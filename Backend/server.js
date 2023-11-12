@@ -1,0 +1,33 @@
+const express = require("express")
+const mongoose = require('mongoose');
+const cors = require('cors');
+
+const app = express()
+
+//middleware
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }));
+app.use(cors());
+
+// test simple route
+app.get('/', (req, res) =>{
+    res.send("suprise mother f#cker");
+})
+
+app.listen(3000, () =>{
+    console.log("Node server in running at port 3000")
+})
+
+const username = "hypeboy";
+const password = "hypeboy103"
+
+//connect DB
+mongoose.connect(`mongodb+srv://${username}:${password}@cluster0.xkosywm.mongodb.net/Node-API?retryWrites=true&w=majority&appName=AtlasApp`)
+  .then(() => console.log('Connected to MongoDB'))
+  .catch((error) => console.log(error))
+  ;
+
+//use routes
+const domain = "hypeboy";
+app.use(`/${domain}/player`, require('./routes/player'))
+
