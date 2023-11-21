@@ -1,31 +1,31 @@
 const express = require('express');
 const router = express.Router();
-const Lesson = require('../models/Lesson')
-// const dayjs = require('dayjs')
+const Course = require('../models/Course')
 
-// get list by course id
-router.post('/getByCourse', async (req, res) => {
+router.post('/list', async (req, res) => {
     try {
-        const { course_id } = req.body;
-        if (course_id) {
-            const data = Lesson.find({ course_id: course_id, is_delete: 0 }).sort({ lesson_before_id: 1, id: 1 })
+        const data = await Course.find({ is_delete: 0 })
 
-            res.status(200).json({ message: 'success', data: data })
-        } else {
-            res.status(400).json({ message: 'Thiếu thông tin' })
-        }
+        res.status(200).json({ message: 'success', data: data })
     } catch (error) {
         console.log('Error', error)
         res.status(500).json({ message: error.message })
     }
 })
 
-// get by id
 router.post('/getById', async (req, res) => {
     try {
-        const { id } = req.body;
+        const { id } = req.body
+
         if (id) {
-            const data = Lesson.findOne({ id: id, is_delete: 0 })
+            const data = await Course.findOne({ id: id, is_delete: 0 })
+                .populate({
+                    path: 'lessons.lesson_id',
+                    model: 'Lesson',
+                    localField: 'lessons.lesson_id',
+                    foreignField: 'id',
+                    option: { lean: true }
+                })
 
             res.status(200).json({ message: 'success', data: data })
         } else {
@@ -37,36 +37,29 @@ router.post('/getById', async (req, res) => {
     }
 })
 
-// create
 router.post('/create', async (req, res) => {
     try {
         const { title,
-            content,
-            chapter_title,
-            course_id,
-            estimate_time,
-            lesson_before_id } = req.body
+            description,
+            author_id,
+            lessons } = req.body
 
-        const maxId = Lesson.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
+        const maxId = Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
         const id = Number(maxId.id) + 1 || 1
 
-        const newLesson = new Lesson({
+        const newData = new Course({
             id: id,
-
             title: title,
-            content: content,
-            chapter_title: chapter_title,
-            course_id: course_id,
-            estimate_time: estimate_time,
-            lesson_before_id: lesson_before_id,
-
+            description: description,
+            author_id: author_id,
+            lessons: lessons ? JSON.parse(lessons) : [],
             is_delete: 0,
             create_at: new Date(),
             update_at: new Date(),
             user_id: 0, // Chưa có user và login 
         })
 
-        const result = await newLesson.save();
+        const result = await newData.save();
         res.status(200).json({ message: 'create success', data: result })
 
     } catch (error) {
@@ -79,23 +72,19 @@ router.post('/update', async (req, res) => {
     try {
         const { id,
             title,
-            content,
-            chapter_title,
-            course_id,
-            estimate_time,
-            lesson_before_id } = req.body
+            description,
+            author_id,
+            lessons } = req.body
 
-        const foundData = await Lesson.findOne({ id: id, is_delete: 0 })
+        const foundData = await Course.findOne({ id: id, is_delete: 0 })
         if (foundData) {
             const update = { update_at: new Date() };
             if (title) update.title = title
-            if (content) update.content = content
-            if (chapter_title) update.chapter_title = chapter_title
-            if (course_id) update.course_id = course_id
-            if (estimate_time) update.estimate_time = estimate_time
-            if (lesson_before_id) update.lesson_before_id = lesson_before_id
+            if (description) update.description = description
+            if (author_id) update.author_id = author_id
+            if (lessons) update.lessons = JSON.parse(lessons)
 
-            await Lesson.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: { update } })
+            await Course.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: { update } })
             res.status(200).json({ message: 'update success' })
 
         } else {
@@ -111,9 +100,9 @@ router.post('/delete', async (req, res) => {
     try {
         const { id } = req.body
 
-        const foundData = await Lesson.findOne({ id: id, is_delete: 0 })
+        const foundData = await Course.findOne({ id: id, is_delete: 0 })
         if (foundData) {
-            await Lesson.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: { is_delete: 1, update_at: new Date() } })
+            await Course.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: { is_delete: 1, update_at: new Date() } })
             res.status(200).json({ message: 'delete success' })
 
         } else {
