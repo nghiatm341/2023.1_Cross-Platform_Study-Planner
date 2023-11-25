@@ -20,11 +20,9 @@ const CourseSchema = new Schema({
         require: true
     },
     lessons: [{
-        lesson_id: {
-            type: Number,
-            require: true,
-            default: 0
-        }
+        type: Number,
+        require: true,
+        default: 0
     }],
 
     // Default

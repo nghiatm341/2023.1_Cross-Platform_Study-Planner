@@ -11,10 +11,10 @@ const LessonSchema = new Schema({
         type: String,
         default: ""
     },
-    content: {
+    content: [{
         type: String,
         default: ""
-    },
+    }],
     chapter_title: {
         type: Number,
         default: ""
@@ -27,10 +27,10 @@ const LessonSchema = new Schema({
         type: Number,
         default: 0
     },
-    lesson_before_id: {
+    lesson_before_id: [{
         type: Number,
         default: 0
-    },
+    }],
 
     // Default
     is_delete: {
