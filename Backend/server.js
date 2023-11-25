@@ -30,4 +30,5 @@ mongoose.connect(`mongodb+srv://${username}:${password}@cluster0.xkosywm.mongodb
 //use routes
 const domain = "hypeboy";
 app.use(`/${domain}/player`, require('./routes/player'))
-
+app.use(`/${domain}/course`, require('./routes/Course'))
+app.use(`/${domain}/lesson`, require('./routes/Lesson'))
