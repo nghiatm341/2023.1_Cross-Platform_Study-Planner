@@ -35,25 +35,25 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
 
-      appBar: AppBar(
-        title: Text("Sharing-learn App"),
-        centerTitle: true,
-        backgroundColor: Colors.black,
-        titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
-      ),
+      // appBar: AppBar(
+      //   title: Text("Sharing-learn App"),
+      //   centerTitle: true,
+      //   backgroundColor: Colors.black,
+      //   titleTextStyle: TextStyle(color: Colors.white, fontSize: 20, fontWeight: FontWeight.w600),
+      // ),
 
       body: _pages[_currentIndexPage],
 
       bottomNavigationBar: Container(
-        color: Colors.black,
+        color: Colors.amber,
 
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
           child: GNav(
-            backgroundColor: Colors.black,
-            color: Colors.white,
-            activeColor: Colors.white,
-            tabBackgroundColor: Color.fromARGB(255, 112, 112, 112),
+            backgroundColor: Colors.amber,
+            color: Colors.black,
+            activeColor: Colors.black,
+            tabBackgroundColor: Colors.yellow.shade600,
             gap: 8,
             padding: EdgeInsets.all(16),
 
