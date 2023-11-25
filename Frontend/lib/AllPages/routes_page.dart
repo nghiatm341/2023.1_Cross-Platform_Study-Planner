@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Route%20Page/complete_routes_tab.dart';
+import 'package:frontend/Route%20Page/in_progress_routes_tab.dart';
 
 class RoutesPage extends StatefulWidget {
   const RoutesPage({super.key});
@@ -10,11 +12,42 @@ class RoutesPage extends StatefulWidget {
 class _RoutesPageState extends State<RoutesPage> {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
+    return DefaultTabController(
+      length: 2,
+      child: Scaffold(
+          appBar: AppBar(
+            title: const Text("My learning route"),
+            centerTitle: true,
+            elevation: 0,
+          ),
+          body: Column(
 
-      body: Center(
-        child: Text("Routes page"),
-      ),
+            children: [
+              const TabBar(
+                
+                tabs: [
+                Tab(
+                  icon: Icon(Icons.schedule, color: Colors.black),
+                  child: Text("In progress", style:  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                ),
+                Tab(
+                  icon: Icon(Icons.task_alt, color: Colors.black),
+                  child: Text("Complete", style:  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
+                )
+              ]),
+
+              Expanded(
+                child: TabBarView(children: [
+                  
+                  InProgressRoutesTab(),
+
+                  CompleteRoutesTab()
+              
+                ]),
+              )
+
+            ],
+          )),
     );
   }
 }
