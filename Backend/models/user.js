@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { GENDER, ROLE, STATUS } = require("../constant/enum");
 const UserSchema = mongoose.Schema(
   {
     id: {
@@ -57,13 +58,13 @@ const UserSchema = mongoose.Schema(
 
     gender: {
       type: String,
-      enum: ["male", "female", "other"],
+      enum: GENDER,
       require: false,
     },
 
     role: {
       type: String,
-      enum: ["admin", "student", "teacher"],
+      enum: ROLE,
       require: true,
     },
 
@@ -75,7 +76,21 @@ const UserSchema = mongoose.Schema(
     score: {
       type: Number,
       default: 1000,
+      min: 0,
+      max: 1000,
     },
+
+    status: {
+      type: String,
+      enum: STATUS,
+      default: STATUS.ACTIVE,
+    },
+
+    count_block: {
+      type: Number,
+      default: 0,
+    },
+    
     // Default
     is_delete: {
       type: Number,

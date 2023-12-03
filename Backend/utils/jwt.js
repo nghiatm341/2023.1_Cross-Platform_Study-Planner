@@ -2,9 +2,9 @@ const jwt = require("jsonwebtoken");
 
 const secret = "shhhhhhhhhh";
 
-exports.signToken = (data) => {
+exports.signToken = (data, time) => {
   return new Promise((resolve, reject) => {
-    jwt.sign({ exp: Math.floor(Date.now() / 1000) + 24 * 60 * 60, data }, secret, (err, token) => {
+    jwt.sign({ exp: Math.floor(Date.now() / 1000) + time, data }, secret, (err, token) => {
       if (err) return reject(err);
       return resolve(token);
     });

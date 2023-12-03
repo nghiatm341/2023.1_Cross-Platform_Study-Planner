@@ -1,10 +1,11 @@
-const { ROLE, GENDER } = require("../constant/enum");
-const User = require("../models/user");
-const Otp = require("../models/otp");
+const { ROLE, GENDER, REASON_REPORT, STATUS } = require("../constant/enum");
 const { comparePassword, cryptPassword } = require("../utils/hashPassword");
 const { signToken, verifyToken } = require("../utils/jwt");
 const { isValidateEmail, isValidDateTime, isValidPhoneNumber } = require("../constant/regex");
 const nodeMailer = require("nodemailer");
+const User = require("../models/user");
+const Otp = require("../models/otp");
+const Report = require("../models/Report");
 
 class AuthController {
   async sendOtp(req, res) {
@@ -17,6 +18,10 @@ class AuthController {
 
       if (!isValidateEmail(email)) {
         return res.status(400).json({ message: "Email is invalid!" });
+      }
+
+      if (isRegister !== "0" && isRegister !== "1") {
+        return res.status(400).json({ message: "isRegister is invalid!" });
       }
 
       const findUser = await User.findOne({ email });
@@ -33,7 +38,7 @@ class AuthController {
       }
 
       const otp = Math.floor(Math.random() * (99999 - 10000 + 1)) + 10000;
-      const html = `
+      const htmlRegister = `
         <!DOCTYPE html>
         <html lang="en">
         <head>
@@ -49,7 +54,27 @@ class AuthController {
         
             <p style="color: #0070cc; font-size: 1.2em; font-weight: bold;">${otp}</p>
         
-            <p>Enter this code on our website to verify your email and activate your account.</p>
+            <p>Thank you,<br>
+            Study-Planner Team</p>
+        </body>
+        </html>
+      `;
+
+      const htmlChangePassword = `
+        <!DOCTYPE html>
+        <html lang="en">
+        <head>
+            <meta charset="UTF-8">
+            <meta http-equiv="X-UA-Compatible" content="IE=edge">
+            <meta name="viewport" content="width=device-width, initial-scale=1.0">
+            <title>Account Verification</title>
+        </head>
+        <body>
+            <p>Dear ${email},</p>
+        
+            <p>You have requested to reset the password of your Study-Planner account! To reset your password, please use the following OTP:</p>
+        
+            <p style="color: #0070cc; font-size: 1.2em; font-weight: bold;">${otp}</p>
         
             <p>Thank you,<br>
             Study-Planner Team</p>
@@ -68,7 +93,7 @@ class AuthController {
         from: "studyplanner252@gmail.com",
         to: email,
         subject: "Account Verification - Your OTP",
-        html,
+        html: !!Number(isRegister) ? htmlRegister : htmlChangePassword,
       };
 
       const currentDateTime = new Date();
@@ -102,10 +127,36 @@ class AuthController {
     }
   }
 
+  async verifyOtp(req, res) {
+    try {
+      const { email, otp } = req.body;
+
+      if (!email || !otp) {
+        return res.status(400).json({ message: "Missing information fields!" });
+      }
+
+      if (!isValidateEmail(email)) {
+        return res.status(400).json({ message: "Email is invalid!" });
+      }
+
+      const otpFind = await Otp.findOne({ email, is_delete: 0, expireAt: { $gt: new Date() } });
+      if (!otpFind?.otp || otpFind?.otp !== +otp) {
+        return res.status(400).json({ message: "Otp or email is incorrect!" });
+      }
+      await Otp.updateOne({ id: otpFind?.id }, { is_delete: 1 });
+
+      const token = await signToken({ email }, 300);
+      return res.status(200).json({ message: "Success", token });
+    } catch (error) {
+      console.log("Error", error);
+      res.status(500).json({ message: error.message });
+    }
+  }
+
   async signUp(req, res) {
     try {
-      let { email, password, firstName, lastName, role, otp } = req.body;
-      if (!email || !password || !firstName || !lastName || !role || !otp) {
+      let { email, password, firstName, lastName, role } = req.body;
+      if (!email || !password || !firstName || !lastName || !role) {
         return res.status(400).json({ message: "Missing information fields!" });
       }
 
@@ -121,6 +172,10 @@ class AuthController {
         return res.status(400).json({ message: "Password minimum 6 characters!" });
       }
 
+      if (email !== req.email) {
+        return res.status(400).json({ message: "Email does not match the OTP!" });
+      }
+
       const findUser = await User.findOne({ email });
       if (findUser) {
         return res.status(400).json({
@@ -128,10 +183,6 @@ class AuthController {
         });
       }
 
-      const otpFind = await Otp.findOne({ email, is_delete: 0, expireAt: { $gt: new Date() } });
-      if (otpFind?.otp !== +otp) {
-        return res.status(400).json({ message: "Otp is invalid!" });
-      }
       password = await cryptPassword(password);
 
       const maxId = await User.findOne({ is_delete: 0 }).sort({ id: -1 }).exec();
@@ -150,7 +201,7 @@ class AuthController {
       });
 
       const result = await newData.save();
-      await Otp.updateOne({ id: otpFind.id }, { is_delete: 1 });
+      // await Otp.updateOne({ id: otpFind?.id }, { is_delete: 1 });
 
       return res.status(200).json({ message: "success", data: result });
     } catch (error) {
@@ -171,22 +222,32 @@ class AuthController {
         return res.status(400).json({ message: "Email is invalid!" });
       }
 
-      const findUser = await User.find({ email });
+      const findUser = await User.findOne({ email });
 
-      if (findUser.length === 0) {
+      if (!findUser) {
         return res.status(404).json({
           message: "account does not exist!",
         });
       }
 
-      const isMatchPassword = await comparePassword(password, findUser[0].password);
-      if (isMatchPassword) {
-        const token = await signToken({ id: findUser[0].id, userName: findUser[0].email, role: findUser[0].role });
-        const refreshToken = await signToken({ id: findUser[0].id, userName: findUser[0].email });
-        findUser[0].token = token;
-        findUser[0].refreshToken = refreshToken;
+      if (findUser.status === STATUS.BLOCK) {
+        return res.status(403).json({
+          message: "account has been block!",
+          data: {
+            blockedAt: findUser.updatedAt,
+            duration: 15 * findUser.count_block + " days",
+          },
+        });
+      }
 
-        await User.updateOne({ email: findUser[0].email }, findUser[0]);
+      const isMatchPassword = await comparePassword(password, findUser.password);
+      if (isMatchPassword) {
+        const token = await signToken({ id: findUser.id, userName: findUser.email, role: findUser.role }, 86400 * 365);
+        const refreshToken = await signToken({ id: findUser.id, userName: findUser.email });
+        findUser.token = token;
+        findUser.refreshToken = refreshToken;
+
+        await User.updateOne({ email: findUser.email }, findUser);
         return res.status(200).json({ message: "success", token, refreshToken });
       } else {
         return res.status(404).json({
@@ -221,63 +282,168 @@ class AuthController {
     }
   }
 
-  async updateInfo(req, res) {
+  // async updateInfo(req, res) {
+  //   try {
+  //     const { firstName, lastName, dob, phoneNumber, gender, avatar } = req.body;
+  //     if (!isValidDateTime(dob)) {
+  //       return res.status(400).json({
+  //         message: "invalid dob!",
+  //       });
+  //     }
+  //     if (gender !== GENDER.MALE && gender !== GENDER.FEMALE && gender !== GENDER.OTHER) {
+  //       return res.status(400).json({ message: "invalid gender!" });
+  //     }
+  //     if (gender !== GENDER.MALE && gender !== GENDER.FEMALE && gender !== GENDER.OTHER) {
+  //       return res.status(400).json({ message: "invalid gender!" });
+  //     }
+  //     if (!isValidPhoneNumber(phoneNumber)) {
+  //       return res.status(400).json({ message: "invalid phone number!" });
+  //     }
+  //     if (firstName === "" && lastName === "" && avatar === "") {
+  //       return res.status(400).json({ message: "empty strings are not allowed!" });
+  //     }
+
+  //     const id = req.userInfo.id;
+
+  //     const findUser = await User.findOne({ id });
+  //     if (!findUser) {
+  //       return res.status(404).json({
+  //         message: "account does not exist!",
+  //       });
+  //     }
+
+  //     const updateValue = { firstName, lastName, dob, phoneNumber, gender, avatar };
+
+  //     await User.updateOne({ id }, updateValue);
+  //     const result = await User.findOne({ id }).select("-password -token -refreshToken");
+  //     return res.status(200).json({
+  //       message: "success",
+  //       data: result,
+  //     });
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // }
+
+  // async forgotPassword(req, res) {
+  //   try {
+  //     let { email, newPassword } = req.body;
+
+  //     if (!email || !newPassword) {
+  //       return res.status(400).json({ message: "Missing information fields!" });
+  //     }
+
+  //     if (newPassword.length < 6) {
+  //       return res.status(400).json({ message: "Password minimum 6 characters!" });
+  //     }
+
+  //     if (email !== req.email) {
+  //       return res.status(400).json({ message: "Email does not match the OTP entered previously!" });
+  //     }
+  //     const password = await cryptPassword(newPassword);
+  //     await User.updateOne({ email }, { password });
+  //     return res.status(200).json({ message: "Update password success!" });
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // }
+
+  // async reportUser(req, res) {
+  //   try {
+  //     const { reportedUserId, levelReport } = req.body;
+  //     const reporterId = req.userInfo.id;
+
+  //     if (!reportedUserId || !levelReport) {
+  //       return res.status(400).json({ message: "Missing information fields!" });
+  //     }
+
+  //     if (!Number.isInteger(+levelReport) || +levelReport < 1 || +levelReport > 5) {
+  //       return res.status(400).json({ message: "levelReport has a value from 1 to 5!" });
+  //     }
+
+  //     const findUser = await User.findOne({ id: reportedUserId });
+
+  //     if (!findUser) {
+  //       return res.status(400).json({ message: "Not found user!" });
+  //     }
+
+  //     const findReport = await Report.findOne({
+  //       reporter_id: reporterId,
+  //       reported_user_id: reportedUserId,
+  //       is_delete: 0,
+  //     });
+  //     if (findReport) {
+  //       return res.status(400).json({ message: "Already reported this user!" });
+  //     }
+
+  //     switch (+levelReport) {
+  //       case 1:
+  //         findUser.score -= 15;
+  //         break;
+  //       case 2:
+  //         findUser.score -= 25;
+  //         break;
+  //       case 3:
+  //         findUser.score -= 50;
+  //         break;
+  //       case 4:
+  //         findUser.score -= 75;
+  //         break;
+  //       case 5:
+  //         findUser.score -= 3000;
+  //         break;
+  //     }
+
+  //     if (findUser.score <= 0) {
+  //       findUser.score = 0;
+  //       findUser.status = STATUS.BLOCK;
+  //       findUser.count_block++;
+  //     }
+
+  //     await findUser.save();
+
+  //     const maxId = await Report.findOne().sort({ id: -1 }).exec();
+  //     const id = +maxId?.id + 1 || 1;
+  //     const newReport = new Report({
+  //       id,
+  //       reporter_id: reporterId,
+  //       reported_user_id: reportedUserId,
+  //     });
+  //     await newReport.save();
+
+  //     return res.status(200).json({ message: "success!" });
+  //   } catch (error) {
+  //     console.log("Error", error);
+  //     res.status(500).json({ message: error.message });
+  //   }
+  // }
+
+  async unblockUser(req, res) {
     try {
-      const { firstName, lastName, dob, phoneNumber, gender, avatar } = req.body;
-      if (!isValidDateTime(dob)) {
-        return res.status(400).json({
-          message: "invalid dob!",
-        });
-      }
-      if (gender !== GENDER.MALE && gender !== GENDER.FEMALE && gender !== GENDER.OTHER) {
-        return res.status(400).json({ message: "invalid gender!" });
-      }
-      if (gender !== GENDER.MALE && gender !== GENDER.FEMALE && gender !== GENDER.OTHER) {
-        return res.status(400).json({ message: "invalid gender!" });
-      }
-      if (!isValidPhoneNumber(phoneNumber)) {
-        return res.status(400).json({ message: "invalid phone number!" });
-      }
-      if (firstName === "" && lastName === "" && avatar === "") {
-        return res.status(400).json({ message: "empty strings are not allowed!" });
+      const { unblockedUserId, score } = req.body;
+
+      if (!unblockedUserId || !score) {
+        return res.status(400).json({ message: "Missing information fields!" });
       }
 
-      const id = req.userInfo.id;
-
-      const findUser = await User.findOne({ id });
-      if (!findUser) {
-        return res.status(404).json({
-          message: "account does not exist!",
-        });
+      if (!Number.isInteger(+score) || +score < 200 || +score > 1000) {
+        return res.status(400).json({ message: "score has a value from 100 to 1000!" });
       }
 
-      const updateValue = { firstName, lastName, dob, phoneNumber, gender, avatar };
+      const findUserBlocked = await User.findOne({ id: unblockedUserId, status: STATUS.BLOCK });
 
-      await User.updateOne({ id }, updateValue);
-      return res.status(200).json({
-        message: "sucess",
-      });
-    } catch (error) {
-      console.log("Error", error);
-      res.status(500).json({ message: error.message });
-    }
-  }
+      if (!findUserBlocked) {
+        return res.status(400).json({ message: "the user does not exist or has not been blocked!" });
+      }
 
-  async forgotPassword(req, res) {
-    try {
-      let { email, newPassword, otp } = req.body;
-      if (newPassword.length < 6) {
-        return res.status(400).json({ message: "Password minimum 6 characters!" });
-      }
-      const otpFind = await Otp.findOne({ email, is_delete: 0, expireAt: { $gt: new Date() } });
-      console.log(otpFind);
-      if (otpFind?.otp !== +otp) {
-        return res.status(400).json({ message: "Otp is invalid!" });
-      }
-      const password = await cryptPassword(newPassword);
-      console.log(password);
-      await User.updateOne({ email }, { password });
-      return res.status(200).json({ message: "Update password success!" });
+      findUserBlocked.status = STATUS.ACTIVE;
+      findUserBlocked.score = score;
+      await findUserBlocked.save();
+      await Report.updateMany({ reported_user_id: findUserBlocked.id }, { is_delete: 1 });
+
+      return res.status(200).json({ message: "success!" });
     } catch (error) {
       console.log("Error", error);
       res.status(500).json({ message: error.message });
