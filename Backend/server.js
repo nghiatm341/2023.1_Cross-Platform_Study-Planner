@@ -32,3 +32,5 @@ const domain = "hypeboy";
 app.use(`/${domain}/player`, require('./routes/player'))
 app.use(`/${domain}/course`, require('./routes/Course'))
 app.use(`/${domain}/lesson`, require('./routes/Lesson'))
+app.use(`${domain}/studyRoute`, require('./routes/studyRoute'))
+app.use(`${domain}/lessonNote`, require('./routes/lessonNote'))
