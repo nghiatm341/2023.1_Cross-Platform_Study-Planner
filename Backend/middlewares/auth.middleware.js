@@ -1,7 +1,7 @@
 const User = require("../models/user");
 const { verifyToken } = require("../utils/jwt");
 
-exports.authRoleMiddleware = (role) => {
+exports.authRoleMiddleware = (...role) => {
   return (req, res, next) => {
     let token = req.headers.authorization?.replace("Bearer", "").trim();
     if (!token) {
@@ -15,7 +15,7 @@ exports.authRoleMiddleware = (role) => {
         if (token !== findUser.token) {
           return res.status(400).json({ message: "Invalid token" });
         }
-        if (role && data.role !== role) return res.status(403).json({ message: "Unauthorized" });
+        if (role && !role.includes(data.role)) return res.status(403).json({ message: "Unauthorized" });
         req.userInfo = data;
         next();
       })
