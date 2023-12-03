@@ -1,17 +1,16 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const StudyRoute = require('../models/StudyRoute')
 const Lesson = require('../models/Lesson')
-import { v4 as uuidv4 } from 'uuid';
+const uuid = require('uuid');
 
 
 //get all in-progress study routes  of a user 
-route.post('/getAllInProgressRoutes', async (req, res) => {
+router.post('/getAllInProgressRoutes', async (req, res) => {
     try {
         const {userId} = req.body;
 
         if(userId){
-            const allInProgressStudyRoutes =  StudyRoute.find({userId: userId, isFinished: false}).sort({createdAt: -1})
+            const allInProgressStudyRoutes = await StudyRoute.find({userId: userId, isFinished: false}).sort({createdAt: -1})
 
             res.status(200).json({message: "Success", data: allInProgressStudyRoutes})
         }
@@ -27,7 +26,7 @@ route.post('/getAllInProgressRoutes', async (req, res) => {
 
 
 //get all finished study routes  of a user 
-route.post('/getAllFinishedRoutes', async (req, res) => {
+router.post('/getAllFinishedRoutes', async (req, res) => {
     try {
         const {userId} = req.body;
 
@@ -46,7 +45,7 @@ route.post('/getAllFinishedRoutes', async (req, res) => {
     }
 });
 
-route.post('/createStudyRoute', async (req, res) => {
+router.post('/createStudyRoute', async (req, res) => {
     try {
         const {courseId, userId} = req.body;
 
@@ -61,7 +60,7 @@ route.post('/createStudyRoute', async (req, res) => {
         });
 
         const newRoute = new StudyRoute({
-            rouId: uuidv4(),
+            routeId: uuid.v4(),
             userId: userId,
             courseId: courseId,
             createdAt: new Date(),
@@ -80,7 +79,7 @@ route.post('/createStudyRoute', async (req, res) => {
 
 
 // get detail info of a study route, include lessons info
-route.post('/getStudyRouteDetail', async (req, res) => {
+router.post('/getStudyRouteDetail', async (req, res) => {
     try {
         const {routeId} = req.body;
 
@@ -104,7 +103,7 @@ route.post('/getStudyRouteDetail', async (req, res) => {
 });
 
 
-route.post('/changeLessonStudyTime', async (req, res) => {
+router.post('/changeLessonStudyTime', async (req, res) => {
     try{
         const {routeId, lessonId, newStudyTime} = req.body;
 
@@ -143,7 +142,7 @@ route.post('/changeLessonStudyTime', async (req, res) => {
     }
 });
 
-route.post('/completeLesson', async(req, res) => {
+router.post('/completeLesson', async(req, res) => {
     try{
         const {routeId, lessonId} = req.body;
 
@@ -188,7 +187,7 @@ route.post('/completeLesson', async(req, res) => {
 });
 
 
-route.post('/deleteStudyRoute', async (req, res) => {
+router.post('/deleteStudyRoute', async (req, res) => {
     try{
         const {routeId} = req.body;
 
@@ -207,6 +206,7 @@ route.post('/deleteStudyRoute', async (req, res) => {
     }
 });
 
+module.exports = router
 
 
 
