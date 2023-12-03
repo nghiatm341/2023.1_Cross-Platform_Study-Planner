@@ -20,6 +20,10 @@ const LessonNoteSchema = mongoose.Schema({
         type: String,
         require: true
     }
+}, {
+    timestamps: true,
+    versionKey: false,
+    collection: "LessonNote"
 });
 
 module.exports = mongoose.model('LessonNote', LessonNoteSchema);

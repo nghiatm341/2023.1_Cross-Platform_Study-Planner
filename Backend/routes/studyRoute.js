@@ -1,8 +1,8 @@
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const StudyRoute = require('../models/StudyRoute')
 const Lesson = require('../models/Lesson')
 const uuid = require('uuid');
+
 
 //get all in-progress study routes  of a user 
 router.post('/getAllInProgressRoutes', async (req, res) => {
@@ -60,7 +60,7 @@ router.post('/createStudyRoute', async (req, res) => {
         });
 
         const newRoute = new StudyRoute({
-            rouId: uuid.v4(),
+            routeId: uuid.v4(),
             userId: userId,
             courseId: courseId,
             createdAt: new Date(),

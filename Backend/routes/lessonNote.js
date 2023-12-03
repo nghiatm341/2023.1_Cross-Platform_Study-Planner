@@ -1,8 +1,5 @@
-
-const express = require('express');
-const router = express.Router();
+const router = require('express').Router();
 const LessonNote = require('../models/LessonNote');
-const Player = require('../models/Player');
 const uuid = require('uuid');
 
 router.post('/getAllLessonNotes', async (req, res) => {

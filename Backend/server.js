@@ -36,5 +36,5 @@ app.use(`/${domain}/course`, require("./routes/Course"));
 app.use(`/${domain}/lesson`, require("./routes/Lesson"));
 app.use(`/${domain}`, require("./routes/auth"));
 app.use(`/${domain}/user`, require("./routes/user"));
-app.use(`${domain}/studyRoute`, require('./routes/studyRoute'))
-app.use(`${domain}/lessonNote`, require('./routes/lessonNote'))
+app.use(`/${domain}/studyRoute`, require("./routes/studyRoute"))
+app.use(`/${domain}/lessonNote`, require("./routes/lessonNote"))
