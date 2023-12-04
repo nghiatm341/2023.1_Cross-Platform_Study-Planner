@@ -11,12 +11,18 @@ const LessonSchema = new Schema({
         type: String,
         default: ""
     },
-    content: [{
-        type: String,
-        default: ""
+    contents: [{
+        content: {
+            type: String,
+            default: ""
+        },
+        content_type: {
+            type: Number,
+            default: 1
+        }
     }],
     chapter_title: {
-        type: Number,
+        type: String,
         default: ""
     },
     course_id: {
