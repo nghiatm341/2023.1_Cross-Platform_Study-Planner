@@ -20,11 +20,12 @@ router.post('/getById', async (req, res) => {
         if (id) {
             const data = await Course.findOne({ id: id, is_delete: 0 })
                 .populate({
-                    path: 'lessons.lesson_id',
+                    path: 'lessons.lesson',
                     model: 'Lesson',
-                    localField: 'lessons.lesson_id',
+                    localField: 'lessons.lesson',
                     foreignField: 'id',
-                    option: { lean: true }
+                    option: { lean: true },
+                    strictPopulate: false
                 })
 
             res.status(200).json({ message: 'success', data: data })
@@ -44,7 +45,7 @@ router.post('/create', async (req, res) => {
             author_id,
             lessons } = req.body
 
-        const maxId = Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
+        const maxId = await Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
         const id = Number(maxId.id) + 1 || 1
 
         const newData = new Course({
@@ -52,7 +53,7 @@ router.post('/create', async (req, res) => {
             title: title,
             description: description,
             author_id: author_id,
-            lessons: lessons ? JSON.parse(lessons) : [],
+            lessons: lessons ? lessons : [],
             is_delete: 0,
             create_at: new Date(),
             update_at: new Date(),
@@ -82,9 +83,9 @@ router.post('/update', async (req, res) => {
             if (title) update.title = title
             if (description) update.description = description
             if (author_id) update.author_id = author_id
-            if (lessons) update.lessons = JSON.parse(lessons)
+            if (lessons) update.lessons = lessons
 
-            await Course.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: { update } })
+            await Course.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: update })
             res.status(200).json({ message: 'update success' })
 
         } else {

@@ -19,11 +19,14 @@ const CourseSchema = new Schema({
         type: Number,
         require: true
     },
-    lessons: [{
-        type: Number,
-        require: true,
-        default: 0
-    }],
+    lessons: [
+        {
+            lesson: {
+                type: Number,
+                require: true,
+                default: 0
+            }
+        }],
 
     // Default
     is_delete: {
@@ -48,3 +51,5 @@ const CourseSchema = new Schema({
     versionKey: false,
     collection: "Course"
 })
+
+module.exports = mongoose.model('Course', CourseSchema)

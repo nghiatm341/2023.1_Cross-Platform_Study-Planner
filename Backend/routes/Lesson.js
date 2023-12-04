@@ -8,7 +8,7 @@ router.post('/getByCourse', async (req, res) => {
     try {
         const { course_id } = req.body;
         if (course_id) {
-            const data = Lesson.find({ course_id: course_id, is_delete: 0 }).sort({ lesson_before_id: 1, id: 1 })
+            const data = await Lesson.find({ course_id: course_id, is_delete: 0 }).sort({ lesson_before_id: 1, id: 1 })
 
             res.status(200).json({ message: 'success', data: data })
         } else {
@@ -25,7 +25,7 @@ router.post('/getById', async (req, res) => {
     try {
         const { id } = req.body;
         if (id) {
-            const data = Lesson.findOne({ id: id, is_delete: 0 })
+            const data = await Lesson.findOne({ id: id, is_delete: 0 })
 
             res.status(200).json({ message: 'success', data: data })
         } else {
@@ -41,24 +41,26 @@ router.post('/getById', async (req, res) => {
 router.post('/create', async (req, res) => {
     try {
         const { title,
-            content,
+            contents,
             chapter_title,
             course_id,
             estimate_time,
-            lesson_before_id } = req.body
+            lesson_before_id
+        } = req.body
 
-        const maxId = Lesson.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
-        const id = Number(maxId.id) + 1 || 1
+        const maxId = await Lesson.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
+        const lastId = await Lesson.findOne({ is_delete: 0, course_id: course_id }, 'id').sort({ id: -1 })
+        const id = maxId ? Number(maxId.id) + 1 : 1
 
         const newLesson = new Lesson({
             id: id,
 
             title: title,
-            content: content,
+            contents: contents,
             chapter_title: chapter_title,
             course_id: course_id,
             estimate_time: estimate_time,
-            lesson_before_id: lesson_before_id,
+            lesson_before_id: lastId ? lastId.id : 0,
 
             is_delete: 0,
             create_at: new Date(),
@@ -79,7 +81,7 @@ router.post('/update', async (req, res) => {
     try {
         const { id,
             title,
-            content,
+            contents,
             chapter_title,
             course_id,
             estimate_time,
@@ -89,13 +91,13 @@ router.post('/update', async (req, res) => {
         if (foundData) {
             const update = { update_at: new Date() };
             if (title) update.title = title
-            if (content) update.content = content
+            if (contents) update.contents = contents
             if (chapter_title) update.chapter_title = chapter_title
             if (course_id) update.course_id = course_id
             if (estimate_time) update.estimate_time = estimate_time
             if (lesson_before_id) update.lesson_before_id = lesson_before_id
 
-            await Lesson.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: { update } })
+            await Lesson.updateOne({ id: id, is_delete: 0 }, { $set: update })
             res.status(200).json({ message: 'update success' })
 
         } else {
