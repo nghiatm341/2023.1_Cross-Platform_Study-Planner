@@ -1,6 +1,18 @@
 const express = require('express');
 const router = express.Router();
 const Course = require('../models/Course')
+const Lesson = require('../models/Lesson')
+
+const sanitizeLesson = async (id, lessons) => {
+    if (lessons && Array.isArray(lessons) && lessons.length > 0) {
+        await lessons.forEach(async (item) => {
+            const result = await Lesson.findOne({ id: item.lesson, is_delete: 0 })
+            if (result) {
+                await Lesson.findOneAndUpdate({ id: item.lesson, is_delete: 0 }, { $set: { course_id: id } })
+            }
+        })
+    }
+}
 
 router.post('/list', async (req, res) => {
     try {
@@ -61,6 +73,7 @@ router.post('/create', async (req, res) => {
         })
 
         const result = await newData.save();
+        await sanitizeLesson(id, lessons)
         res.status(200).json({ message: 'create success', data: result })
 
     } catch (error) {
@@ -86,6 +99,7 @@ router.post('/update', async (req, res) => {
             if (lessons) update.lessons = lessons
 
             await Course.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: update })
+            await sanitizeLesson(id, lessons)
             res.status(200).json({ message: 'update success' })
 
         } else {
