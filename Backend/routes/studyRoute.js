@@ -49,7 +49,7 @@ router.post('/createStudyRoute', async (req, res) => {
     try {
         const {courseId, userId} = req.body;
 
-        const courseLessonList = await Lesson.find({ course_id: courseId, is_delete: 0 }).sort({ lesson_before_id: 1, id: 1 })
+        const courseLessonList = await Lesson.find({ course_id: courseId, is_delete: 0 }).sort({ lesson_before_id: 1, course_id: 1 })
 
         const studyRouteLesson = courseLessonList.map((item) => {
             return {
@@ -162,7 +162,8 @@ router.post('/completeLesson', async(req, res) => {
             await StudyRoute.findOneAndUpdate({routeId: routeId}, 
                 { 
                     $set: {
-                        lessons: lessons
+                        lessons: lessons,
+                        isFinished: isCompleteCourse
                     }
                 })
 
@@ -170,6 +171,7 @@ router.post('/completeLesson', async(req, res) => {
                 isCompleteCourse: isCompleteCourse,
                 lessonComplete: lessonId
             }
+
 
             res.status(200).json({message: "Success", data: data})
 

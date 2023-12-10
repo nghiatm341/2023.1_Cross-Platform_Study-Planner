@@ -20,33 +20,39 @@ class _RoutesPageState extends State<RoutesPage> {
             centerTitle: true,
             elevation: 0,
           ),
-          body: Column(
-
-            children: [
-              const TabBar(
-                
-                tabs: [
-                Tab(
-                  icon: Icon(Icons.schedule, color: Colors.black),
-                  child: Text("In progress", style:  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                ),
-                Tab(
-                  icon: Icon(Icons.task_alt, color: Colors.black),
-                  child: Text("Complete", style:  TextStyle(fontSize: 18, fontWeight: FontWeight.bold),),
-                )
-              ]),
-
-              Expanded(
-                child: TabBarView(children: [
-                  
-                  InProgressRoutesTab(),
-
-                  CompleteRoutesTab()
-              
+          body: Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                  image: AssetImage("assets/bg1.jpg"), fit: BoxFit.cover),
+            ),
+            child: Column(
+              children: [
+                const TabBar(
+     
+                  tabs: [
+                  Tab(
+                    icon: Icon(Icons.schedule, color: Colors.black),
+                    child: Text(
+                      "In progress",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  Tab(
+                    icon: Icon(Icons.task_alt, color: Colors.black),
+                    child: Text(
+                      "Complete",
+                      style:
+                          TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                    ),
+                  )
                 ]),
-              )
-
-            ],
+                Expanded(
+                  child: TabBarView(
+                      children: [InProgressRoutesTab(), CompleteRoutesTab()]),
+                )
+              ],
+            ),
           )),
     );
   }
