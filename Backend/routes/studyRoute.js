@@ -54,7 +54,7 @@ router.post('/createStudyRoute', async (req, res) => {
         const studyRouteLesson = courseLessonList.map((item) => {
             return {
                 lessonId: item.id,
-                studyTime: item.estimate_time,
+                studyTime: Math.ceil(item.estimate_time),
                 isComplete: false
             }
         });
