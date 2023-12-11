@@ -58,7 +58,7 @@ router.post('/create', async (req, res) => {
             lessons } = req.body
 
         const maxId = await Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
-        const id = Number(maxId.id) + 1 || 1
+        const id = maxId ? Number(maxId.id) + 1 : 1
 
         const newData = new Course({
             id: id,
