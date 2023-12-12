@@ -6,7 +6,13 @@ import 'package:frontend/Route%20Page/dialog_route_lesson_undone.dart';
 import 'package:frontend/Route%20Page/route_lesson_detail.dart';
 
 class RouteLessonItem extends StatefulWidget {
-  const RouteLessonItem({super.key});
+
+  final int index;
+  final int lessonId;
+  final String routeId;
+  final String title;
+
+  const RouteLessonItem({super.key, required this.index, required this.lessonId, required this.routeId, required this.title});
 
   @override
   State<RouteLessonItem> createState() => _RouteLessonItemState();
@@ -58,7 +64,7 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
                 
                     padding: const EdgeInsets.only(left: 12),
                     child: Text(
-                      "Lesson 1: Kotlin basics ",
+                      "Lesson " + widget.index.toString() + " : " + widget.title,
                       style: TextStyle(fontSize: 16),
                     )
                     
