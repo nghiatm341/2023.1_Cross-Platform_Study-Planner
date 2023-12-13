@@ -8,11 +8,21 @@ import 'package:frontend/Route%20Page/route_lesson_detail.dart';
 class RouteLessonItem extends StatefulWidget {
 
   final int index;
-  final int lessonId;
   final String routeId;
   final String title;
+  final RouteCustomLessonData customLessonData;
+  final RouteCourseLessonData courseLessonData;
+  final VoidCallback onCompleteLesson;
 
-  const RouteLessonItem({super.key, required this.index, required this.lessonId, required this.routeId, required this.title});
+  const RouteLessonItem({
+    super.key, 
+    required this.index, 
+    required this.routeId, 
+    required this.title, 
+    required this.customLessonData, 
+    required this.courseLessonData,
+    required this.onCompleteLesson
+    });
 
   @override
   State<RouteLessonItem> createState() => _RouteLessonItemState();
@@ -20,10 +30,16 @@ class RouteLessonItem extends StatefulWidget {
 
 class _RouteLessonItemState extends State<RouteLessonItem> {
 
-  bool isComplete = true;
-
   void tapRouteLessonItem() {
-    Navigator.push(context, MaterialPageRoute(builder: (context) => RouteLessonDetail()));
+    Navigator.push(context, 
+    MaterialPageRoute(
+      builder: (context) => RouteLessonDetail
+      (courseLessonData: widget.courseLessonData, 
+      lessonIndex: widget.index, 
+      isCompleted: widget.customLessonData.isCompleted,
+      onCompleteLesson: widget.onCompleteLesson,
+      routeId: widget.routeId,
+      )));
   }
 
   void showDialogLessonDone(){
@@ -64,7 +80,7 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
                 
                     padding: const EdgeInsets.only(left: 12),
                     child: Text(
-                      "Lesson " + widget.index.toString() + " : " + widget.title,
+                      "Lesson " + (widget.index + 1).toString() + " : " + widget.title,
                       style: TextStyle(fontSize: 16),
                     )
                     
@@ -78,7 +94,7 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
 
             // actions
             Visibility(
-              visible: isComplete,
+              visible: widget.customLessonData.isCompleted,
               child: GestureDetector(
                 child: Container(
                   width: 70,
@@ -92,7 +108,7 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
             ),
 
             Visibility(
-              visible: !isComplete,
+              visible: !widget.customLessonData.isCompleted,
               child: GestureDetector(
                 child: Container(
                   color: Colors.white,
@@ -123,3 +139,30 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
     );
   }
 }
+
+class RouteCustomLessonData {
+  final int lessonId;
+  final int studyTime;
+  final bool isCompleted;
+
+  RouteCustomLessonData
+  ({
+      required this.lessonId,
+      required this.studyTime,
+      required this.isCompleted,
+  });
+}
+
+class RouteCourseLessonData {
+  final int lessonId;
+  final String title;
+  final List contents;
+
+  RouteCourseLessonData
+  ({
+      required this.lessonId,
+      required this.title,
+      required this.contents,
+  });
+}
+

@@ -132,7 +132,7 @@ class _RouteItem extends State<RouteItem> {
                                 "%", // Number to display inside the circle
                             style: TextStyle(
                               color: Colors.green, // Color of the number text
-                              fontSize: 20, // Font size of the number text
+                              fontSize: 18, // Font size of the number text
                               fontWeight: FontWeight
                                   .bold, // Font weight of the number text
                             ),
