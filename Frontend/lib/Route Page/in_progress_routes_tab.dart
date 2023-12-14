@@ -14,6 +14,8 @@ class InProgressRoutesTab extends StatefulWidget {
 
 class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
 
+   late List<RouteItemData> inProgressRoute = [];
+
   Future<void> fetchCourses() async {
 
  // Replace with your API endpoint
@@ -56,7 +58,7 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
                 courseId: e['courseId'], 
                 userId: e['userId'], 
                 createdAt: date,
-                progress: ((completeCount / allLessons.length).ceil() * 100).toString()
+                progress: (((completeCount / allLessons.length) * 100).ceil()).toString()
               );
             }).toList();
             
@@ -71,7 +73,7 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
     }
   }
 
-  late List<RouteItemData> inProgressRoute = [];
+ 
 
   @override
   void initState(){

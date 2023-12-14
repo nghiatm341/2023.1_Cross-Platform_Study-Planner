@@ -23,6 +23,9 @@ class _RouteDetailState extends State<RouteDetail> {
   late int totalLessonCount = 1;
 
   Future<void> fetchRouteDetail(String routeId) async {
+
+    debugPrint("Fetch route detail");
+
     Map<String, String> headers = {
       'Content-Type':
           'application/json', // Set the content type for POST request
@@ -60,6 +63,11 @@ class _RouteDetailState extends State<RouteDetail> {
       // Catch and handle any errors that occur during the API call
       print('Error: $error');
     }
+  }
+
+  void Refresh(){
+    debugPrint("Refresh");
+    fetchRouteDetail(widget.routeId);
   }
 
   @override
@@ -125,7 +133,7 @@ class _RouteDetailState extends State<RouteDetail> {
                       border: Border.all(color: Colors.black, width: 1)),
                   child: Center(
                     child: Text(
-                      ((completeLessonsCount / totalLessonCount).ceil() * 100).toString() + "%",
+                      ((completeLessonsCount / totalLessonCount) * 100).ceil().toString() + "%",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 20,
@@ -145,7 +153,23 @@ class _RouteDetailState extends State<RouteDetail> {
           Expanded(
             child: ListView.builder(
                 itemBuilder: (context, index) {
-                  return RouteLessonItem(index: index, lessonId: customLessonsData[index]['lessonId'], routeId:  widget.routeId, title: courseLessonData[index]['title']);
+                  return RouteLessonItem(
+                    index: index, 
+                    routeId:  widget.routeId, 
+                    title: courseLessonData[index]['title'], 
+                    customLessonData: RouteCustomLessonData(
+                      lessonId: customLessonsData[index]['lessonId'], 
+                      studyTime:  customLessonsData[index]['studyTime'], 
+                      isCompleted: customLessonsData[index]['isCompleted']),
+                    
+                    courseLessonData: RouteCourseLessonData(
+                      lessonId: courseLessonData[index]['id'], 
+                      title: courseLessonData[index]['title'], 
+                      contents: courseLessonData[index]['contents']),
+
+                    onCompleteLesson: Refresh, 
+                      
+                    );
                 },
                 itemCount: customLessonsData.length),
           )
