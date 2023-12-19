@@ -15,7 +15,7 @@ exports.authRoleMiddleware = (...role) => {
         if (token !== findUser.token) {
           return res.status(400).json({ message: "Invalid token" });
         }
-        if (role && !role.includes(data.role)) return res.status(403).json({ message: "Unauthorized" });
+        if (role.length && !role.includes(data.role)) return res.status(403).json({ message: "Unauthorized" });
         req.userInfo = data;
         next();
       })
