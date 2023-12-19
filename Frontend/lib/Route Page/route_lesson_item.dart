@@ -13,6 +13,7 @@ class RouteLessonItem extends StatefulWidget {
   final RouteCustomLessonData customLessonData;
   final RouteCourseLessonData courseLessonData;
   final VoidCallback onCompleteLesson;
+  final VoidCallback onChangeLesson;
 
   const RouteLessonItem({
     super.key, 
@@ -21,7 +22,8 @@ class RouteLessonItem extends StatefulWidget {
     required this.title, 
     required this.customLessonData, 
     required this.courseLessonData,
-    required this.onCompleteLesson
+    required this.onCompleteLesson,
+    required this.onChangeLesson
     });
 
   @override
@@ -54,7 +56,13 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
     showDialog(
         context: context, 
         builder: (context) {
-        return DialogRouteLessonUnDone();
+        return DialogRouteLessonUnDone(
+          routeCreatedTime: widget.customLessonData.routeCreatedAt, 
+          studyTime: widget.customLessonData.studyTime,
+          routeId: widget.routeId,
+          lessonId: widget.customLessonData.lessonId,
+          onChangeStudyTime: widget.onChangeLesson,
+          );
       });
   }
 
@@ -144,12 +152,14 @@ class RouteCustomLessonData {
   final int lessonId;
   final int studyTime;
   final bool isCompleted;
+  final DateTime routeCreatedAt;
 
   RouteCustomLessonData
   ({
       required this.lessonId,
       required this.studyTime,
       required this.isCompleted,
+      required this.routeCreatedAt
   });
 }
 
