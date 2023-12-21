@@ -248,7 +248,16 @@ class AuthController {
         findUser.refreshToken = refreshToken;
 
         await User.updateOne({ email: findUser.email }, findUser);
-        return res.status(200).json({ message: "success", token, refreshToken });
+        return res
+          .status(200)
+          .json({
+            message: "success",
+            id: findUser.id,
+            role: findUser.role,
+            token,
+            refreshToken,
+            userName: findUser.firstName + " " + findUser.lastName,
+          });
       } else {
         return res.status(404).json({
           message: "login fail!",
