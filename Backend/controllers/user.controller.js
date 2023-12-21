@@ -150,6 +150,52 @@ class UserController {
       res.status(500).json({ message: error.message });
     }
   }
+
+  async getInfo(req, res) {
+    const { userId } = req.body;
+
+    const id = req.userInfo.id;
+
+    if (!userId) {
+      return res.status(400).json({ message: "Missing userId fields!" });
+    }
+
+    if (userId === 1 && id !== 1) {
+      return res.status(401).json({
+        message: "do not have permission to view this user information!",
+      });
+    }
+
+    const findUser = await User.findOne({ id: userId }).select("-password -token -refreshToken");
+    if (!findUser) {
+      return res.status(404).json({
+        message: "account does not exist!",
+      });
+    }
+
+    return res.status(200).json({
+      message: "success",
+      data: findUser,
+    });
+  }
+
+  async getListUser(req, res) {
+    const findUser = await User.find({ id: { $ne: 1 } }).select("-password -token -refreshToken");
+
+    return res.status(200).json({
+      message: "success",
+      data: findUser,
+    });
+  }
+
+  async getListBlock(req, res){
+    const findUser = await User.find({ status: 'block'}).select("-password -token -refreshToken");
+
+    return res.status(200).json({
+      message: "success",
+      data: findUser,
+    });
+  }
 }
 
 module.exports = new UserController();

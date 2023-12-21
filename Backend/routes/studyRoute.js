@@ -91,7 +91,8 @@ router.post('/getStudyRouteDetail', async (req, res) => {
             routeId: routeId,
             courseId: routeData.courseId,
             customLessons: routeData.lessons,
-            lessonData: courseLessonList
+            lessonData: courseLessonList,
+            createdAt: routeData.createdAt
         }
     
         res.status(200).json({message: "Success", data: data})
