@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Lesson = require('../models/Lesson')
+const User = require('../models/user')
 // const dayjs = require('dayjs')
 
 // get list by course id
@@ -26,6 +27,14 @@ router.post('/getById', async (req, res) => {
         const { id } = req.body;
         if (id) {
             const data = await Lesson.findOne({ id: id, is_delete: 0 })
+            .populate({
+                path: 'user_id',
+                model: User,
+                localField: 'user_id',
+                foreignField: 'id',
+                option: { lean: true },
+                strictPopulate: false
+            })
 
             res.status(200).json({ message: 'success', data: data })
         } else {

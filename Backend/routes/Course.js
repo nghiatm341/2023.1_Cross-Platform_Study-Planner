@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Course = require('../models/Course')
 const Lesson = require('../models/Lesson')
+const User = require('../models/user')
 
 const sanitizeLesson = async (id, lessons) => {
     if (lessons && Array.isArray(lessons) && lessons.length > 0) {
@@ -16,7 +17,16 @@ const sanitizeLesson = async (id, lessons) => {
 
 router.post('/list', async (req, res) => {
     try {
-        const data = await Course.find({ is_delete: 0 })
+        const {
+            author_id,
+            is_drafting
+        } = req.body
+
+        let conditions = {}
+        if (author_id) conditions.author_id = author_id
+        if (is_drafting) conditions.is_drafting = is_drafting
+
+        const data = await Course.find({ is_delete: 0, ...conditions })
 
         res.status(200).json({ message: 'success', data: data })
     } catch (error) {
@@ -32,9 +42,41 @@ router.post('/getById', async (req, res) => {
         if (id) {
             const data = await Course.findOne({ id: id, is_delete: 0 })
                 .populate({
+                    path: 'lessons.lesson.user_id',
+                    model: User,
+                    localField: 'lessons.lesson.user_id',
+                    foreignField: 'id',
+                    option: { lean: true },
+                    strictPopulate: false
+                })
+                .populate({
                     path: 'lessons.lesson',
-                    model: 'Lesson',
+                    model: Lesson,
                     localField: 'lessons.lesson',
+                    foreignField: 'id',
+                    option: { lean: true },
+                    strictPopulate: false
+                })
+                .populate({
+                    path: 'list_subscriber.user_id',
+                    model: User,
+                    localField: 'list_subscriber.user_id',
+                    foreignField: 'id',
+                    option: { lean: true },
+                    strictPopulate: false
+                })
+                .populate({
+                    path: 'author_id',
+                    model: User,
+                    localField: 'author_id',
+                    foreignField: 'id',
+                    option: { lean: true },
+                    strictPopulate: false
+                })
+                .populate({
+                    path: 'user_id',
+                    model: User,
+                    localField: 'user_id',
                     foreignField: 'id',
                     option: { lean: true },
                     strictPopulate: false
@@ -55,21 +97,25 @@ router.post('/create', async (req, res) => {
         const { title,
             description,
             author_id,
-            lessons } = req.body
+            lessons,
+            is_drafting,
+            list_subscriber } = req.body
 
         const maxId = await Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
         const id = maxId ? Number(maxId.id) + 1 : 1
 
         const newData = new Course({
             id: id,
-            title: title,
-            description: description,
+            title: title ? title : '',
+            description: description ? description : '',
             author_id: author_id,
             lessons: lessons ? lessons : [],
             is_delete: 0,
             create_at: new Date(),
             update_at: new Date(),
             user_id: 0, // Chưa có user và login 
+            is_drafting: !isNaN(is_drafting) ? is_drafting : 1,
+            list_subscriber: list_subscriber ? list_subscriber : [],
         })
 
         const result = await newData.save();
@@ -88,7 +134,9 @@ router.post('/update', async (req, res) => {
             title,
             description,
             author_id,
-            lessons } = req.body
+            lessons,
+            is_drafting,
+            list_subscriber } = req.body
 
         const foundData = await Course.findOne({ id: id, is_delete: 0 })
         if (foundData) {
@@ -97,6 +145,8 @@ router.post('/update', async (req, res) => {
             if (description) update.description = description
             if (author_id) update.author_id = author_id
             if (lessons) update.lessons = lessons
+            if (!isNaN(is_drafting)) update.is_drafting = is_drafting
+            if (list_subscriber) update.list_subscriber = list_subscriber
 
             await Course.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: update })
             await sanitizeLesson(id, lessons)
