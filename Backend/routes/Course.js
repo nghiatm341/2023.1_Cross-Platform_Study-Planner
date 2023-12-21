@@ -24,7 +24,7 @@ router.post('/list', async (req, res) => {
 
         let conditions = {}
         if (author_id) conditions.author_id = author_id
-        if (is_drafting) conditions.is_drafting = is_drafting
+        if (!isNaN(is_drafting)) conditions.is_drafting = is_drafting
 
         const data = await Course.find({ is_delete: 0, ...conditions })
 
