@@ -45,7 +45,18 @@ const CourseSchema = new Schema({
     user_id: {
         type: Number,
         require: true
-    }
+    },
+
+    is_drafting: {
+        type: Number,
+        default: 1
+    },
+    list_subscriber: [{
+        user_id: {
+            type: Number,
+            default: 0
+        }
+    }]
 }, {
     timestamps: true,
     versionKey: false,

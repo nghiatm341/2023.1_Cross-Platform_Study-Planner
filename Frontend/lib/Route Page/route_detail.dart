@@ -4,6 +4,7 @@ import 'package:frontend/Route%20Page/route_lesson_item.dart';
 import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
+import 'package:frontend/utils.dart' as utils;
 
 class RouteDetail extends StatefulWidget {
   final String description;
@@ -21,6 +22,7 @@ class _RouteDetailState extends State<RouteDetail> {
   late List courseLessonData = [];
   late int completeLessonsCount = 0;
   late int totalLessonCount = 1;
+  late String routeCreatedTime;
 
   Future<void> fetchRouteDetail(String routeId) async {
 
@@ -49,6 +51,7 @@ class _RouteDetailState extends State<RouteDetail> {
         setState(() {
           customLessonsData = routeDetailData['customLessons'];
           courseLessonData = routeDetailData['lessonData'];
+          routeCreatedTime = routeDetailData['createdAt'];
 
           completeLessonsCount = customLessonsData
               .where((element) => element['isCompleted'] == true)
@@ -160,7 +163,9 @@ class _RouteDetailState extends State<RouteDetail> {
                     customLessonData: RouteCustomLessonData(
                       lessonId: customLessonsData[index]['lessonId'], 
                       studyTime:  customLessonsData[index]['studyTime'], 
-                      isCompleted: customLessonsData[index]['isCompleted']),
+                      isCompleted: customLessonsData[index]['isCompleted'],
+                      routeCreatedAt: DateTime.parse(utils.getSubstringUntilCharacter(routeCreatedTime, 'T'))
+                      ),
                     
                     courseLessonData: RouteCourseLessonData(
                       lessonId: courseLessonData[index]['id'], 
@@ -168,6 +173,7 @@ class _RouteDetailState extends State<RouteDetail> {
                       contents: courseLessonData[index]['contents']),
 
                     onCompleteLesson: Refresh, 
+                    onChangeLesson: Refresh,
                       
                     );
                 },
