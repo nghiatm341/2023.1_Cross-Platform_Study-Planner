@@ -19,6 +19,7 @@ class _RoutesPageState extends State<RoutesPage> {
             title: const Text("My learning route"),
             centerTitle: true,
             elevation: 0,
+            automaticallyImplyLeading: false,
           ),
           body: Container(
             decoration: BoxDecoration(

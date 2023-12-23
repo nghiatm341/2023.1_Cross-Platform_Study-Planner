@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Course%20Page/course_detail.dart';
+import 'package:frontend/Course%20Page/popup_subscribe.dart';
+import 'package:frontend/Course%20Page/popup_subscribe_result.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
@@ -24,6 +26,21 @@ class _RouteItem extends State<CourseItem> {
   @override
   void initState() {
     super.initState();
+  }
+
+  void subscribeCourse(){
+    showDialog(
+        context: context, 
+        builder: (context) {
+        return PopupSubscribeCourse(courseId: widget.courseData.courseId, onConfirmSubscribe: changeSubscribeState);
+        //return PopupSubscribeResult(isSubscribedSucceed: true,);
+      });
+  }
+
+  void changeSubscribeState(){
+    setState(() {
+      widget.courseData.isSubscribed = true;
+    });
   }
 
   @override
@@ -98,26 +115,32 @@ class _RouteItem extends State<CourseItem> {
                        ),
                      ),
 
-                     Visibility(
-                      visible: !widget.courseData.isSubscribed,
-                       child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        height: 40,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Center(
-                              child: Text("Subscribe", style: TextStyle(fontSize: 12),)
-                            ),
-                     
-                            Icon(Icons.subscriptions)
-                          ],
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 1),
-                          borderRadius: BorderRadius.circular(4)
-                        ),
+                     GestureDetector(
+                       child: Visibility(
+                        visible: !widget.courseData.isSubscribed,
+                         child: Container(
+                          padding: EdgeInsets.symmetric(vertical: 4),
+                          height: 40,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceAround,
+                            children: [
+                              Center(
+                                child: Text("Subscribe", style: TextStyle(fontSize: 12),)
+                              ),
+                       
+                              Icon(Icons.subscriptions)
+                            ],
+                          ),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 1),
+                            borderRadius: BorderRadius.circular(4)
+                          ),
+                         ),
                        ),
+
+                       onTap: () => {
+                        subscribeCourse()
+                       },
                      ),
 
                       Container(
@@ -184,7 +207,7 @@ class CourseItemData {
   final String authorName;
   final String title;
   final String createdAt;
-  final bool isSubscribed;
+  bool isSubscribed;
   final int subscribersCount;
   final String description;
   final List lessons;

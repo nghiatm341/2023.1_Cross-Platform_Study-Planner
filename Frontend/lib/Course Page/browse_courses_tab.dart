@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Course%20Page/course_item.dart';
+import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/const.dart' as constaint;
@@ -81,7 +82,7 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
 
             debugPrint("subscribers count: " + subscribers.length.toString());
 
-            var meSubscriber = subscribers.where((element) => element['user_id'] == 1).length > 0;
+            var meSubscriber = subscribers.where((element) => element['user_id'] == AppStore.ID).length > 0;
 
             return new CourseItemData(
               courseId: c['id'],

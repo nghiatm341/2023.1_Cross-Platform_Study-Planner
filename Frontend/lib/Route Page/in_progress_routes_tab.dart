@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Route%20Page/route_item.dart';
+import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/const.dart' as constaint;
@@ -27,7 +28,7 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
     };
 
     Map<String, dynamic> postData = {
-      'userId' : "1"
+      'userId' : AppStore.ID
     };
 
     try {
