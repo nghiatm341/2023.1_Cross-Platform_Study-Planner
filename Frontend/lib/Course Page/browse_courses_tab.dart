@@ -44,6 +44,7 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
   }
 
   late List<CourseItemData> courseList = [];
+  late List courseLessonList;
 
   Future<void> fetchCourses() async {
     // Replace with your API endpoint
@@ -88,7 +89,9 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
               createdAt: date,
               title: c['title'],
               isSubscribed: meSubscriber,
-              subscribersCount: subscribers.length
+              subscribersCount: subscribers.length,
+              description: c['description'],
+              lessons: c['lessons']
             );
           }).toList();
         });

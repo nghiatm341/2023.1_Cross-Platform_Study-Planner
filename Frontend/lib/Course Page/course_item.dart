@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Course%20Page/course_detail.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
@@ -171,8 +172,9 @@ class _RouteItem extends State<CourseItem> {
         ),
       ),
       onTap: () => {
-
-      }
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => CourseDetail(courseData: widget.courseData)))
+      },
     );
   }
 }
@@ -184,6 +186,8 @@ class CourseItemData {
   final String createdAt;
   final bool isSubscribed;
   final int subscribersCount;
+  final String description;
+  final List lessons;
 
   CourseItemData(
     {
@@ -192,6 +196,8 @@ class CourseItemData {
       required this.authorName,
       required this.createdAt,
       required this.isSubscribed,
-      required this.subscribersCount
+      required this.subscribersCount,
+      required this.description,
+      required this.lessons
     });
 }

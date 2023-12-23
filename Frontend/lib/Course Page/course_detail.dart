@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Course%20Page/course_item.dart';
+import 'package:frontend/Course%20Page/course_lesson_item.dart';
 import 'package:frontend/Route%20Page/route_item.dart';
 import 'package:frontend/Route%20Page/route_lesson_item.dart';
 import 'package:frontend/const.dart' as constaint;
@@ -7,21 +9,17 @@ import 'dart:convert';
 import 'package:frontend/utils.dart' as utils;
 
 class CourseDetail extends StatefulWidget {
-  final CourseDetail courseDetailData;
+
+  final CourseItemData courseData;
 
   const CourseDetail(
-      {super.key, required this.courseDetailData});
+      {super.key, required this.courseData});
 
   @override
   State<CourseDetail> createState() => _CourseDetailState();
 }
 
 class _CourseDetailState extends State<CourseDetail> {
-  late List customLessonsData = [];
-  late List courseLessonData = [];
-  late int completeLessonsCount = 0;
-  late int totalLessonCount = 1;
-  late String routeCreatedTime;
 
   @override
   void initState() {
@@ -30,10 +28,13 @@ class _CourseDetailState extends State<CourseDetail> {
 
   @override
   Widget build(BuildContext context) {
+
+    debugPrint("lessons count: " + widget.courseData.lessons.length.toString());
+    
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          "Route Detail",
+          "Course detail",
           style: TextStyle(fontSize: 16),
         ),
         centerTitle: true,
@@ -47,6 +48,32 @@ class _CourseDetailState extends State<CourseDetail> {
         padding: EdgeInsets.all(8),
         width: MediaQuery.of(context).size.width,
         child: Column(crossAxisAlignment: CrossAxisAlignment.center, children: [
+         
+          Container(
+            padding: EdgeInsets.all(8),
+            width: MediaQuery.of(context).size.width * 0.95,
+            height: 70,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+              Text("Course: " +  widget.courseData.title, style: TextStyle(fontSize: 18),),
+              Text("Author: " +  widget.courseData.authorName),
+
+              
+            ]),
+
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.black, width: 1),
+              borderRadius: BorderRadius.circular(8)
+            ),
+          ),
+
+          Container(
+            padding: EdgeInsets.only(top: 8),
+          ),
+
           //description
           Container(
             padding: EdgeInsets.all(8),
@@ -56,46 +83,14 @@ class _CourseDetailState extends State<CourseDetail> {
                 color: Color.fromARGB(255, 241, 241, 241),
                 border: Border.all(color: Colors.black, width: 1),
                 borderRadius: BorderRadius.circular(8)),
-            child: Text(
-              "Description",
-              style: TextStyle(fontSize: 16),
+                child: Text("Description: " +  widget.courseData.description,
+                style: TextStyle(fontSize: 14),
             ),
           ),
 
           //progress
           Container(
-            height: 75,
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text(
-                  "Complete " +
-                      completeLessonsCount.toString() +
-                      "/" +
-                      totalLessonCount.toString() +
-                      " lessons",
-                  style: TextStyle(fontSize: 20),
-                ),
-                Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                      shape: BoxShape.circle,
-                      color: Colors.amber,
-                      border: Border.all(color: Colors.black, width: 1)),
-                  child: Center(
-                    child: Text(
-                      ((completeLessonsCount / totalLessonCount) * 100).ceil().toString() + "%",
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
-            ),
+            padding: EdgeInsets.only(top: 12),
             decoration: BoxDecoration(
               border: Border(bottom: BorderSide(color: Colors.black, width: 1)),
             ),
@@ -105,9 +100,13 @@ class _CourseDetailState extends State<CourseDetail> {
           Expanded(
             child: ListView.builder(
                 itemBuilder: (context, index) {
-                 
+                  return CourseLessonItem(lessonIndex: index, 
+                  lessonData: new CourseLessonData(
+                    lessonId: widget.courseData.lessons[index]['lesson']['id'], 
+                    title: widget.courseData.lessons[index]['lesson']['title'], 
+                    contents: widget.courseData.lessons[index]['lesson']['contents']));
                 },
-                itemCount: customLessonsData.length),
+                itemCount: widget.courseData.lessons.length),
           )
         ]),
       ),
