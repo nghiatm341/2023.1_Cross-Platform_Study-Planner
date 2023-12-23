@@ -109,6 +109,7 @@ class _SendOtpForgetPasswordPage extends State<SendOtpForgetPasswordPage> {
                   autofocus: true,
                   onChanged: (value) {
                     setState(() {
+                      _message = null;
                       if (value.isNotEmpty) {
                         _filedEmail = true;
                       }
@@ -116,13 +117,6 @@ class _SendOtpForgetPasswordPage extends State<SendOtpForgetPasswordPage> {
                         _filedEmail = false;
                         _message = null;
                         return;
-                      }
-                      if (!RegExp(
-                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                          .hasMatch(value)) {
-                        _message = 'Invalid email!';
-                      } else {
-                        _message = null;
                       }
                     });
                   },
@@ -142,15 +136,18 @@ class _SendOtpForgetPasswordPage extends State<SendOtpForgetPasswordPage> {
                     width: screenWidth,
                     child: ElevatedButton(
                         onPressed: () async {
-                          if (_message == 'Invalid email!') {
-                            return;
-                          }
                           if (phone.text == '') {
                             _message = 'Please fill in email';
                             setState(() {});
                             return;
                           }
-                          setState(() {});
+                          if (!RegExp(
+                                  r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                              .hasMatch(phone.text)) {
+                            _message = 'Invalid email!';
+                            setState(() {});
+                            return;
+                          }
                           _message = await sendOtp(phone.text);
                           setState(() {});
                           print(
@@ -184,7 +181,7 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
   _VerifyOtpForgetPasswordPage({this.email});
 
   bool _filedOtp = false;
-  int? otp;
+  String? otp;
   String? _message;
   @override
   void initState() {
@@ -274,12 +271,16 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                       const InputDecoration(hintText: "Enter your code"),
                   autofocus: true,
                   onChanged: (value) {
-                    if (otp != null) {
-                      otp = int.parse(value);
-                      setState(() {
-                        _message == null;
-                      });
-                    }
+                    otp = value;
+                    _message = null;
+                    setState(() {});
+                    // if (value.isNotEmpty) {
+                    //   setState(() {
+                    //     _message == null;
+                    //   });
+                    // } else {
+                    //   otp == null;
+                    // }
                   },
                 ),
                 SizedBox(height: 10),
@@ -297,14 +298,14 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                     width: screenWidth,
                     child: ElevatedButton(
                         onPressed: () async {
-                          if (otp == null) {
-                            print("run here");
+                          if (otp == null || otp == '') {
                             _message = 'Please fill in code';
                             setState(() {});
                             return;
                           }
-                          setState(() {});
-                          _message = await verifyOtp(email.toString(), otp);
+                          print(otp);
+                          _message = await verifyOtp(
+                              email.toString(), int.parse(otp.toString()));
                           setState(() {});
                         },
                         style: ElevatedButton.styleFrom(
@@ -448,7 +449,8 @@ class _ChangePasswordPage extends State<ChangePasswordPage> {
                         hintText: "Password", labelText: 'Password'),
                   ),
                   GestureDetector(
-                    child: Text(_filedPassword ? "SHOW" : "",
+                    child: Text(
+                        _filedPassword ? (_showPass ? "HIDE" : "SHOW") : "",
                         style: TextStyle(color: Colors.grey, fontSize: 14)),
                     onTap: onToggleChangePass,
                   )
