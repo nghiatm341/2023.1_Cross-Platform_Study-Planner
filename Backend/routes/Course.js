@@ -19,12 +19,14 @@ router.post('/list', async (req, res) => {
     try {
         const {
             author_id,
-            is_drafting
+            is_drafting,
+            title
         } = req.body
 
         let conditions = {}
         if (author_id) conditions.author_id = author_id
         if (!isNaN(is_drafting)) conditions.is_drafting = is_drafting
+        if (title) conditions.title = RegExp(title, 'i')
 
         const data = await Course.find({ is_delete: 0, ...conditions })
 
