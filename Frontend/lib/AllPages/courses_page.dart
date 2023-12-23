@@ -16,6 +16,7 @@ class _CoursesPageState extends State<CoursesPage> {
           title: const Text("Courses"),
           centerTitle: true,
           elevation: 0,
+          automaticallyImplyLeading: false,
         ),
         body: BrowseCoursesTab());
   }

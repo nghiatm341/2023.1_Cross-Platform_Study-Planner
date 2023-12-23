@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Route%20Page/route_item.dart';
 import 'package:frontend/Route%20Page/route_item_complete.dart';
+import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/const.dart' as constaint;
@@ -29,7 +30,7 @@ late List<RouteItemData> inProgressRoute = [];
     };
 
     Map<String, dynamic> postData = {
-      'userId' : "1"
+      'userId' : AppStore.ID
     };
 
     try {

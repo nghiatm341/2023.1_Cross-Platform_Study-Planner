@@ -52,13 +52,17 @@ class _CourseDetailState extends State<CourseDetail> {
           Container(
             padding: EdgeInsets.all(8),
             width: MediaQuery.of(context).size.width * 0.95,
-            height: 70,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
               Text("Course: " +  widget.courseData.title, style: TextStyle(fontSize: 18),),
-              Text("Author: " +  widget.courseData.authorName),
+
+
+              Container(
+                padding: EdgeInsets.only(top: 12),
+                child: Text("Author: " +  widget.courseData.authorName)
+              ),
 
               
             ]),

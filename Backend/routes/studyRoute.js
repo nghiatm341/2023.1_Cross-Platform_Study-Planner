@@ -209,6 +209,25 @@ router.post('/deleteStudyRoute', async (req, res) => {
     }
 });
 
+router.post('/deleteStudyRouteWhenUnsubscribe', async (req, res) => {
+    try{
+        const {courseId, userId} = req.body;
+
+        const route = await StudyRoute.findOneAndDelete({courseId: courseId, userId: userId});
+
+        if(!route){
+            return res.status(300).json({message: "Can't find route"})
+        }
+        else{
+            res.status(200).json({message: "Delete succeed"});
+        }
+    }
+    catch(error){
+        console.log(error.message);
+        res.status(500).json({message: error.message});
+    }
+});
+
 module.exports = router
 
 

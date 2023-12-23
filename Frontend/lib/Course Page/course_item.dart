@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Course%20Page/course_detail.dart';
+import 'package:frontend/Course%20Page/popup_subscribe.dart';
+import 'package:frontend/Course%20Page/popup_subscribe_result.dart';
+import 'package:frontend/Course%20Page/popup_unsubscribe.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
@@ -18,12 +21,40 @@ class CourseItem extends StatefulWidget {
 }
 
 class _RouteItem extends State<CourseItem> {
-  
   String courseDescription = "";
 
   @override
   void initState() {
     super.initState();
+  }
+
+  void subscribeCourse() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return PopupSubscribeCourse(
+              courseId: widget.courseData.courseId,
+              onConfirmSubscribe: () => changeSubscribeState(true));
+          //return PopupSubscribeResult(isSubscribedSucceed: true,);
+        });
+  }
+
+  void unsubscribeCourse() {
+    
+    showDialog(
+        context: context,
+        builder: (context) {
+          return PopupUnsubscribeCourse(
+              courseId: widget.courseData.courseId,
+              onConfirmUnsubscribe: () => changeSubscribeState(false));
+          //return PopupSubscribeResult(isSubscribedSucceed: true,);
+        });
+  }
+
+  void changeSubscribeState(bool isSubscribed) {
+    setState(() {
+      widget.courseData.isSubscribed = isSubscribed;
+    });
   }
 
   @override
@@ -73,92 +104,103 @@ class _RouteItem extends State<CourseItem> {
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
                     children: [
+                      //subscribe state
 
-                    //subscribe state
-
-                     Visibility(
-                      visible: widget.courseData.isSubscribed,
-                       child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        height: 40,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Center(
-                              child: Text("Subscribed", style: TextStyle(fontSize: 12),)
-                            ),
-                     
-                            Icon(Icons.app_registration)
-                          ],
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 1),
-                          borderRadius: BorderRadius.circular(4)
-                        ),
-                       ),
-                     ),
-
-                     Visibility(
-                      visible: !widget.courseData.isSubscribed,
-                       child: Container(
-                        padding: EdgeInsets.symmetric(vertical: 4),
-                        height: 40,
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            Center(
-                              child: Text("Subscribe", style: TextStyle(fontSize: 12),)
-                            ),
-                     
-                            Icon(Icons.subscriptions)
-                          ],
-                        ),
-                        decoration: BoxDecoration(
-                          border: Border.all(color: Colors.black, width: 1),
-                          borderRadius: BorderRadius.circular(4)
-                        ),
-                       ),
-                     ),
-
-                      Container(
-                            width: 70, // Set the width of the container
-                            height: 50, // Set the height of the container
-                            decoration: BoxDecoration(
-                              borderRadius: BorderRadius.circular(8),
-                              shape: BoxShape.rectangle,
-                              color: const Color.fromARGB(255, 255, 255,
-                                  255), // Set the background color of the circle
-                            ),
-
-                            child: Column(
+                      GestureDetector(
+                        child: Visibility(
+                          visible: widget.courseData.isSubscribed,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            height: 40,
+                            child: Row(
                               mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 Center(
-                                  child: Text(
-                                        widget.courseData.subscribersCount.toString(), // Number to display inside the circle
-                                    style: TextStyle(
-                                      color: Colors.black, // Color of the number text
-                                      fontSize: 20, // Font size of the number text
-                                      fontWeight: FontWeight
-                                          .bold, // Font weight of the number text
-                                    ),
-                                  ),
-                                ),
-
-                                Center(
-                                  child: Text(
-                                        "subcribers", // Number to display inside the circle
-                                    style: TextStyle(
-                                      color: Colors.black, // Color of the number text
-                                      fontSize: 12, // Font size of the number text
-                                      fontWeight: FontWeight
-                                          .bold, // Font weight of the number text
-                                    ),
-                                  ),
-                                ),
+                                    child: Text(
+                                  "Subscribed",
+                                  style: TextStyle(fontSize: 12),
+                                )),
+                                Icon(Icons.app_registration)
                               ],
                             ),
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.black, width: 1),
+                                borderRadius: BorderRadius.circular(4),
+                                color: Colors.orange),
                           ),
+                        ),
+                        onTap: () => {unsubscribeCourse()},
+                      ),
+
+                      GestureDetector(
+                        child: Visibility(
+                          visible: !widget.courseData.isSubscribed,
+                          child: Container(
+                            padding: EdgeInsets.symmetric(vertical: 4),
+                            height: 40,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Center(
+                                    child: Text(
+                                  "Subscribe",
+                                  style: TextStyle(fontSize: 12),
+                                )),
+                                Icon(Icons.subscriptions)
+                              ],
+                            ),
+                            decoration: BoxDecoration(
+                                border:
+                                    Border.all(color: Colors.black, width: 1),
+                                borderRadius: BorderRadius.circular(4),
+                                color: Colors.green),
+                          ),
+                        ),
+                        onTap: () => {subscribeCourse()},
+                      ),
+
+                      Container(
+                        width: 70, // Set the width of the container
+                        height: 50, // Set the height of the container
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          shape: BoxShape.rectangle,
+                          color: const Color.fromARGB(255, 255, 255,
+                              255), // Set the background color of the circle
+                        ),
+
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Center(
+                              child: Text(
+                                widget.courseData.subscribersCount
+                                    .toString(), // Number to display inside the circle
+                                style: TextStyle(
+                                  color:
+                                      Colors.black, // Color of the number text
+                                  fontSize: 20, // Font size of the number text
+                                  fontWeight: FontWeight
+                                      .bold, // Font weight of the number text
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Text(
+                                "subcribers", // Number to display inside the circle
+                                style: TextStyle(
+                                  color:
+                                      Colors.black, // Color of the number text
+                                  fontSize: 12, // Font size of the number text
+                                  fontWeight: FontWeight
+                                      .bold, // Font weight of the number text
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
                     ],
                   ),
                 )
@@ -173,7 +215,10 @@ class _RouteItem extends State<CourseItem> {
       ),
       onTap: () => {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => CourseDetail(courseData: widget.courseData)))
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    CourseDetail(courseData: widget.courseData)))
       },
     );
   }
@@ -184,20 +229,18 @@ class CourseItemData {
   final String authorName;
   final String title;
   final String createdAt;
-  final bool isSubscribed;
+  bool isSubscribed;
   final int subscribersCount;
   final String description;
   final List lessons;
 
   CourseItemData(
-    {
-      required this.title,
+      {required this.title,
       required this.courseId,
       required this.authorName,
       required this.createdAt,
       required this.isSubscribed,
       required this.subscribersCount,
       required this.description,
-      required this.lessons
-    });
+      required this.lessons});
 }

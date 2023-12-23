@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/Course%20Page/course_lesson_detail.dart';
+import 'package:frontend/Course%20Page/popup_subscribe.dart';
 
 
 class CourseLessonItem extends StatefulWidget {
@@ -29,8 +30,7 @@ class _CourseLessonItemState extends State<CourseLessonItem> {
       lessonIndex: widget.lessonIndex
       )));
   }
-
-
+  
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -46,7 +46,7 @@ class _CourseLessonItemState extends State<CourseLessonItem> {
               flex: 8,
               child: GestureDetector(
                 child: Container(
-                  color: Colors.orangeAccent.shade200,
+                  //color: Color.fromARGB(255, 253, 234, 124),
                   height: 70,
                   alignment: Alignment.centerLeft,
                 
@@ -54,7 +54,8 @@ class _CourseLessonItemState extends State<CourseLessonItem> {
                     child: Text(
                       "Lesson " + (widget.lessonIndex + 1).toString() + " : " + widget.lessonData.title,
                       style: TextStyle(fontSize: 16),
-                    )
+                    ),
+                    
                     
                     ),
 
@@ -70,6 +71,7 @@ class _CourseLessonItemState extends State<CourseLessonItem> {
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 255, 255, 255),
           border: Border.all(color: const Color.fromARGB(255, 0, 0, 0), width: 2),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Color.fromARGB(255, 92, 92, 92).withOpacity(0.5), // Shadow color with opacity
