@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:frontend/AllPages/home_page.dart';
 import 'package:frontend/AllPages/home_page_admin.dart';
 import 'package:frontend/AllPages/home_page_teacher.dart';
@@ -18,6 +19,7 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       home: LoginPage(),
       theme: ThemeData(primarySwatch: Colors.amber),
+      builder: EasyLoading.init(),
     );
   }
 }
