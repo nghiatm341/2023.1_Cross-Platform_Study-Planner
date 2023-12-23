@@ -1,28 +1,173 @@
 import 'package:flutter/material.dart';
-import 'package:frontend/Route%20Page/route_item.dart';
+import 'package:frontend/Course%20Page/course_item.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/utils.dart' as utils;
 
-class InProgressRoutesTab extends StatefulWidget {
-  const InProgressRoutesTab({super.key});
+class BrowseCoursesTab extends StatefulWidget {
+  const BrowseCoursesTab({super.key});
 
   @override
-  State<InProgressRoutesTab> createState() => _InProgressRoutesTabState();
+  State<BrowseCoursesTab> createState() => _BrowseCoursesTabState();
 }
 
-class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
+class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
+  String _searchText = "";
 
-  List routeItemDataList = [
-    new RouteItemData(title: "Route 1", author: "Author 1", startDate: "15/12/2023", progress: '45'),
-    new RouteItemData(title: "Route 2", author: "Author 2", startDate: "25/12/2023", progress: '90'),
-  ];
+  TextEditingController _textEditingController = TextEditingController();
+
+  void clearFilter() {
+    _searchText = "";
+    _textEditingController.clear();
+    setState(() {
+      courseList = [];
+    });
+
+  }
+
+  void findCourse() {
+    if(_searchText != ""){
+      debugPrint("find courses with title: " + _searchText);
+      fetchCourses();
+    }
+  }
+
+  void updateSearchText(String value) {
+    _searchText = value;
+    debugPrint("update search text: " + value);
+  }
+
+  void closeKeyboard(BuildContext context) {
+    // FocusScopeNode's static method to unfocus the current focused input
+    FocusScope.of(context).unfocus();
+  }
+
+  late List<CourseItemData> courseList = [];
+
+  Future<void> fetchCourses() async {
+    // Replace with your API endpoint
+    debugPrint("Fetch api list course");
+
+    Map<String, String> headers = {
+      'Content-Type':
+          'application/json', // Set the content type for POST request
+      // Add other headers if needed
+    };
+
+    Map<String, dynamic> postData = {'title': _searchText};
+
+    try {
+      final response = await http.post(
+        Uri.parse('${constaint.apiUrl}/course/list'),
+        headers: headers,
+        body: jsonEncode(postData), // Encode the POST data to JSON
+      );
+
+      if (response.statusCode == 200) {
+        // Successfully fetched data
+        final jsonData = json.decode(response.body);
+        List courses = jsonData['data'];
+
+        debugPrint("course count: " + courses.length.toString());
+
+        setState(() {
+          courseList = courses.map((c) {
+            String rawDate = c['create_at'];
+
+            String date = utils.getSubstringUntilCharacter(rawDate, 'T');
+            List subscribers = c['list_subscriber'];
+
+            debugPrint("subscribers count: " + subscribers.length.toString());
+
+            var meSubscriber = subscribers.where((element) => element['user_id'] == 1).length > 0;
+
+            return new CourseItemData(
+              courseId: c['id'],
+              authorId: c['author_id'],
+              createdAt: date,
+              title: c['title'],
+              isSubscribed: meSubscriber,
+              subscribersCount: subscribers.length
+            );
+          }).toList();
+        });
+      } else {
+        // Request failed with an error status code
+        print('Failed with status code: ${response.statusCode}');
+      }
+    } catch (error) {
+      // Catch and handle any errors that occur during the API call
+      print('Error: $error');
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
-
     return Container(
+      child: Column(
+        children: [
+          Container(
+            padding: EdgeInsets.all(12),
+            child: Text(
+              "Search course:",
+              style: TextStyle(fontSize: 16),
+            ),
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                  border: Border.all(width: 1, color: Colors.black),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+                width: 300,
+                padding: EdgeInsets.all(8),
+                child: Container(
+                  width: 240,
+                  child: TextFormField(
+                    controller: _textEditingController,
+                    decoration: InputDecoration(
+                      hintText: 'Enter some keywords...', // Placeholder text
+                      border:
+                          OutlineInputBorder(), // Optional border appearance
+                    ),
+                    onChanged: (value) => {updateSearchText(value)},
+                  ),
+                ),
+              ),
+              Container(
+                child: Column(children: [
+                  ElevatedButton(
+                      onPressed: () => {closeKeyboard(context), clearFilter()},
+                      child: Text("Clear")),
+                  ElevatedButton(
+                      onPressed: () => {closeKeyboard(context), findCourse()},
+                      child: Text("Search")),
+                ]),
+              )
+            ],
+          ),
+          Padding(
+            padding:
+                const EdgeInsets.only(top: 8, left: 24, right: 24, bottom: 8),
+            child: Container(
+              height: 1,
+              color: Colors.black,
+            ),
+          ),
 
-      child: ListView.builder(itemBuilder: (context, index) {
-        return RouteItem(routeData: routeItemDataList[index]);
-      }, itemCount: routeItemDataList.length),
+          Expanded(
+              child: Container(
+            child: ListView.builder(
+                itemBuilder: (context, index) {
+                  return CourseItem(courseData: courseList[index]);
+                },
+                itemCount: courseList.length),
+          ))
+        ],
+      ),
     );
   }
 }
