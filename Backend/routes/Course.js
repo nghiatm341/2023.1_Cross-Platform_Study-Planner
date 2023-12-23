@@ -181,4 +181,62 @@ router.post('/delete', async (req, res) => {
     }
 })
 
+router.post('/subscribe', async (req, res) => {
+    try {
+        const { id, user_id } = req.body
+
+        if (id && user_id) {
+            const foundData = await Course.findOne({ id: id, is_delete: 0, 'list_subscriber.user_id': user_id })
+            if (!foundData) {
+                // const update = { update_at: new Date() };
+                await Course.findOneAndUpdate(
+                    { id: id, is_delete: 0 },
+                    {
+                        $push: { list_subscriber: { user_id: user_id } },
+                        $set: { update_at: new Date() }
+                    },
+                    { upsert: true, new: true }
+                )
+                res.status(200).json({ message: 'subscribe success' })
+            } else {
+                res.status(400).json({ message: 'User already subscribed' })
+            }
+        } else {
+            res.status(400).json({ message: 'Missing fields' })
+        }
+    } catch (error) {
+        console.log('Error', error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
+router.post('/unsubscribe', async (req, res) => {
+    try {
+        const { id, user_id } = req.body
+
+        if (id && user_id) {
+            const foundData = await Course.findOne({ id: id, is_delete: 0, 'list_subscriber.user_id': user_id })
+            if (foundData) {
+                // const update = { update_at: new Date() };
+                await Course.findOneAndUpdate(
+                    { id: id, is_delete: 0 },
+                    {
+                        $pull: { list_subscriber: { user_id: user_id } },
+                        $set: { update_at: new Date() }
+                    },
+                    { new: true }
+                )
+                res.status(200).json({ message: 'unsubscribe success' })
+            } else {
+                res.status(400).json({ message: 'User not found' })
+            }
+        } else {
+            res.status(400).json({ message: 'Missing fields' })
+        }
+    } catch (error) {
+        console.log('Error', error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 module.exports = router
