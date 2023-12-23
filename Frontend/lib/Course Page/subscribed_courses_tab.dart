@@ -16,9 +16,7 @@ class _CompleteRoutesTabState extends State<CompleteRoutesTab> {
 
       child: ListView(
         children: [
-          RouteItemComplete(),
-    
-          RouteItemComplete()
+          
         ],
       ),
     );
