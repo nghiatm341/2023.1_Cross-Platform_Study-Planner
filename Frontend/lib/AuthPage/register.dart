@@ -21,7 +21,7 @@ class SendOtpPage extends StatefulWidget {
 
 class _SendOtpPage extends State<SendOtpPage> {
   bool _filedEmail = false;
-  TextEditingController phone = TextEditingController();
+  TextEditingController email = TextEditingController();
   String? _message;
   @override
   void initState() {
@@ -102,26 +102,19 @@ class _SendOtpPage extends State<SendOtpPage> {
                 ),
                 SizedBox(height: 20),
                 TextFormField(
-                  controller: phone,
+                  controller: email,
                   decoration:
                       const InputDecoration(hintText: "Enter your email"),
                   autofocus: true,
                   onChanged: (value) {
                     setState(() {
+                      _message = null;
                       if (value.isNotEmpty) {
                         _filedEmail = true;
                       }
                       if (value.isEmpty) {
                         _filedEmail = false;
-                        _message = null;
                         return;
-                      }
-                      if (!RegExp(
-                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                          .hasMatch(value)) {
-                        _message = 'Invalid email!';
-                      } else {
-                        _message = null;
                       }
                     });
                   },
@@ -142,16 +135,20 @@ class _SendOtpPage extends State<SendOtpPage> {
                     width: screenWidth,
                     child: ElevatedButton(
                         onPressed: () async {
-                          if (_message == 'Invalid email!') {
-                            return;
-                          }
-                          if (phone.text == '') {
+                          if (email.text == '') {
                             _message = 'Please fill in email';
                             setState(() {});
                             return;
                           }
-                          setState(() {});
-                          _message = await sendOtp(phone.text);
+
+                          if (!RegExp(
+                                  r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                              .hasMatch(email.text)) {
+                            _message = 'Invalid email!';
+                            setState(() {});
+                            return;
+                          }
+                          _message = await sendOtp(email.text);
                           setState(() {});
                         },
                         style: ElevatedButton.styleFrom(
@@ -181,14 +178,14 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
   _VerifyOtpPage({this.email});
 
   bool _filedOtp = false;
-  int? otp;
+  String? otp;
   String? _message;
   @override
   void initState() {
     super.initState();
   }
 
-  Future<String?> verifyOtp(String email, int? otp) async {
+  Future<String?> verifyOtp(String email, String otp) async {
     debugPrint("Fetch verify-otp");
 
     Map<String, String> headers = {
@@ -197,7 +194,7 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'email': email, 'otp': otp.toString()};
+    Map<String, dynamic> postData = {'email': email, 'otp': otp};
 
     try {
       EasyLoading.show();
@@ -270,10 +267,9 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
                       const InputDecoration(hintText: "Enter your code"),
                   autofocus: true,
                   onChanged: (value) {
-                    otp = int.parse(value);
-                    setState(() {
-                      _message = null;
-                    });
+                    otp = value;
+                    _message = null;
+                    setState(() {});
                   },
                 ),
                 SizedBox(height: 10),
@@ -292,12 +288,13 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
                     width: screenWidth,
                     child: ElevatedButton(
                         onPressed: () async {
-                          if (otp == null) {
+                          if (otp == null || otp == '') {
                             _message = 'Please fill in code';
                             setState(() {});
                             return;
                           }
-                          _message = await verifyOtp(email.toString(), otp);
+                          _message =
+                              await verifyOtp(email.toString(), otp.toString());
                           setState(() {});
                         },
                         style: ElevatedButton.styleFrom(
@@ -500,7 +497,10 @@ class _InformPage extends State<InformPage> {
                                 hintText: "Password", labelText: 'Password'),
                           ),
                           GestureDetector(
-                            child: Text(_filedPassword ? "SHOW" : "",
+                            child: Text(
+                                _filedPassword
+                                    ? (_showPass ? "HIDE" : "SHOW")
+                                    : "",
                                 style: TextStyle(
                                     color: Colors.grey, fontSize: 14)),
                             onTap: onToggleChangePass,
