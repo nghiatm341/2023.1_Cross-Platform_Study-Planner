@@ -17,8 +17,7 @@ class CourseItem extends StatefulWidget {
 }
 
 class _RouteItem extends State<CourseItem> {
-  CourseItemUIData courseItemUIData = new CourseItemUIData();
-
+  
   String courseDescription = "";
 
   @override
@@ -58,7 +57,7 @@ class _RouteItem extends State<CourseItem> {
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      Text("Author: " + courseItemUIData.author,
+                      Text("Author: " + widget.courseData.authorName,
                           style: TextStyle(fontSize: 16),
                           textAlign: TextAlign.left),
                       Text(
@@ -180,7 +179,7 @@ class _RouteItem extends State<CourseItem> {
 
 class CourseItemData {
   final int courseId;
-  final int authorId;
+  final String authorName;
   final String title;
   final String createdAt;
   final bool isSubscribed;
@@ -190,15 +189,9 @@ class CourseItemData {
     {
       required this.title,
       required this.courseId,
-      required this.authorId,
+      required this.authorName,
       required this.createdAt,
       required this.isSubscribed,
       required this.subscribersCount
     });
-}
-
-class CourseItemUIData {
-  String title = "1";
-  String author = "1";
-  String startDate = "1";
 }

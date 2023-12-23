@@ -84,7 +84,7 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
 
             return new CourseItemData(
               courseId: c['id'],
-              authorId: c['author_id'],
+              authorName: c['author_id']['firstName'] + " " + c['author_id']['lastName'],
               createdAt: date,
               title: c['title'],
               isSubscribed: meSubscriber,
