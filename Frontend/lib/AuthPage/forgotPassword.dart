@@ -188,7 +188,7 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
     super.initState();
   }
 
-  Future<String?> verifyOtp(String email, int? otp) async {
+  Future<String?> verifyOtp(String email, String otp) async {
     debugPrint("Fetch verify-otp");
 
     Map<String, String> headers = {
@@ -197,7 +197,7 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'email': email, 'otp': otp.toString()};
+    Map<String, dynamic> postData = {'email': email, 'otp': otp};
 
     try {
       EasyLoading.show();
@@ -304,8 +304,8 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                             return;
                           }
                           print(otp);
-                          _message = await verifyOtp(
-                              email.toString(), int.parse(otp.toString()));
+                          _message =
+                              await verifyOtp(email.toString(), otp.toString());
                           setState(() {});
                         },
                         style: ElevatedButton.styleFrom(
