@@ -14,6 +14,7 @@ router.post("/send-otp", AuthController.sendOtp);
 router.post("/verify-otp", AuthController.verifyOtp);
 
 router.post("/admin/unblock", authRoleMiddleware(ROLE.ADMIN), AuthController.unblockUser);
+router.post("/admin/block", authRoleMiddleware(ROLE.ADMIN), AuthController.blockUser);
 
 // router.post("/user/update-info", authRoleMiddleware(), AuthController.updateInfo);
 // router.post("/user/report", authRoleMiddleware(), AuthController.reportUser);

@@ -5,6 +5,7 @@ import 'package:frontend/Course%20Page/popup_subscribe_result.dart';
 import 'package:frontend/Course%20Page/popup_unsubscribe.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -108,7 +109,7 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: widget.courseData.isSubscribed,
+                          visible: widget.courseData.isSubscribed && AppStore.ROLE == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,
@@ -135,7 +136,7 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: !widget.courseData.isSubscribed,
+                          visible: !widget.courseData.isSubscribed && AppStore.ROLE == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,

@@ -15,7 +15,12 @@ class InProgressRoutesTab extends StatefulWidget {
 
 class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
 
-   late List<RouteItemData> inProgressRoute = [];
+  late List<RouteItemData> inProgressRoute = [];
+
+  void refetchCourses(){
+    debugPrint("re fetch course");
+    fetchCourses();
+  }
 
   Future<void> fetchCourses() async {
 
@@ -83,11 +88,12 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-
-      child: ListView.builder(itemBuilder: (context, index) {
-        return RouteItem(routeData: inProgressRoute[index]);
-      }, itemCount: inProgressRoute.length),
+    return Expanded(
+      child: Container(
+        child: ListView.builder(itemBuilder: (context, index) {
+          return RouteItem(routeData: inProgressRoute[index], onUpdateRoute: refetchCourses,);
+        }, itemCount: inProgressRoute.length),
+      ),
     );
   }
 }

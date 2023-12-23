@@ -1,5 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:frontend/AllPages/home_page.dart';
+import 'package:frontend/AllPages/home_page_admin.dart';
+import 'package:frontend/AllPages/home_page_teacher.dart';
+import 'package:frontend/AuthPage/forgotPassword.dart';
 import 'package:frontend/AuthPage/register.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/const.dart' as constaint;
@@ -18,10 +22,9 @@ class _MyWidgetState extends State<LoginPage> {
   bool _showPass = false;
   bool _filedPassword = false;
   bool _filedPhoneNumber = false;
-  TextEditingController phone = TextEditingController();
+  TextEditingController email = TextEditingController();
   TextEditingController pass = TextEditingController();
   String? _message;
-  bool _isLogined = false;
   @override
   void initState() {
     super.initState();
@@ -39,6 +42,7 @@ class _MyWidgetState extends State<LoginPage> {
     Map<String, dynamic> postData = {'email': email, 'password': pass};
 
     try {
+      EasyLoading.show();
       final response = await http.post(
         Uri.parse('${constaint.apiUrl}/login'),
         headers: headers,
@@ -57,14 +61,30 @@ class _MyWidgetState extends State<LoginPage> {
         role = jsonData['role'];
       } else {
         print('Failed with status code: ${response.statusCode}');
-        return 'Email hoặc mật khẩu không hợp lệ';
+
+        EasyLoading.dismiss();
+        return 'Email or password is invalid';
       }
       AppStore.ID = userId;
       AppStore.TOKEN = token;
       AppStore.USERNAME = userName;
       AppStore.ROLE = role;
 
-      if (AppStore.TOKEN != '') {
+      if (AppStore.ROLE == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePageAdmin(),
+          ),
+        );
+      } else if (AppStore.ROLE == 'teacher') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePageTeacher(),
+          ),
+        );
+      } else {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -72,6 +92,8 @@ class _MyWidgetState extends State<LoginPage> {
           ),
         );
       }
+
+      EasyLoading.dismiss();
       return null;
     } catch (error) {
       // Catch and handle any errors that occur during the API call
@@ -113,17 +135,12 @@ class _MyWidgetState extends State<LoginPage> {
               right: screenWidth * 0.1),
           child: Column(children: [
             TextFormField(
-              controller: phone,
+              controller: email,
               decoration: const InputDecoration(hintText: "Enter your email"),
               autofocus: true,
               onChanged: (value) {
                 setState(() {
-                  if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                      .hasMatch(value)) {
-                    _message = 'Invalid email!';
-                  } else {
-                    _message = null;
-                  }
+                  _message = null;
                   if (value.isNotEmpty) {
                     _filedPhoneNumber = true;
                   }
@@ -140,6 +157,10 @@ class _MyWidgetState extends State<LoginPage> {
                 obscuringCharacter: "•",
                 onChanged: (value) {
                   setState(() {
+                    if (_message == 'Invalid email!') {
+                      return;
+                    }
+                    _message = null;
                     if (value.isNotEmpty) {
                       _filedPassword = true;
                     }
@@ -152,7 +173,7 @@ class _MyWidgetState extends State<LoginPage> {
                     const InputDecoration(hintText: "Enter your password"),
               ),
               GestureDetector(
-                child: Text(_filedPassword ? "SHOW" : "",
+                child: Text(_filedPassword ? (_showPass ? "HIDE" : "SHOW") : "",
                     style: TextStyle(color: Colors.grey, fontSize: 14)),
                 onTap: onToggleChangePass,
               )
@@ -166,36 +187,27 @@ class _MyWidgetState extends State<LoginPage> {
                     style: TextStyle(color: Colors.red)),
               ),
             ),
-            Container(
-              height: 20,
-              child: Visibility(
-                  visible: (_isLogined && _message == null),
-                  child: Container(
-                    height: 20,
-                    width: 20,
-                    child: Center(child: CircularProgressIndicator()),
-                  )),
-            ),
+            SizedBox(height: 10),
             Container(
                 margin: const EdgeInsets.only(top: 0),
                 height: screenHeight * 0.055,
                 width: screenWidth,
                 child: ElevatedButton(
                     onPressed: () async {
-                      if (phone.text == '' || pass.text == '') {
-                        _isLogined = false;
+                      if (email.text == '' || pass.text == '') {
                         _message = 'Please fill in both email and account';
                         setState(() {});
                         return;
                       }
-                      if (_message != null) {
-                        _isLogined = false;
+                      if (!RegExp(
+                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                          .hasMatch(email.text)) {
+                        _message = 'Invalid email!';
                         setState(() {});
-                      } else {
-                        _isLogined = true;
-                        setState(() {});
+                        return;
                       }
-                      _message = await login(phone.text, pass.text);
+                      _message = await login(email.text, pass.text);
+                      setState(() {});
                     },
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.amber),
@@ -212,7 +224,7 @@ class _MyWidgetState extends State<LoginPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomePage(),
+                    builder: (context) => SendOtpForgetPasswordPage(),
                   ),
                 );
               },

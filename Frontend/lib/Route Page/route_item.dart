@@ -6,10 +6,12 @@ import 'dart:convert';
 
 class RouteItem extends StatefulWidget {
   RouteItemData routeData;
+  VoidCallback onUpdateRoute;
 
   RouteItem({
     super.key,
     required this.routeData,
+    required this.onUpdateRoute
   });
 
   @override
@@ -61,6 +63,10 @@ class _RouteItem extends State<RouteItem> {
 
   Future<void> fetchAuthor(RouteItemData routeData) async {
     
+  }
+
+  void onRouteUpdated(){
+    widget.onUpdateRoute();
   }
 
   @override
@@ -153,7 +159,7 @@ class _RouteItem extends State<RouteItem> {
       ),
       onTap: () => {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.routeData.routeId)))
+            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.routeData.routeId, onUpdateRoute: onRouteUpdated,)))
       },
     );
   }
