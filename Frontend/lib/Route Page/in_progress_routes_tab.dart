@@ -73,8 +73,6 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
     }
   }
 
- 
-
   @override
   void initState(){
     super.initState();

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Course%20Page/course_detail.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
@@ -17,57 +18,12 @@ class CourseItem extends StatefulWidget {
 }
 
 class _RouteItem extends State<CourseItem> {
-  CourseItemUIData courseItemUIData = new CourseItemUIData();
-
+  
   String courseDescription = "";
-
-  Future<void> fetchCourses(CourseItemData routeData) async {
-    Map<String, String> headers = {
-      'Content-Type':
-          'application/json', // Set the content type for POST request
-      // Add other headers if needed
-    };
-
-    Map<String, dynamic> postData = {'id': routeData.courseId};
-
-    try {
-      final response = await http.post(
-        Uri.parse('${constaint.apiUrl}/course/getById'),
-        headers: headers,
-        body: jsonEncode(postData), // Encode the POST data to JSON
-      );
-
-      if (response.statusCode == 200) {
-        // Successfully fetched data
-        final jsonData = json.decode(response.body);
-        final courseData = jsonData['data'];
-
-        setState(() {
-          courseDescription = courseData['description'];
-          courseItemUIData.title = courseData['title'];
-          courseItemUIData.author = "1";
-          courseItemUIData.startDate = routeData.createdAt;
-          courseItemUIData.progress = routeData.progress;
-        });
-      } else {
-        // Request failed with an error status code
-        print('Failed with status code: ${response.statusCode}');
-      }
-    } catch (error) {
-      // Catch and handle any errors that occur during the API call
-      print('Error: $error');
-    }
-  }
-
-  Future<void> fetchAuthor(CourseItemData routeData) async {
-    
-  }
 
   @override
   void initState() {
     super.initState();
-    fetchCourses(widget.courseData);
-    fetchAuthor(widget.courseData);
   }
 
   @override
@@ -82,10 +38,10 @@ class _RouteItem extends State<CourseItem> {
             child: Row(
               children: [
                 Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Icon(
                       Icons.book,
-                      size: 60,
+                      size: 50,
                     )),
                 Expanded(
                   flex: 6,
@@ -96,56 +52,120 @@ class _RouteItem extends State<CourseItem> {
                       Padding(
                         padding: const EdgeInsets.only(bottom: 8),
                         child: Text(
-                          courseItemUIData.title,
+                          widget.courseData.title,
                           style: TextStyle(
                               fontSize: 16, fontWeight: FontWeight.w700),
                           textAlign: TextAlign.left,
                         ),
                       ),
-                      Text("Author: " + courseItemUIData.author,
+                      Text("Author: " + widget.courseData.authorName,
                           style: TextStyle(fontSize: 16),
                           textAlign: TextAlign.left),
                       Text(
-                        "Start: " + courseItemUIData.startDate,
+                        "Created at: " + widget.courseData.createdAt,
                         style: TextStyle(fontSize: 16),
                       ),
                     ],
                   ),
                 ),
                 Expanded(
-                  flex: 2,
+                  flex: 3,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        width: 50, // Set the width of the container
-                        height: 50, // Set the height of the container
-                        decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          color: const Color.fromARGB(255, 255, 255,
-                              255), // Set the background color of the circle
+
+                    //subscribe state
+
+                     Visibility(
+                      visible: widget.courseData.isSubscribed,
+                       child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Center(
+                              child: Text("Subscribed", style: TextStyle(fontSize: 12),)
+                            ),
+                     
+                            Icon(Icons.app_registration)
+                          ],
                         ),
-                        child: Center(
-                          child: Text(
-                            courseItemUIData.progress +
-                                "%", // Number to display inside the circle
-                            style: TextStyle(
-                              color: Colors.green, // Color of the number text
-                              fontSize: 20, // Font size of the number text
-                              fontWeight: FontWeight
-                                  .bold, // Font weight of the number text
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(4)
+                        ),
+                       ),
+                     ),
+
+                     Visibility(
+                      visible: !widget.courseData.isSubscribed,
+                       child: Container(
+                        padding: EdgeInsets.symmetric(vertical: 4),
+                        height: 40,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceAround,
+                          children: [
+                            Center(
+                              child: Text("Subscribe", style: TextStyle(fontSize: 12),)
+                            ),
+                     
+                            Icon(Icons.subscriptions)
+                          ],
+                        ),
+                        decoration: BoxDecoration(
+                          border: Border.all(color: Colors.black, width: 1),
+                          borderRadius: BorderRadius.circular(4)
+                        ),
+                       ),
+                     ),
+
+                      Container(
+                            width: 70, // Set the width of the container
+                            height: 50, // Set the height of the container
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(8),
+                              shape: BoxShape.rectangle,
+                              color: const Color.fromARGB(255, 255, 255,
+                                  255), // Set the background color of the circle
+                            ),
+
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                Center(
+                                  child: Text(
+                                        widget.courseData.subscribersCount.toString(), // Number to display inside the circle
+                                    style: TextStyle(
+                                      color: Colors.black, // Color of the number text
+                                      fontSize: 20, // Font size of the number text
+                                      fontWeight: FontWeight
+                                          .bold, // Font weight of the number text
+                                    ),
+                                  ),
+                                ),
+
+                                Center(
+                                  child: Text(
+                                        "subcribers", // Number to display inside the circle
+                                    style: TextStyle(
+                                      color: Colors.black, // Color of the number text
+                                      fontSize: 12, // Font size of the number text
+                                      fontWeight: FontWeight
+                                          .bold, // Font weight of the number text
+                                    ),
+                                  ),
+                                ),
+                              ],
                             ),
                           ),
-                        ),
-                      )
                     ],
                   ),
                 )
               ],
             ),
             decoration: BoxDecoration(
-                color: Color.fromARGB(255, 132, 230, 255),
+                color: Color.fromARGB(255, 253, 201, 87),
                 borderRadius: BorderRadius.circular(4),
                 border: Border.all(color: Colors.black)),
           ),
@@ -153,30 +173,31 @@ class _RouteItem extends State<CourseItem> {
       ),
       onTap: () => {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.courseData.routeId)))
+            context, MaterialPageRoute(builder: (context) => CourseDetail(courseData: widget.courseData)))
       },
     );
   }
 }
 
 class CourseItemData {
-  final String routeId;
   final int courseId;
-  final int userId;
+  final String authorName;
+  final String title;
   final String createdAt;
-  final String progress;
+  final bool isSubscribed;
+  final int subscribersCount;
+  final String description;
+  final List lessons;
 
   CourseItemData(
-      {required this.routeId,
+    {
+      required this.title,
       required this.courseId,
-      required this.userId,
+      required this.authorName,
       required this.createdAt,
-      required this.progress});
-}
-
-class CourseItemUIData {
-  String title = "1";
-  String author = "1";
-  String startDate = "1";
-  String progress = "1";
+      required this.isSubscribed,
+      required this.subscribersCount,
+      required this.description,
+      required this.lessons
+    });
 }
