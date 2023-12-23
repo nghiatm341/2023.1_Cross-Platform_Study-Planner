@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:frontend/AllPages/home_page.dart';
+import 'package:frontend/AllPages/home_page_admin.dart';
+import 'package:frontend/AllPages/home_page_teacher.dart';
 import 'package:frontend/AuthPage/forgotPassword.dart';
 import 'package:frontend/AuthPage/register.dart';
 import 'package:http/http.dart' as http;
@@ -20,7 +22,7 @@ class _MyWidgetState extends State<LoginPage> {
   bool _showPass = false;
   bool _filedPassword = false;
   bool _filedPhoneNumber = false;
-  TextEditingController phone = TextEditingController();
+  TextEditingController email = TextEditingController();
   TextEditingController pass = TextEditingController();
   String? _message;
   @override
@@ -68,7 +70,21 @@ class _MyWidgetState extends State<LoginPage> {
       AppStore.USERNAME = userName;
       AppStore.ROLE = role;
 
-      if (AppStore.TOKEN != '') {
+      if (AppStore.ROLE == 'admin') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePageAdmin(),
+          ),
+        );
+      } else if (AppStore.ROLE == 'teacher') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => HomePageTeacher(),
+          ),
+        );
+      } else {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -76,6 +92,7 @@ class _MyWidgetState extends State<LoginPage> {
           ),
         );
       }
+
       EasyLoading.dismiss();
       return null;
     } catch (error) {
@@ -118,24 +135,17 @@ class _MyWidgetState extends State<LoginPage> {
               right: screenWidth * 0.1),
           child: Column(children: [
             TextFormField(
-              controller: phone,
+              controller: email,
               decoration: const InputDecoration(hintText: "Enter your email"),
               autofocus: true,
               onChanged: (value) {
                 setState(() {
+                  _message = null;
                   if (value.isNotEmpty) {
                     _filedPhoneNumber = true;
                   }
                   if (value.isEmpty) {
                     _filedPhoneNumber = false;
-                    _message = null;
-                    return;
-                  }
-                  if (!RegExp(r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
-                      .hasMatch(value)) {
-                    _message = 'Invalid email!';
-                  } else {
-                    _message = null;
                   }
                 });
               },
@@ -163,7 +173,7 @@ class _MyWidgetState extends State<LoginPage> {
                     const InputDecoration(hintText: "Enter your password"),
               ),
               GestureDetector(
-                child: Text(_filedPassword ? "SHOW" : "",
+                child: Text(_filedPassword ? (_showPass ? "HIDE" : "SHOW") : "",
                     style: TextStyle(color: Colors.grey, fontSize: 14)),
                 onTap: onToggleChangePass,
               )
@@ -184,16 +194,19 @@ class _MyWidgetState extends State<LoginPage> {
                 width: screenWidth,
                 child: ElevatedButton(
                     onPressed: () async {
-                      if (_message == 'Invalid email!') {
-                        return;
-                      }
-                      if (phone.text == '' || pass.text == '') {
+                      if (email.text == '' || pass.text == '') {
                         _message = 'Please fill in both email and account';
                         setState(() {});
                         return;
                       }
-                      setState(() {});
-                      _message = await login(phone.text, pass.text);
+                      if (!RegExp(
+                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                          .hasMatch(email.text)) {
+                        _message = 'Invalid email!';
+                        setState(() {});
+                        return;
+                      }
+                      _message = await login(email.text, pass.text);
                       setState(() {});
                     },
                     style:
