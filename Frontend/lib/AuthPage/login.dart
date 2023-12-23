@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/AllPages/home_page.dart';
+import 'package:frontend/AuthPage/register.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/const.dart' as constaint;
 import 'package:frontend/AllPages/routes_page.dart';
@@ -19,10 +20,8 @@ class _MyWidgetState extends State<LoginPage> {
   bool _filedPhoneNumber = false;
   TextEditingController phone = TextEditingController();
   TextEditingController pass = TextEditingController();
-  // String? _codeLogin;
   String? _message;
   bool _isLogined = false;
-  // Future<List<User>>? _login;
   @override
   void initState() {
     super.initState();
@@ -87,8 +86,18 @@ class _MyWidgetState extends State<LoginPage> {
     return Scaffold(
         body: Column(children: [
       Padding(
+        padding: EdgeInsets.symmetric(
+            horizontal: screenWidth * 0, vertical: screenHeight * 0.015),
+        child: Image.asset(
+          "assets/logo-bkhn-04.png",
+          width: screenWidth * 1,
+          height: screenHeight * 0.075,
+          fit: BoxFit.contain,
+        ),
+      ),
+      Padding(
         padding: EdgeInsets.only(
-          top: screenHeight * 0.05,
+          top: screenHeight * 0.0,
         ),
         child: Text("Study Planner App",
             style: TextStyle(
@@ -98,18 +107,8 @@ class _MyWidgetState extends State<LoginPage> {
             )),
       ),
       Padding(
-        padding: EdgeInsets.symmetric(
-            horizontal: screenWidth * 0.3, vertical: screenHeight * 0.05),
-        child: Image.asset(
-          "assets/logo.png",
-          width: screenWidth * 0.32, // Thiết lập kích thước rộng của hình ảnh
-          height: screenHeight * 0.16, // Thiết lập kích thước cao của hình ảnh
-          fit: BoxFit.contain,
-        ),
-      ),
-      Padding(
           padding: EdgeInsets.only(
-              top: screenHeight * 0.05,
+              top: screenHeight * 0,
               left: screenWidth * 0.1,
               right: screenWidth * 0.1),
           child: Column(children: [
@@ -158,7 +157,7 @@ class _MyWidgetState extends State<LoginPage> {
                 onTap: onToggleChangePass,
               )
             ]),
-            SizedBox(height: 20),
+            SizedBox(height: 10),
             Container(
               height: 20,
               child: Visibility(
@@ -178,18 +177,17 @@ class _MyWidgetState extends State<LoginPage> {
                   )),
             ),
             Container(
-                margin: const EdgeInsets.only(top: 10),
+                margin: const EdgeInsets.only(top: 0),
                 height: screenHeight * 0.055,
                 width: screenWidth,
                 child: ElevatedButton(
                     onPressed: () async {
                       if (phone.text == '' || pass.text == '') {
                         _isLogined = false;
-                        _message = 'Vui lòng điền đầy đủ email và tài khoản';
+                        _message = 'Please fill in both email and account';
                         setState(() {});
                         return;
                       }
-                      _message = await login(phone.text, pass.text);
                       if (_message != null) {
                         _isLogined = false;
                         setState(() {});
@@ -197,6 +195,7 @@ class _MyWidgetState extends State<LoginPage> {
                         _isLogined = true;
                         setState(() {});
                       }
+                      _message = await login(phone.text, pass.text);
                     },
                     style:
                         ElevatedButton.styleFrom(backgroundColor: Colors.amber),
@@ -218,7 +217,7 @@ class _MyWidgetState extends State<LoginPage> {
                 );
               },
               child: Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.only(top: 10),
                 child: Text(
                   "Forgot password ?",
                   style: TextStyle(
@@ -235,12 +234,12 @@ class _MyWidgetState extends State<LoginPage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => HomePage(),
+                    builder: (context) => SendOtpPage(),
                   ),
                 );
               },
               child: Padding(
-                padding: EdgeInsets.only(top: 20),
+                padding: EdgeInsets.only(top: 10),
                 child: Text(
                   "Create new account",
                   style: TextStyle(
