@@ -2,6 +2,8 @@ const router = require('express').Router();
 const StudyRoute = require('../models/StudyRoute')
 const Lesson = require('../models/Lesson')
 const uuid = require('uuid');
+const authMiddleware = require('../middlewares/auth.middleware');
+const {ROLE} = require('../constant/enum')
 
 
 //get all in-progress study routes  of a user 
@@ -49,13 +51,14 @@ router.post('/createStudyRoute', async (req, res) => {
     try {
         const {courseId, userId} = req.body;
 
-        const courseLessonList = await Lesson.find({ course_id: courseId, is_delete: 0 }).sort({ lesson_before_id: 1, course_id: 1 })
+        const courseLessonList = await Lesson.find({ course_id: courseId, is_delete: 0 }).sort({id: 1, lesson_before_id: 1})
 
         const studyRouteLesson = courseLessonList.map((item) => {
             return {
                 lessonId: item.id,
                 studyTime: Math.ceil(item.estimate_time),
-                isComplete: false
+                isCompleted: false,
+                completedAt: new Date()
             }
         });
 
@@ -65,6 +68,7 @@ router.post('/createStudyRoute', async (req, res) => {
             courseId: courseId,
             createdAt: new Date(),
             isFinished: false,
+            finishedAt: new Date(),
             lessons: studyRouteLesson
         })
 
@@ -104,7 +108,7 @@ router.post('/getStudyRouteDetail', async (req, res) => {
 });
 
 
-router.post('/changeLessonStudyTime', async (req, res) => {
+router.post('/changeLessonStudyTime', authMiddleware.authRoleMiddleware(ROLE.STUDENT), async (req, res) => {
     try{
         const {routeId, lessonId, newStudyTime} = req.body;
 
@@ -155,6 +159,7 @@ router.post('/completeLesson', async(req, res) => {
 
         if(needUpdateLesson){
             needUpdateLesson.isCompleted = true;
+            needUpdateLesson.completedAt = new Date();
 
             const incompleteLesson = lessons.find(lesson => lesson.isCompleted == false);
 
@@ -164,7 +169,8 @@ router.post('/completeLesson', async(req, res) => {
                 { 
                     $set: {
                         lessons: lessons,
-                        isFinished: isCompleteCourse
+                        isFinished: isCompleteCourse,
+                        finishedAt: new Date()
                     }
                 })
 

@@ -44,6 +44,10 @@ const StudyRouteSchema = mongoose.Schema({
             type: Boolean,
             default: false
         },
+
+        completedAt: {
+            type: Date
+        }
     }]
 
 }, {

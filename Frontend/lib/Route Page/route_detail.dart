@@ -9,9 +9,10 @@ import 'package:frontend/utils.dart' as utils;
 class RouteDetail extends StatefulWidget {
   final String description;
   final String routeId;
+  final VoidCallback onUpdateRoute;
 
   const RouteDetail(
-      {super.key, required this.description, required this.routeId});
+      {super.key, required this.description, required this.routeId, required this.onUpdateRoute});
 
   @override
   State<RouteDetail> createState() => _RouteDetailState();
@@ -70,6 +71,7 @@ class _RouteDetailState extends State<RouteDetail> {
 
   void Refresh(){
     debugPrint("Refresh");
+    widget.onUpdateRoute();
     fetchRouteDetail(widget.routeId);
   }
 
