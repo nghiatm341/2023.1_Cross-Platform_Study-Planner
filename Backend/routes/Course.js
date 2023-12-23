@@ -29,6 +29,14 @@ router.post('/list', async (req, res) => {
         if (title) conditions.title = RegExp(title, 'i')
 
         const data = await Course.find({ is_delete: 0, ...conditions })
+            .populate({
+                path: 'author_id',
+                model: User,
+                localField: 'author_id',
+                foreignField: 'id',
+                option: { lean: true },
+                strictPopulate: false
+            })
 
         res.status(200).json({ message: 'success', data: data })
     } catch (error) {
