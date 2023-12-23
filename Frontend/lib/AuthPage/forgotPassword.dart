@@ -12,14 +12,15 @@ String? _fullName;
 String? _phoneNumber;
 String? _password;
 
-class SendOtpPage extends StatefulWidget {
-  const SendOtpPage({super.key});
+class SendOtpForgetPasswordPage extends StatefulWidget {
+  const SendOtpForgetPasswordPage({super.key});
 
   @override
-  State<SendOtpPage> createState() => _SendOtpPage();
+  State<SendOtpForgetPasswordPage> createState() =>
+      _SendOtpForgetPasswordPage();
 }
 
-class _SendOtpPage extends State<SendOtpPage> {
+class _SendOtpForgetPasswordPage extends State<SendOtpForgetPasswordPage> {
   bool _filedEmail = false;
   TextEditingController phone = TextEditingController();
   String? _message;
@@ -37,7 +38,7 @@ class _SendOtpPage extends State<SendOtpPage> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'email': email, 'isRegister': '1'};
+    Map<String, dynamic> postData = {'email': email, 'isRegister': '0'};
 
     try {
       EasyLoading.show();
@@ -47,18 +48,18 @@ class _SendOtpPage extends State<SendOtpPage> {
         body: jsonEncode(postData), // Encode the POST data to JSON
       );
       if (response.statusCode == 200) {
-        EasyLoading.dismiss();
         // Successfully fetched data
+        EasyLoading.dismiss();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => VerifyOtpPage(email: email),
+            builder: (context) => VerifyOtpForgetPasswordPage(email: email),
           ),
         );
       } else {
-        print('Failed with status code: ${response.statusCode}');
         EasyLoading.dismiss();
-        return 'Email has been used';
+        print('Failed with status code: ${response.statusCode}');
+        return 'Email dose not exists';
       }
     } catch (error) {
       // Catch and handle any errors that occur during the API call
@@ -93,7 +94,7 @@ class _SendOtpPage extends State<SendOtpPage> {
                   right: screenWidth * 0.1),
               child: Column(children: [
                 Text(
-                  'Please enter the email address you used to create your account.',
+                  'Please enter the email address you want to recover your password',
                   style: TextStyle(
                       color: Colors.black,
                       fontSize: 16,
@@ -135,7 +136,6 @@ class _SendOtpPage extends State<SendOtpPage> {
                         style: TextStyle(color: Colors.red)),
                   ),
                 ),
-                SizedBox(height: 10),
                 Container(
                     margin: const EdgeInsets.only(top: 10),
                     height: screenHeight * 0.055,
@@ -153,6 +153,8 @@ class _SendOtpPage extends State<SendOtpPage> {
                           setState(() {});
                           _message = await sendOtp(phone.text);
                           setState(() {});
+                          print(
+                              'Failed with status code' + _message.toString());
                         },
                         style: ElevatedButton.styleFrom(
                             backgroundColor: Colors.amber),
@@ -168,17 +170,18 @@ class _SendOtpPage extends State<SendOtpPage> {
   }
 }
 
-class VerifyOtpPage extends StatefulWidget {
+class VerifyOtpForgetPasswordPage extends StatefulWidget {
   String? email;
-  VerifyOtpPage({this.email});
+  VerifyOtpForgetPasswordPage({this.email});
 
   @override
-  State<VerifyOtpPage> createState() => _VerifyOtpPage(email: email);
+  State<VerifyOtpForgetPasswordPage> createState() =>
+      _VerifyOtpForgetPasswordPage(email: email);
 }
 
-class _VerifyOtpPage extends State<VerifyOtpPage> {
+class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
   String? email;
-  _VerifyOtpPage({this.email});
+  _VerifyOtpForgetPasswordPage({this.email});
 
   bool _filedOtp = false;
   int? otp;
@@ -214,7 +217,8 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => InformPage(email: email, token: token),
+            builder: (context) =>
+                ChangePasswordPage(email: email, token: token),
           ),
         );
       } else {
@@ -270,10 +274,12 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
                       const InputDecoration(hintText: "Enter your code"),
                   autofocus: true,
                   onChanged: (value) {
-                    otp = int.parse(value);
-                    setState(() {
-                      _message = null;
-                    });
+                    if (otp != null) {
+                      otp = int.parse(value);
+                      setState(() {
+                        _message == null;
+                      });
+                    }
                   },
                 ),
                 SizedBox(height: 10),
@@ -285,7 +291,6 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
                         style: TextStyle(color: Colors.red)),
                   ),
                 ),
-                SizedBox(height: 10),
                 Container(
                     margin: const EdgeInsets.only(top: 10),
                     height: screenHeight * 0.055,
@@ -293,10 +298,12 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
                     child: ElevatedButton(
                         onPressed: () async {
                           if (otp == null) {
+                            print("run here");
                             _message = 'Please fill in code';
                             setState(() {});
                             return;
                           }
+                          setState(() {});
                           _message = await verifyOtp(email.toString(), otp);
                           setState(() {});
                         },
@@ -314,35 +321,31 @@ class _VerifyOtpPage extends State<VerifyOtpPage> {
   }
 }
 
-class InformPage extends StatefulWidget {
+class ChangePasswordPage extends StatefulWidget {
   String? email;
   String? token;
-  InformPage({this.email, this.token});
+  ChangePasswordPage({this.email, this.token});
 
   @override
-  State<InformPage> createState() => _InformPage(email: email, token: token);
+  State<ChangePasswordPage> createState() =>
+      _ChangePasswordPage(email: email, token: token);
 }
 
-class _InformPage extends State<InformPage> {
+class _ChangePasswordPage extends State<ChangePasswordPage> {
   String? email;
   String? token;
-  _InformPage({this.email, this.token});
+  _ChangePasswordPage({this.email, this.token});
 
-  bool _filledFamilyName = false;
-  bool _filedName = false;
   String _textMessage =
-      "Please fill in your personal information to create an account";
+      "Create a new password. You will use this password to maintain your account.";
   Color _colorMessage = Colors.black;
-  int _selectedValue = 1;
+  // String _textMessage =
+  //     "Tạo mật khẩu gồm tối thiểu 6 ký tự. Đó phải là mật khẩu mà người khác không đoán được.";
   bool _filedPassword = false;
   bool _showPass = false;
-
-  TextEditingController _familyName = new TextEditingController();
-  TextEditingController _name = new TextEditingController();
   TextEditingController _pass = new TextEditingController();
 
-  Future<String?> signUp(
-      String password, String firstName, String lastName, String role) async {
+  Future<String?> changePassword(String password) async {
     debugPrint("Fetch sign-up");
 
     Map<String, String> headers = {
@@ -354,22 +357,17 @@ class _InformPage extends State<InformPage> {
 
     Map<String, dynamic> postData = {
       'email': email,
-      'password': password,
-      'firstName': firstName,
-      'lastName': lastName,
-      'role': role
+      'newPassword': password,
     };
 
     try {
-      EasyLoading.show();
       final response = await http.post(
-        Uri.parse('${constaint.apiUrl}/sign-up'),
+        Uri.parse('${constaint.apiUrl}/user/forget-password'),
         headers: headers,
         body: jsonEncode(postData), // Encode the POST data to JSON
       );
       if (response.statusCode == 200) {
         // Successfully fetched data
-        EasyLoading.dismiss();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -377,7 +375,6 @@ class _InformPage extends State<InformPage> {
           ),
         );
       } else {
-        EasyLoading.dismiss();
         print('Failed with status code: ${response.statusCode}');
         return 'Invaid code';
       }
@@ -392,26 +389,27 @@ class _InformPage extends State<InformPage> {
     double screenHeight = MediaQuery.of(context).size.height;
     double screenWidth = MediaQuery.of(context).size.width;
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Login",
-              style: TextStyle(
-                color: Colors.black,
-              )),
-          leading: IconButton(
-            icon: Icon(Icons.arrow_back),
-            color: Colors.black,
-            onPressed: () {
-              showAlertDialog(context);
-            },
-          ),
-          backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: Text("Login",
+            style: TextStyle(
+              color: Colors.black,
+            )),
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back),
+          color: Colors.black,
+          onPressed: () {
+            showAlertDialog(context);
+          },
         ),
-        body: Column(children: [
+        backgroundColor: Colors.white,
+      ),
+      body: Column(
+        children: [
           Padding(
             padding: EdgeInsets.only(
                 left: screenWidth * 0.05, right: screenWidth * 0.05),
             child: Container(
-                height: 45,
+                height: 50,
                 child: Text(_textMessage,
                     maxLines: 2,
                     style: TextStyle(
@@ -421,199 +419,78 @@ class _InformPage extends State<InformPage> {
                     textAlign: TextAlign.center)),
           ),
           Padding(
-            padding: EdgeInsets.only(
-                top: screenHeight * 0,
-                left: screenWidth * 0.05,
-                right: screenWidth * 0.05),
-            child: Column(
-              children: [
-                Container(
-                    margin: const EdgeInsets.only(top: 0),
-                    width: screenWidth,
-                    child: Row(
-                      children: [
-                        Container(
-                          width: screenWidth * 0.44,
-                          child: Padding(
-                              padding: EdgeInsets.only(left: screenWidth * 0),
-                              child: TextFormField(
-                                controller: _familyName,
-                                decoration: const InputDecoration(
-                                  hintText: "First name",
-                                  labelText: "First name",
-                                ),
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    _filledFamilyName = true;
-                                  } else {
-                                    _filledFamilyName = false;
-                                  }
-                                },
-                              )),
-                        ),
-                        Container(
-                          width: screenWidth * 0.44,
-                          child: Padding(
-                              padding:
-                                  EdgeInsets.only(left: screenWidth * 0.02),
-                              child: TextFormField(
-                                controller: _name,
-                                decoration: const InputDecoration(
-                                  hintText: "Last name",
-                                  labelText: "Last name",
-                                ),
-                                onChanged: (value) {
-                                  if (value.isNotEmpty) {
-                                    _filedName = true;
-                                  } else {
-                                    _filedName = false;
-                                  }
-                                },
-                              )),
-                        ),
-                      ],
-                    )),
-                Column(children: [
-                  Padding(
-                    padding: EdgeInsets.only(
-                        top: screenHeight * 0.0,
-                        left: screenWidth * 0.0,
-                        right: screenWidth * 0.0),
-                    child: Stack(
-                        alignment: AlignmentDirectional.centerEnd,
-                        children: [
-                          TextFormField(
-                            controller: _pass,
-                            obscureText: !_showPass,
-                            obscuringCharacter: "•",
-                            onChanged: (value) {
-                              setState(() {
-                                if (value.isNotEmpty) {
-                                  _filedPassword = true;
-                                }
-                                if (value.isEmpty) {
-                                  _filedPassword = false;
-                                }
-                              });
-                            },
-                            decoration: const InputDecoration(
-                                hintText: "Password", labelText: 'Password'),
-                          ),
-                          GestureDetector(
-                            child: Text(_filedPassword ? "SHOW" : "",
-                                style: TextStyle(
-                                    color: Colors.grey, fontSize: 14)),
-                            onTap: onToggleChangePass,
-                          )
-                        ]),
+              padding: EdgeInsets.only(
+                  top: screenHeight * 0,
+                  left: screenWidth * 0.05,
+                  right: screenWidth * 0.05),
+              child: Padding(
+                padding: EdgeInsets.only(
+                    top: screenHeight * 0.0,
+                    left: screenWidth * 0.0,
+                    right: screenWidth * 0.0),
+                child:
+                    Stack(alignment: AlignmentDirectional.centerEnd, children: [
+                  TextFormField(
+                    controller: _pass,
+                    obscureText: !_showPass,
+                    obscuringCharacter: "•",
+                    onChanged: (value) {
+                      setState(() {
+                        if (value.isNotEmpty) {
+                          _filedPassword = true;
+                        }
+                        if (value.isEmpty) {
+                          _filedPassword = false;
+                        }
+                      });
+                    },
+                    decoration: const InputDecoration(
+                        hintText: "Password", labelText: 'Password'),
                   ),
+                  GestureDetector(
+                    child: Text(_filedPassword ? "SHOW" : "",
+                        style: TextStyle(color: Colors.grey, fontSize: 14)),
+                    onTap: onToggleChangePass,
+                  )
                 ]),
-                SizedBox(height: 5),
-                Row(
-                  children: [
-                    Text(
-                      'Role',
+              )),
+          Container(
+              margin: const EdgeInsets.only(top: 15),
+              height: screenHeight * 0.055,
+              width: screenWidth * 0.9,
+              child: ElevatedButton(
+                  onPressed: () async {
+                    // if (_colorMessage == Colors.red) return;
+                    if (!_filedPassword) {
+                      _textMessage = "Please enter a password\n";
+                      _colorMessage = Colors.red;
+                      setState(() {});
+                      return;
+                    } else {
+                      if (_pass.text.length < 6) {
+                        _colorMessage = Colors.red;
+                        _textMessage = "Password minimum 6 characters\n";
+                        setState(() {});
+                        return;
+                      } else {
+                        await changePassword(_pass.text);
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => LoginPage()));
+                      }
+                    }
+                  },
+                  style:
+                      ElevatedButton.styleFrom(backgroundColor: Colors.amber),
+                  child: const Text("Create",
                       style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 16,
-                      ),
-                    ),
-                    SizedBox(width: 50),
-
-                    // Ô radio thứ nhất
-                    Radio(
-                      value: 1,
-                      groupValue: _selectedValue,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedValue = value as int;
-                        });
-                      },
-                    ),
-                    Text('Student'),
-                    // Ô radio thứ hai
-                    SizedBox(width: 15),
-                    Radio(
-                      value: 2,
-                      groupValue: _selectedValue,
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedValue = value as int;
-                        });
-                      },
-                    ),
-                    Text('Teacher'),
-                  ],
-                ),
-                Container(
-                    margin: const EdgeInsets.only(top: 5),
-                    height: screenHeight * 0.055,
-                    width: screenWidth,
-                    child: ElevatedButton(
-                        onPressed: () async {
-                          checkInput();
-                          if (_colorMessage == Colors.red) return;
-                          _fullName = _familyName.text.toString() +
-                              " " +
-                              _name.text.toString();
-                          if (!_filedPassword) {
-                            _textMessage = "Please enter a password\n";
-                            _colorMessage = Colors.red;
-                            return;
-                          } else {
-                            if (_pass.text.length < 6) {
-                              _colorMessage = Colors.red;
-                              _textMessage = "Password minimum 6 characters\n";
-                              return;
-                            } else {
-                              print(_familyName.text +
-                                  ' ' +
-                                  _name.text +
-                                  ' ' +
-                                  _pass.text +
-                                  ' ' +
-                                  _selectedValue.toString());
-                              String roleConvert;
-                              if (_selectedValue == 1) {
-                                roleConvert = "student";
-                              } else {
-                                roleConvert = "teacher";
-                              }
-
-                              await signUp(_pass.text, _familyName.text,
-                                  _name.text, roleConvert);
-                            }
-                          }
-                        },
-                        style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.amber),
-                        child: const Text("Create",
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold))))
-              ],
-            ),
-          ),
-        ]));
-  }
-
-  void checkInput() {
-    setState(() {
-      if (!_filedName && !_filledFamilyName) {
-        _textMessage = "Please enter your first and last name";
-        _colorMessage = Colors.red;
-      } else if (!_filledFamilyName) {
-        _textMessage = "Please enter your firs name";
-        _colorMessage = Colors.red;
-      } else if (!_filedName) {
-        _textMessage = "Please enter your last name";
-        _colorMessage = Colors.red;
-      } else {
-        _textMessage = "";
-        _colorMessage = Colors.grey;
-      }
-    });
+                          color: Colors.white,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold))))
+        ],
+      ),
+    );
   }
 
   void onToggleChangePass() {
@@ -637,7 +514,7 @@ showAlertDialog(BuildContext context) {
     child: Padding(
       padding: EdgeInsets.only(top: 7),
       child: Text(
-        "Stop creating account",
+        "Stop creating a new password",
         style: TextStyle(
           color: Colors.red,
         ),
@@ -651,7 +528,7 @@ showAlertDialog(BuildContext context) {
     child: Padding(
       padding: EdgeInsets.only(top: 7),
       child: Text(
-        "Continue creating account",
+        "Continue creating a new password",
         style: TextStyle(
           color: Colors.grey,
         ),
@@ -662,7 +539,7 @@ showAlertDialog(BuildContext context) {
   // set up the AlertDialog
   AlertDialog alert = AlertDialog(
     title: Text(
-      "Do you want to stop creating an account?",
+      "Do you want to stop creating new passwords?",
       style: TextStyle(
           color: Colors.black, fontSize: 18, fontWeight: FontWeight.bold),
     ),
