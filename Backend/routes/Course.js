@@ -37,6 +37,14 @@ router.post('/list', async (req, res) => {
                 option: { lean: true },
                 strictPopulate: false
             })
+            .populate({
+                path: 'lessons.lesson',
+                model: Lesson,
+                localField: 'lessons.lesson',
+                foreignField: 'id',
+                option: { lean: true },
+                strictPopulate: false
+            })
 
         res.status(200).json({ message: 'success', data: data })
     } catch (error) {
