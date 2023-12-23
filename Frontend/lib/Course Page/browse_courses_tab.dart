@@ -57,7 +57,7 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'title': _searchText};
+    Map<String, dynamic> postData = {'title': _searchText, 'is_drafting': 0};
 
     try {
       final response = await http.post(
@@ -163,7 +163,7 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
           ),
 
           Expanded(
-              child: Container(
+            child: Container(
             child: ListView.builder(
                 itemBuilder: (context, index) {
                   return CourseItem(courseData: courseList[index]);

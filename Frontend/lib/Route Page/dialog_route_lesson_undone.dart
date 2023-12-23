@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ultils/store.dart';
 import 'package:intl/intl.dart';
 import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
@@ -51,7 +52,8 @@ class _DialogRouteLessonUnDoneState extends State<DialogRouteLessonUnDone> {
   Future<void> _updateStudyTime() async {
     Map<String, String> headers = {
       'Content-Type':
-          'application/json', // Set the content type for POST request
+          'application/json',
+      'Authorization': "Bearer ${AppStore.TOKEN}"// Set the content type for POST request
       // Add other headers if needed
     };
 
