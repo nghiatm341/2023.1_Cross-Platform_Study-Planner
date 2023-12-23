@@ -1,52 +1,51 @@
 import 'package:flutter/material.dart';
 
-class PopupSubscribeResult extends StatefulWidget {
-  final bool isSubscribedSucceed;
-  const PopupSubscribeResult({super.key, required this.isSubscribedSucceed});
+class PopupUnsubscribeResult extends StatefulWidget {
+  final bool isUnsubscribedSucceed;
+  const PopupUnsubscribeResult({super.key, required this.isUnsubscribedSucceed});
 
   @override
-  State<PopupSubscribeResult> createState() => _PopupSubscribeResultState();
+  State<PopupUnsubscribeResult> createState() => _PopupUnsubscribeResultState();
 }
 
-class _PopupSubscribeResultState extends State<PopupSubscribeResult> {
-
+class _PopupUnsubscribeResultState extends State<PopupUnsubscribeResult> {
 
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       content: Container(
-        height: widget.isSubscribedSucceed ? 100 : 120,
+        height: widget.isUnsubscribedSucceed ? 100 : 120,
         child: Column(
           children: [
 
             Visibility(
-              visible: widget.isSubscribedSucceed,
+              visible: widget.isUnsubscribedSucceed,
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                  child: Text("Subscribe course successfully"),
+                  child: Text("Unsubscribe course successfully"),
                 ),
             ),
 
             Visibility(
-              visible: widget.isSubscribedSucceed,
+              visible: widget.isUnsubscribedSucceed,
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                  ElevatedButton(onPressed: () => { Navigator.pop(context) }, child: Text("Cool!")),
+                  ElevatedButton(onPressed: () => { Navigator.pop(context) }, child: Text("Continue")),
                 ],),
             ),
 
              Visibility(
-              visible: !widget.isSubscribedSucceed,
+              visible: !widget.isUnsubscribedSucceed,
               child: Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 12),
-                  child: Text("Subscribe course failed, please try later again :(("),
+                  child: Text("Unsubscribe course failed, please try later again :(("),
                 ),
             ),
 
             Visibility(
-              visible: !widget.isSubscribedSucceed,
+              visible: !widget.isUnsubscribedSucceed,
               child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [

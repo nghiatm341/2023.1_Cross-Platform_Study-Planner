@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/AllPages/home_page.dart';
+import 'package:frontend/AllPages/home_page_admin.dart';
+import 'package:frontend/AllPages/home_page_teacher.dart';
 import 'package:frontend/AllPages/routes_page.dart';
 import 'package:frontend/AuthPage/login.dart';
 
