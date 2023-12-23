@@ -28,7 +28,7 @@ class _DraftingCourses extends State<DraftingCourses> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'author_id': 1, 'is_drafting' : 1};
+    Map<String, dynamic> postData = {'author_id': AppStore.ID, 'is_drafting' : 1};
 
     try {
       final response = await http.post(

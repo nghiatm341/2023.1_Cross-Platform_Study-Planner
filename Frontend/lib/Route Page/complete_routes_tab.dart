@@ -84,10 +84,12 @@ late List<RouteItemData> inProgressRoute = [];
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: ListView.builder(itemBuilder: (context, index) {
-        return RouteItemComplete(routeData: inProgressRoute[index]);
-      }, itemCount: inProgressRoute.length),
+    return Expanded(
+      child: Container(
+        child: ListView.builder(itemBuilder: (context, index) {
+          return RouteItemComplete(routeData: inProgressRoute[index]);
+        }, itemCount: inProgressRoute.length),
+      ),
     );
   }
 }

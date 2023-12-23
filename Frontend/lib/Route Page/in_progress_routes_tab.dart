@@ -88,11 +88,12 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
   @override
   Widget build(BuildContext context) {
 
-    return Container(
-
-      child: ListView.builder(itemBuilder: (context, index) {
-        return RouteItem(routeData: inProgressRoute[index], onUpdateRoute: refetchCourses,);
-      }, itemCount: inProgressRoute.length),
+    return Expanded(
+      child: Container(
+        child: ListView.builder(itemBuilder: (context, index) {
+          return RouteItem(routeData: inProgressRoute[index], onUpdateRoute: refetchCourses,);
+        }, itemCount: inProgressRoute.length),
+      ),
     );
   }
 }
