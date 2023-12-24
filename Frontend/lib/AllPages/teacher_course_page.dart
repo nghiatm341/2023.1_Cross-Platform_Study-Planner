@@ -20,7 +20,7 @@ class _TeacherCoursePage extends State<TeacherCoursePage> {
       length: 2,
       child: Scaffold(
           appBar: AppBar(
-            title: const Text("My learning route"),
+            title: const Text("My Courses"),
             centerTitle: true,
             elevation: 0,
             automaticallyImplyLeading: false,

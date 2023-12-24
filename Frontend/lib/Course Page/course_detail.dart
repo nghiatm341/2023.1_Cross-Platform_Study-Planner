@@ -26,6 +26,132 @@ class _CourseDetailState extends State<CourseDetail> {
     super.initState();
   }
 
+  Future<void> _showPublishDraftConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Do you want to ${widget.courseData.isDrafting.toInt() == 1 ? 'publish' : 'draft'} this course?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                // Perform the action when the user confirms
+                // ...
+                try {
+                  EasyLoading.show();
+                  Map<String, String> headers = {
+                    'Content-Type':
+                        'application/json', // Set the content type for POST request
+                    // Add other headers if needed
+                  };
+
+                  Map<String, dynamic> postData = {
+                    'id': widget.courseData.courseId,
+                    'is_drafting':
+                        widget.courseData.isDrafting.toInt() == 1 ? 0 : 1
+                  };
+
+                  final response = await http.post(
+                    Uri.parse('${constaint.apiUrl}/course/update'),
+                    headers: headers,
+                    body: jsonEncode(postData), // Encode the POST data to JSON
+                  );
+                  print(json.decode(response.body));
+                  EasyLoading.dismiss();
+                } catch (error) {
+                  // Catch and handle any errors that occur during the API call
+                  print('Error: $error');
+                  EasyLoading.dismiss();
+                }
+                // Close the dialog
+                Navigator.of(context).pop();
+
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<void> _showDeleteConfirmationDialog(BuildContext context) async {
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false, // user must tap button!
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Confirmation'),
+          content: const SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Text('Do you want to delete this course?'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            TextButton(
+              child: const Text('Cancel'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                // Perform the action when the user confirms
+                // ...
+                try {
+                  EasyLoading.show();
+                  Map<String, String> headers = {
+                    'Content-Type':
+                        'application/json', // Set the content type for POST request
+                    // Add other headers if needed
+                  };
+
+                  Map<String, dynamic> postData = {
+                    'id': widget.courseData.courseId
+                  };
+
+                  final response = await http.post(
+                    Uri.parse('${constaint.apiUrl}/course/delete'),
+                    headers: headers,
+                    body: jsonEncode(postData), // Encode the POST data to JSON
+                  );
+                  print(json.decode(response.body));
+                  EasyLoading.dismiss();
+                } catch (error) {
+                  // Catch and handle any errors that occur during the API call
+                  print('Error: $error');
+                  EasyLoading.dismiss();
+                }
+                // Close the dialog
+                Navigator.of(context).pop();
+
+                Navigator.pop(context);
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   SpeedDial _buildFAB() {
     return SpeedDial(
       animatedIcon: AnimatedIcons.menu_close,
@@ -36,17 +162,18 @@ class _CourseDetailState extends State<CourseDetail> {
       visible: AppStore.ROLE == "teacher",
       children: [
         SpeedDialChild(
-          child: Icon(Icons.public_sharp),
-          backgroundColor: Colors.amber,
+          child: Icon(Icons.delete),
+          visible: widget.courseData.isDrafting.toInt() == 1,
+          backgroundColor: Colors.red,
           onTap: () {
-            // Add functionality for the first button
-            print('Publish ${widget.courseData.courseId}');
+            _showDeleteConfirmationDialog(context);
           },
-          label: 'Publish',
+          label: 'Delete',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
         ),
         SpeedDialChild(
           child: Icon(Icons.edit),
+          visible: widget.courseData.isDrafting.toInt() == 1,
           backgroundColor: Colors.blue[400],
           onTap: () {
             // Add functionality for the second button
@@ -56,43 +183,15 @@ class _CourseDetailState extends State<CourseDetail> {
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
         ),
         SpeedDialChild(
-          child: Icon(Icons.delete),
-          backgroundColor: Colors.red,
+          child: Icon(widget.courseData.isDrafting.toInt() == 1
+              ? Icons.public_sharp
+              : Icons.public_off_sharp),
+          backgroundColor: Colors.amber,
           onTap: () async {
-            // Add functionality for the third button
-            debugPrint("Fetch delete course");
-            Map<String, String> headers = {
-              'Content-Type':
-                  'application/json', // Set the content type for POST request
-              // Add other headers if needed
-            };
-
-            Map<String, dynamic> postData = {'id': widget.courseData.courseId};
-
-            try {
-              EasyLoading.show();
-              final response = await http.post(
-                Uri.parse('${constaint.apiUrl}/course/delete'),
-                headers: headers,
-                body: jsonEncode(postData), // Encode the POST data to JSON
-              );
-              // if (response.statusCode == 200) {
-              //   print(response);
-              //   EasyLoading.dismiss();
-              // } else {
-              //   print(response);
-              //   EasyLoading.dismiss();
-              // }
-              print(json.decode(response.body));
-              EasyLoading.dismiss();
-              Navigator.pop(context);
-            } catch (error) {
-              // Catch and handle any errors that occur during the API call
-              print('Error: $error');
-              EasyLoading.dismiss();
-            }
+            _showPublishDraftConfirmationDialog(context);
           },
-          label: 'Delete',
+          label:
+              widget.courseData.isDrafting.toInt() == 1 ? 'Publish' : 'Draft',
           labelStyle: TextStyle(fontWeight: FontWeight.w500),
         ),
       ],
