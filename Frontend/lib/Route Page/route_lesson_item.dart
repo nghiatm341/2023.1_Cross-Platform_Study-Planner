@@ -72,6 +72,7 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
     return Padding(
       padding: const EdgeInsets.only(top: 12, left: 8, right: 8),
       child: Container(
+        padding: EdgeInsets.only(left: 8),
         height: 70,
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -133,6 +134,7 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
         decoration: BoxDecoration(
           color: Color.fromARGB(255, 255, 255, 255),
           border: Border.all(color: Colors.amber, width: 2),
+          borderRadius: BorderRadius.circular(12),
           boxShadow: [
             BoxShadow(
               color: Color.fromARGB(255, 92, 92, 92).withOpacity(0.5), // Shadow color with opacity

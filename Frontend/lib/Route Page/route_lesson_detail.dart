@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Route%20Page/lesson_note_page.dart';
 import 'package:frontend/Route%20Page/popup_notification.dart';
 import 'package:frontend/Route%20Page/route_lesson_item.dart';
 import 'package:http/http.dart' as http;
@@ -26,6 +27,7 @@ class RouteLessonDetail extends StatefulWidget {
 }
 
 class _RouteLessonDetailState extends State<RouteLessonDetail> {
+
   void _showWarning() {
     showDialog(
         context: context,
@@ -34,6 +36,12 @@ class _RouteLessonDetailState extends State<RouteLessonDetail> {
             message: "You must complete previous lesson",
           );
         });
+  }
+
+  void showLessonNote(){
+    showDialog(context: context, builder: (context){ 
+      return LessonNotePage(routeId: widget.routeId, lessonId: widget.courseLessonData.lessonId,);
+    });
   }
 
   Future<void> callCompleteLesson() async {
@@ -85,6 +93,11 @@ class _RouteLessonDetailState extends State<RouteLessonDetail> {
         title: Text("Lesson " + (widget.lessonIndex + 1).toString()),
         centerTitle: true,
         elevation: 0,
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: showLessonNote,
+        child: Icon(Icons.add), // Add your icon here
+        backgroundColor: Colors.amber, // Change FAB background color
       ),
       body: Container(
         padding: EdgeInsets.all(8),
