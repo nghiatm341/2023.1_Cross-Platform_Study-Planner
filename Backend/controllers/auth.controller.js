@@ -248,16 +248,14 @@ class AuthController {
         findUser.refreshToken = refreshToken;
 
         await User.updateOne({ email: findUser.email }, findUser);
-        return res
-          .status(200)
-          .json({
-            message: "success",
-            id: findUser.id,
-            role: findUser.role,
-            token,
-            refreshToken,
-            userName: findUser.firstName + " " + findUser.lastName,
-          });
+        return res.status(200).json({
+          message: "success",
+          id: findUser.id,
+          role: findUser.role,
+          token,
+          refreshToken,
+          userName: findUser.firstName + " " + findUser.lastName,
+        });
       } else {
         return res.status(404).json({
           message: "login fail!",
@@ -313,6 +311,36 @@ class AuthController {
       findUserBlocked.score = score;
       await findUserBlocked.save();
       await Report.updateMany({ reported_user_id: findUserBlocked.id }, { is_delete: 1 });
+
+      return res.status(200).json({ message: "success!" });
+    } catch (error) {
+      console.log("Error", error);
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async blockUser(req, res) {
+    try {
+      const { userId } = req.body;
+
+      if (!userId) {
+        return res.status(400).json({ message: "Missing information fields!" });
+      }
+
+      if (+userId === 1) {
+        return res.status(400).json({ message: "This person cannot be blocked!" });
+      }
+
+      const findUser = await User.findOne({ id: userId, status: STATUS.ACTIVE });
+
+      if (!findUser) {
+        return res.status(400).json({ message: "the user does not exist or has been blocked!" });
+      }
+
+      findUser.status = STATUS.BLOCK;
+      findUser.score = 0;
+      findUser.count_block++;
+      await findUser.save();
 
       return res.status(200).json({ message: "success!" });
     } catch (error) {

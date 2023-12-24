@@ -255,4 +255,73 @@ router.post('/unsubscribe', async (req, res) => {
     }
 })
 
+router.post('/createWithNewLessons', async (req, res) => {
+    try {
+        const { title,
+            description,
+            author_id,
+            lessons,
+            is_drafting,
+            list_subscriber } = req.body
+
+        const maxId = await Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
+        const id = maxId ? Number(maxId.id) + 1 : 1
+
+        let lessonIds = []
+
+        if (lessons && lessons.length > 0) {
+            const maxLessonId = await Lesson.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
+            let lessonId = maxLessonId ? Number(maxLessonId.id) + 1 : 1
+
+            for (let i = 0; i < lessons.length; i++) {
+                const element = lessons[i];
+
+                const newLesson = new Lesson({
+                    id: lessonId + i,
+        
+                    title: element.hasOwnProperty('title') ? element.title : '',
+                    contents: element.hasOwnProperty('contents') ? element.contents : [],
+                    chapter_title: element.hasOwnProperty('chapter_title') ? element.chapter_title : '',
+                    course_id: 0,
+                    estimate_time: element.hasOwnProperty('estimate_time') ? element.estimate_time : 0,
+                    lesson_before_id: i === 0 ? 0 : lessonId + i - 1,
+        
+                    is_delete: 0,
+                    create_at: new Date(),
+                    update_at: new Date(),
+                    user_id: author_id, // Chưa có user và login 
+                })
+
+                const resultLesson = await newLesson.save()
+
+                lessonIds.push({
+                    lesson: lessonId + i
+                })
+            }
+        }
+
+        const newData = new Course({
+            id: id,
+            title: title ? title : '',
+            description: description ? description : '',
+            author_id: author_id,
+            lessons: lessonIds,
+            is_delete: 0,
+            create_at: new Date(),
+            update_at: new Date(),
+            user_id: 0, // Chưa có user và login 
+            is_drafting: !isNaN(is_drafting) ? is_drafting : 1,
+            list_subscriber: list_subscriber ? list_subscriber : [],
+        })
+
+        const result = await newData.save();
+        await sanitizeLesson(id, lessons)
+        res.status(200).json({ message: 'create success', data: result })
+
+    } catch (error) {
+        console.log('Error', error)
+        res.status(500).json({ message: error.message })
+    }
+})
+
 module.exports = router

@@ -188,7 +188,7 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
     super.initState();
   }
 
-  Future<String?> verifyOtp(String email, int? otp) async {
+  Future<String?> verifyOtp(String email, String otp) async {
     debugPrint("Fetch verify-otp");
 
     Map<String, String> headers = {
@@ -197,7 +197,7 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'email': email, 'otp': otp.toString()};
+    Map<String, dynamic> postData = {'email': email, 'otp': otp};
 
     try {
       EasyLoading.show();
@@ -222,6 +222,38 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
         EasyLoading.dismiss();
         print('Failed with status code: ${response.statusCode}');
         return 'Invaid code';
+      }
+    } catch (error) {
+      // Catch and handle any errors that occur during the API call
+      print('Error: $error');
+    }
+  }
+
+  Future<String?> sendOtp(String email) async {
+    debugPrint("Fetch send-otp");
+
+    Map<String, String> headers = {
+      'Content-Type':
+          'application/json', // Set the content type for POST request
+      // Add other headers if needed
+    };
+
+    Map<String, dynamic> postData = {'email': email, 'isRegister': '0'};
+
+    try {
+      EasyLoading.show();
+      final response = await http.post(
+        Uri.parse('${constaint.apiUrl}/send-otp'),
+        headers: headers,
+        body: jsonEncode(postData), // Encode the POST data to JSON
+      );
+      if (response.statusCode == 200) {
+        // Successfully fetched data
+        EasyLoading.dismiss();
+      } else {
+        EasyLoading.dismiss();
+        print('Failed with status code: ${response.statusCode}');
+        return 'Email dose not exists';
       }
     } catch (error) {
       // Catch and handle any errors that occur during the API call
@@ -293,7 +325,7 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                   ),
                 ),
                 Container(
-                    margin: const EdgeInsets.only(top: 10),
+                    margin: const EdgeInsets.only(top: 10, bottom: 15),
                     height: screenHeight * 0.055,
                     width: screenWidth,
                     child: ElevatedButton(
@@ -304,8 +336,8 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                             return;
                           }
                           print(otp);
-                          _message = await verifyOtp(
-                              email.toString(), int.parse(otp.toString()));
+                          _message =
+                              await verifyOtp(email.toString(), otp.toString());
                           setState(() {});
                         },
                         style: ElevatedButton.styleFrom(
@@ -317,6 +349,16 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                                     : Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold)))),
+                TextButton(
+                  child: Text("Resend the code",
+                      style: TextStyle(
+                          color: Colors.amber,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () async {
+                    await sendOtp(email.toString());
+                  },
+                )
               ])),
         ]));
   }
