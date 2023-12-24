@@ -13,7 +13,7 @@ class PopupNotification extends StatefulWidget {
 class _PopupNotification extends State<PopupNotification> {
 
   void _close(){
-    Navigator.pop(context);
+    Navigator.of(context).pop();
   }
 
   @override
