@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/Route%20Page/route_item.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
@@ -19,6 +20,10 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
 
    RouteItemCompleteUIData routeItemUIData = new RouteItemCompleteUIData();
    String courseDescription = "";
+
+    void _reload(){
+      fetchCourses(widget.routeData);
+    }
 
    Future<void> fetchCourses(RouteItemData routeData) async {
     Map<String, String> headers = {
@@ -44,8 +49,9 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
         setState(() {
           courseDescription = courseData['description'];
           routeItemUIData.title = courseData['title'];
-          routeItemUIData.author = "1";
           routeItemUIData.startDate = routeData.createdAt;
+          routeItemUIData.endDate = routeData.finishedAt;
+          routeItemUIData.author = courseData['author_id']['firstName'] +  " " + courseData['author_id']['lastName'];
         });
       } else {
         // Request failed with an error status code
@@ -56,6 +62,7 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
       print('Error: $error');
     }
   }
+
 
    @override
   void initState() {
@@ -113,7 +120,7 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
                     children: [
     
                       Text("Start: " + routeItemUIData.startDate, style: TextStyle(fontSize: 16),),
-                      Text("End: 12/25/2023", style: TextStyle(fontSize: 16),),
+                      Text("End: " + routeItemUIData.endDate, style: TextStyle(fontSize: 16),),
                   
                     ],
                   ),
@@ -132,17 +139,17 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
 
       onTap: () => {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.routeData.routeId, onUpdateRoute: (){},)))
+            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.routeData.routeId)))
       },
     );
   }
 }
 
 class RouteItemCompleteUIData {
-  String title = "1";
-  String author = "1";
-  String startDate = "1";
-  String endDate = "1";
+  String title = "...";
+  String author = "...";
+  String startDate = "...";
+  String endDate = "...";
 }
 
 

@@ -22,7 +22,7 @@ late List<RouteItemData> inProgressRoute = [];
   Future<void> fetchCourses() async {
 
  // Replace with your API endpoint
-    debugPrint("Fetch api list route");
+   
 
     Map<String, String> headers = {
       'Content-Type': 'application/json', // Set the content type for POST request
@@ -56,11 +56,15 @@ late List<RouteItemData> inProgressRoute = [];
 
               String date = utils.getSubstringUntilCharacter(rawDate, 'T');
 
+              String finishRawDate = e['finishedAt'];
+              String finishDate = utils.getSubstringUntilCharacter(finishRawDate, 'T');
+
               return new RouteItemData(
                 routeId: e['routeId'], 
                 courseId: e['courseId'], 
                 userId: e['userId'], 
                 createdAt: date,
+                finishedAt: finishDate,
                 progress: (((completeCount / allLessons.length) * 100).ceil()).toString()
               );
             }).toList();
@@ -84,12 +88,10 @@ late List<RouteItemData> inProgressRoute = [];
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: Container(
+    return Container(
         child: ListView.builder(itemBuilder: (context, index) {
           return RouteItemComplete(routeData: inProgressRoute[index]);
         }, itemCount: inProgressRoute.length),
-      ),
-    );
+      );
   }
 }

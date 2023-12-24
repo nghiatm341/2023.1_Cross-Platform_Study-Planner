@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Route%20Page/popup_notification.dart';
 import 'package:frontend/Route%20Page/route_lesson_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -13,27 +14,41 @@ class RouteLessonDetail extends StatefulWidget {
   final VoidCallback onCompleteLesson;
 
   const RouteLessonDetail(
-      {super.key, required this.courseLessonData, required this.lessonIndex, required this.isCompleted, required this.onCompleteLesson, required this.routeId});
+      {super.key,
+      required this.courseLessonData,
+      required this.lessonIndex,
+      required this.isCompleted,
+      required this.onCompleteLesson,
+      required this.routeId});
 
   @override
   State<RouteLessonDetail> createState() => _RouteLessonDetailState();
 }
 
 class _RouteLessonDetailState extends State<RouteLessonDetail> {
+  void _showWarning() {
+    showDialog(
+        context: context,
+        builder: (context) {
+          return PopupNotification(
+            message: "You must complete previous lesson",
+          );
+        });
+  }
 
-Future<void> callCompleteLesson() async {
-
- // Replace with your API endpoint
+  Future<void> callCompleteLesson() async {
+    // Replace with your API endpoint
     debugPrint("Call API complete lesson");
 
     Map<String, String> headers = {
-      'Content-Type': 'application/json', // Set the content type for POST request
+      'Content-Type':
+          'application/json', // Set the content type for POST request
       // Add other headers if needed
     };
 
     Map<String, dynamic> postData = {
-      'lessonId' : widget.courseLessonData.lessonId,
-      'routeId' : widget.routeId
+      'lessonId': widget.courseLessonData.lessonId,
+      'routeId': widget.routeId
     };
 
     try {
@@ -50,7 +65,9 @@ Future<void> callCompleteLesson() async {
         widget.onCompleteLesson();
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
-
+      } else if (response.statusCode == 300) {
+        debugPrint("Need to complete previous lesson");
+        _showWarning();
       } else {
         // Request failed with an error status code
         print('Failed with status code: ${response.statusCode}');
@@ -60,7 +77,6 @@ Future<void> callCompleteLesson() async {
       print('Error: $error');
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -72,53 +88,52 @@ Future<void> callCompleteLesson() async {
       ),
       body: Container(
         padding: EdgeInsets.all(8),
-        decoration: BoxDecoration(border: Border.all(color: Colors.black, width: 1)),
+        decoration:
+            BoxDecoration(border: Border.all(color: Colors.black, width: 1)),
 
         child: Column(
-          mainAxisSize: MainAxisSize.min,
-
-          mainAxisAlignment: MainAxisAlignment.start,
-
-          children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Center(
-                child: Text(
-              widget.courseLessonData.title,
-              style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black),
-            )),
-          ),
-
-          Container(
-
-            child: Expanded(
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.all(8),
-                      child:
-                          Text(widget.courseLessonData.contents[index]['contents'], style: TextStyle(fontSize: 16),),
-                    );
-                  },
-                  itemCount: widget.courseLessonData.contents.length,
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Center(
+                    child: Text(
+                  widget.courseLessonData.title,
+                  style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black),
+                )),
+              ),
+              Container(
+                child: Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      return Padding(
+                        padding: EdgeInsets.all(8),
+                        child: Text(
+                          widget.courseLessonData.contents[index]['contents'],
+                          style: TextStyle(fontSize: 16),
+                        ),
+                      );
+                    },
+                    itemCount: widget.courseLessonData.contents.length,
+                  ),
                 ),
               ),
-          ),
-
-          Visibility(
-            visible: !widget.isCompleted,
-            child: Padding(
-              padding:  EdgeInsets.only(bottom: 20),
-              child: ElevatedButton(onPressed: (){
-                callCompleteLesson();
-              }, child: Text("Complete")),
-            ),
-          )
-          
-        ]),
+              Visibility(
+                visible: !widget.isCompleted,
+                child: Padding(
+                  padding: EdgeInsets.only(bottom: 20),
+                  child: ElevatedButton(
+                      onPressed: () {
+                        callCompleteLesson();
+                      },
+                      child: Text("Complete")),
+                ),
+              )
+            ]),
         // decoration: BoxDecoration(
         //   image: DecorationImage(
         //       image: AssetImage("assets/bg5.png"), fit: BoxFit.cover),

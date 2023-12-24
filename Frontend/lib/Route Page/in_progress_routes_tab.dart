@@ -24,8 +24,7 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
 
   Future<void> fetchCourses() async {
 
- // Replace with your API endpoint
-    debugPrint("Fetch api list route");
+     debugPrint("Fetch api list route");
 
     Map<String, String> headers = {
       'Content-Type': 'application/json', // Set the content type for POST request
@@ -59,11 +58,15 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
 
               String date = utils.getSubstringUntilCharacter(rawDate, 'T');
 
+              String finishRawDate = e['finishedAt'];
+              String finishDate = utils.getSubstringUntilCharacter(finishRawDate, 'T');
+
               return new RouteItemData(
                 routeId: e['routeId'], 
                 courseId: e['courseId'], 
                 userId: e['userId'], 
                 createdAt: date,
+                finishedAt: finishDate,
                 progress: (((completeCount / allLessons.length) * 100).ceil()).toString()
               );
             }).toList();
@@ -88,12 +91,14 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
   @override
   Widget build(BuildContext context) {
 
-    return Expanded(
+    return RefreshIndicator(
       child: Container(
-        child: ListView.builder(itemBuilder: (context, index) {
-          return RouteItem(routeData: inProgressRoute[index], onUpdateRoute: refetchCourses,);
-        }, itemCount: inProgressRoute.length),
-      ),
+          child: ListView.builder(itemBuilder: (context, index) {
+            return RouteItem(routeData: inProgressRoute[index], reloadTab: refetchCourses,);
+          }, itemCount: inProgressRoute.length),
+        ),
+
+      onRefresh:  fetchCourses,
     );
   }
 }

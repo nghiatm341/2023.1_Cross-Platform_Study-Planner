@@ -158,30 +158,37 @@ router.post('/completeLesson', async(req, res) => {
         const needUpdateLesson = lessons.find(lesson => lesson.lessonId == lessonId);
 
         if(needUpdateLesson){
-            needUpdateLesson.isCompleted = true;
-            needUpdateLesson.completedAt = new Date();
 
-            const incompleteLesson = lessons.find(lesson => lesson.isCompleted == false);
+            const index = lessons.indexOf(needUpdateLesson);
 
-            const isCompleteCourse = (incompleteLesson == null)
-
-            await StudyRoute.findOneAndUpdate({routeId: routeId}, 
-                { 
-                    $set: {
-                        lessons: lessons,
-                        isFinished: isCompleteCourse,
-                        finishedAt: new Date()
-                    }
-                })
-
-            const data = {
-                isCompleteCourse: isCompleteCourse,
-                lessonComplete: lessonId
+            if(index > 0 &&  lessons[index-1].isCompleted == false){
+                res.status(300).json({message: "Failed"})
             }
-
-
-            res.status(200).json({message: "Success", data: data})
-
+            else{
+                needUpdateLesson.isCompleted = true;
+                needUpdateLesson.completedAt = new Date();
+    
+                const incompleteLesson = lessons.find(lesson => lesson.isCompleted == false);
+    
+                const isCompleteCourse = (incompleteLesson == null)
+    
+                await StudyRoute.findOneAndUpdate({routeId: routeId}, 
+                    { 
+                        $set: {
+                            lessons: lessons,
+                            isFinished: isCompleteCourse,
+                            finishedAt: new Date()
+                        }
+                    })
+    
+                const data = {
+                    isCompleteCourse: isCompleteCourse,
+                    lessonComplete: lessonId
+                }
+    
+    
+                res.status(200).json({message: "Success", data: data})
+            }
         }
         else{
             res.status(500).json({message: "Lesson need complete not found"});

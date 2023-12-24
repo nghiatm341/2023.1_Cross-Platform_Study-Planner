@@ -2,7 +2,10 @@ import 'package:flutter/material.dart';
 
 class DialogRouteLessonDone extends StatefulWidget {
 
-  const DialogRouteLessonDone({super.key});
+  final String startDate;
+  final String finishDate;
+
+  const DialogRouteLessonDone({super.key, required this.startDate, required this.finishDate});
 
   @override
   State<DialogRouteLessonDone> createState() => _DialogRouteLessonDone();
@@ -15,7 +18,12 @@ class _DialogRouteLessonDone extends State<DialogRouteLessonDone> {
       backgroundColor: Colors.amber,
       content: Container(
         height: 120,
-        child: Text("Lesson done dialog"),
+        child: Column(
+          children: [
+              Text("Begin: " + widget.startDate),
+              Text("Complete: " + widget.finishDate)
+
+          ]),
       ),
     );
   }

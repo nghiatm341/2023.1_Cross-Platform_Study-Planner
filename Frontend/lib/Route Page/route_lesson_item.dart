@@ -45,11 +45,11 @@ class _RouteLessonItemState extends State<RouteLessonItem> {
   }
 
   void showDialogLessonDone(){
-      showDialog(
-        context: context, 
-        builder: (context) {
-        return DialogRouteLessonDone();
-      });
+      // showDialog(
+      //   context: context, 
+      //   builder: (context) {
+      //   return DialogRouteLessonDone(startDate: widget.customLessonData.s,);
+      // });
   }
 
   void showDialogLessonUnDone(){
