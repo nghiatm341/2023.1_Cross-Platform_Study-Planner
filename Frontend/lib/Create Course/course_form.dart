@@ -1,35 +1,65 @@
 import 'package:flutter/material.dart';
-// import 'package:frontend/Course%20Page/course_item.dart';
 
-class CourseForm extends StatefulWidget {
-  // final CourseItemData courseData;
-
-  // const CourseForm(
-  //     {super.key, required this.courseData});
-
-  @override
-  State<CourseForm> createState() => _CourseFormState();
+void main() {
+  runApp(MyApp());
 }
 
-class _CourseFormState extends State<CourseForm> {
-  final TextEditingController _titleController = TextEditingController();
-  final TextEditingController _descriptionController = TextEditingController();
-
-  void saveCourse() {
-    // Replace this with your actual API call logic
-    Course newCourse = Course(
-      title: _titleController.text,
-      description: _descriptionController.text,
+class MyApp extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      home: NewCourseScreen(),
     );
+  }
+}
 
-    // Map the Course object to Map<String, dynamic>
-    Map<String, dynamic> courseMap = newCourse.toMap();
+class NewCourseScreen extends StatefulWidget {
+  @override
+  _NewCourseScreenState createState() => _NewCourseScreenState();
+}
 
-    // Print the mapped data (for testing purposes)
-    print(courseMap);
+class _NewCourseScreenState extends State<NewCourseScreen> {
+  TextEditingController titleController = TextEditingController();
+  TextEditingController descriptionController = TextEditingController();
+  List<Lesson> lessons = [];
 
-    // Add your API call logic here
-    // Example: api.saveCourse(courseMap);
+  void _addLesson() {
+    setState(() {
+      lessons.add(Lesson(title: '', chapterName: '', contents: []));
+    });
+  }
+
+  void _deleteLesson(int index) {
+    setState(() {
+      lessons.removeAt(index);
+    });
+  }
+
+  void _addContent(int lessonIndex) {
+    setState(() {
+      lessons[lessonIndex].contents.add(Content(type: 0, content: ''));
+    });
+  }
+
+  void _deleteContent(int lessonIndex, int contentIndex) {
+    setState(() {
+      lessons[lessonIndex].contents.removeAt(contentIndex);
+    });
+  }
+
+  void _saveCourse() {
+    // Perform API call here using the data from the controllers and lessons
+    Map<String, dynamic> courseData = {
+      'title': titleController.text,
+      'description': descriptionController.text,
+      'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
+    };
+
+    // Example API call:
+    // ApiService.createCourse(courseData);
+
+    // You might want to handle the API response or errors here
+    print(courseData);
   }
 
   @override
@@ -38,38 +68,129 @@ class _CourseFormState extends State<CourseForm> {
       appBar: AppBar(
         title: Text('New Course'),
       ),
-      body: Padding(
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              TextField(
+                controller: titleController,
+                decoration: InputDecoration(
+                  labelText: 'Title',
+                ),
+              ),
+              SizedBox(height: 16),
+              TextField(
+                controller: descriptionController,
+                maxLines: 4,
+                decoration: InputDecoration(
+                  labelText: 'Description',
+                ),
+              ),
+              SizedBox(height: 16),
+              for (int i = 0; i < lessons.length; i++)
+                LessonWidget(
+                  lesson: lessons[i],
+                  onAddContent: () => _addContent(i),
+                  onDelete: () => _deleteLesson(i),
+                  onDeleteContent: (int contentIndex) => _deleteContent(i, contentIndex),
+                ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _addLesson,
+                child: Text('Add Lesson'),
+              ),
+              SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _saveCourse,
+                child: Text('Save'),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class Lesson {
+  String title;
+  String chapterName;
+  List<Content> contents;
+
+  Lesson({required this.title, required this.chapterName, required this.contents});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'title': title,
+      'chapterName': chapterName,
+      'contents': contents.map((content) => content.toJson()).toList(),
+    };
+  }
+}
+
+class Content {
+  int type;
+  String content;
+
+  Content({required this.type, required this.content});
+
+  Map<String, dynamic> toJson() {
+    return {
+      'type': type,
+      'content': content,
+    };
+  }
+}
+
+class LessonWidget extends StatelessWidget {
+  final Lesson lesson;
+  final VoidCallback onAddContent;
+  final VoidCallback onDelete;
+  final Function(int) onDeleteContent;
+
+  LessonWidget({
+    required this.lesson,
+    required this.onAddContent,
+    required this.onDelete,
+    required this.onDeleteContent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             TextField(
-              controller: _titleController,
-              decoration: InputDecoration(labelText: 'Title'),
+              onChanged: (value) => lesson.title = value,
+              decoration: InputDecoration(labelText: 'Lesson Title'),
             ),
-            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-              maxLines: 3,
+            SizedBox(height: 16),
+            TextField(
+              onChanged: (value) => lesson.chapterName = value,
+              decoration: InputDecoration(labelText: 'Chapter Name'),
             ),
-            SizedBox(height: 24.0),
+            SizedBox(height: 16),
+            for (int i = 0; i < lesson.contents.length; i++)
+              ContentWidget(
+                content: lesson.contents[i],
+                onDelete: () => onDeleteContent(i),
+              ),
+            SizedBox(height: 8),
             ElevatedButton(
-              onPressed: () {
-                // Validate inputs before saving
-                if (_titleController.text.isNotEmpty &&
-                    _descriptionController.text.isNotEmpty) {
-                  saveCourse();
-                } else {
-                  // Show a snackbar or alert indicating that fields are empty
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text('Please fill in all fields'),
-                    ),
-                  );
-                }
-              },
-              child: Text('Save'),
+              onPressed: onAddContent,
+              child: Text('Add Content'),
+            ),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: onDelete,
+              style: ElevatedButton.styleFrom(primary: Colors.red),
+              child: Text('Delete Lesson'),
             ),
           ],
         ),
@@ -78,16 +199,34 @@ class _CourseFormState extends State<CourseForm> {
   }
 }
 
-class Course {
-  String title;
-  String description;
+class ContentWidget extends StatelessWidget {
+  final Content content;
+  final VoidCallback onDelete;
 
-  Course({required this.title, required this.description});
+  ContentWidget({required this.content, required this.onDelete});
 
-  Map<String, dynamic> toMap() {
-    return {
-      'title': title,
-      'description': description,
-    };
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: EdgeInsets.symmetric(vertical: 8),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            TextField(
+              onChanged: (value) => content.content = value,
+              decoration: InputDecoration(labelText: 'Content Text'),
+            ),
+            SizedBox(height: 8),
+            ElevatedButton(
+              onPressed: onDelete,
+              style: ElevatedButton.styleFrom(primary: Colors.red),
+              child: Text('Delete Content'),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
