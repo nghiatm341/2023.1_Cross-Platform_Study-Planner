@@ -4,6 +4,7 @@ import 'package:frontend/Create%20Course/drafting_course_tab.dart';
 import 'package:frontend/Create%20Course/published_course_tab.dart';
 import 'package:frontend/Route%20Page/complete_routes_tab.dart';
 import 'package:frontend/Route%20Page/in_progress_routes_tab.dart';
+import 'package:frontend/Create%20Course/course_form.dart';
 
 class TeacherCoursePage extends StatefulWidget {
   const TeacherCoursePage({super.key});
@@ -27,7 +28,10 @@ class _TeacherCoursePage extends State<TeacherCoursePage> {
 
           floatingActionButton: FloatingActionButton(
           onPressed: () {
-            Navigator.push(context, MaterialPageRoute(builder: (context) => CreateCourse(),));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => 
+            // CreateCourse(),
+            NewCourseScreen(),
+            ));
           },
           child: Icon(Icons.add), // Add your icon here
           backgroundColor: Colors.amber, // Change FAB background color
