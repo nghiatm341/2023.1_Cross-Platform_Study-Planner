@@ -1,5 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ultils/store.dart';
 import 'package:numberpicker/numberpicker.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:http/http.dart' as http;
+import 'package:frontend/const.dart' as constaint;
+import 'dart:convert';
 
 // void main() {
 //   runApp(MyApp());
@@ -53,12 +58,21 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
     });
   }
 
-  void _saveCourse() {
+  void _saveCourse() async {
+    debugPrint("Fetch add course");
+
+    Map<String, String> headers = {
+      'Content-Type':
+          'application/json', // Set the content type for POST request
+      // Add other headers if needed
+    };
+
     // Perform API call here using the data from the controllers and lessons
     Map<String, dynamic> courseData = {
       'title': titleController.text,
       'description': descriptionController.text,
       'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
+      'author_id': AppStore.ID
     };
 
     // Example API call:
@@ -67,6 +81,29 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
     // You might want to handle the API response or errors here
 
     print(courseData);
+
+    try {
+      EasyLoading.show();
+      final response = await http.post(
+        Uri.parse('${constaint.apiUrl}/course/createWithNewLessons'),
+        headers: headers,
+        body: jsonEncode(courseData), // Encode the POST data to JSON
+      );
+      // if (response.statusCode == 200) {
+      //   print(response);
+      //   EasyLoading.dismiss();
+      // } else {
+      //   print(response);
+      //   EasyLoading.dismiss();
+      // }
+      print(json.decode(response.body));
+      EasyLoading.dismiss();
+      Navigator.pop(context);
+    } catch (error) {
+      // Catch and handle any errors that occur during the API call
+      print('Error: $error');
+      EasyLoading.dismiss();
+    }
   }
 
   @override
@@ -101,7 +138,8 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
                   lesson: lessons[i],
                   onAddContent: () => _addContent(i),
                   onDelete: () => _deleteLesson(i),
-                  onDeleteContent: (int contentIndex) => _deleteContent(i, contentIndex),
+                  onDeleteContent: (int contentIndex) =>
+                      _deleteContent(i, contentIndex),
                   onEstimateTimeChanged: (double newValue) {
                     setState(() {
                       lessons[i].estimateTime = newValue;
@@ -132,7 +170,11 @@ class Lesson {
   double estimateTime;
   List<Content> contents;
 
-  Lesson({required this.title, required this.chapterTitle, required this.estimateTime, required this.contents});
+  Lesson(
+      {required this.title,
+      required this.chapterTitle,
+      required this.estimateTime,
+      required this.contents});
 
   Map<String, dynamic> toJson() {
     return {
