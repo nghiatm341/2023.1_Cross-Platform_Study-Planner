@@ -229,6 +229,38 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
     }
   }
 
+  Future<String?> sendOtp(String email) async {
+    debugPrint("Fetch send-otp");
+
+    Map<String, String> headers = {
+      'Content-Type':
+          'application/json', // Set the content type for POST request
+      // Add other headers if needed
+    };
+
+    Map<String, dynamic> postData = {'email': email, 'isRegister': '0'};
+
+    try {
+      EasyLoading.show();
+      final response = await http.post(
+        Uri.parse('${constaint.apiUrl}/send-otp'),
+        headers: headers,
+        body: jsonEncode(postData), // Encode the POST data to JSON
+      );
+      if (response.statusCode == 200) {
+        // Successfully fetched data
+        EasyLoading.dismiss();
+      } else {
+        EasyLoading.dismiss();
+        print('Failed with status code: ${response.statusCode}');
+        return 'Email dose not exists';
+      }
+    } catch (error) {
+      // Catch and handle any errors that occur during the API call
+      print('Error: $error');
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     double screenHeight = MediaQuery.of(context).size.height;
@@ -293,7 +325,7 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                   ),
                 ),
                 Container(
-                    margin: const EdgeInsets.only(top: 10),
+                    margin: const EdgeInsets.only(top: 10, bottom: 15),
                     height: screenHeight * 0.055,
                     width: screenWidth,
                     child: ElevatedButton(
@@ -317,6 +349,16 @@ class _VerifyOtpForgetPasswordPage extends State<VerifyOtpForgetPasswordPage> {
                                     : Colors.white,
                                 fontSize: 16,
                                 fontWeight: FontWeight.bold)))),
+                TextButton(
+                  child: Text("Resend the code",
+                      style: TextStyle(
+                          color: Colors.amber,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold)),
+                  onPressed: () async {
+                    await sendOtp(email.toString());
+                  },
+                )
               ])),
         ]));
   }
