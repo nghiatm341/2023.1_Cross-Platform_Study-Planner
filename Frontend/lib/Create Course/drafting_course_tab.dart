@@ -14,7 +14,6 @@ class DraftingCourses extends StatefulWidget {
 }
 
 class _DraftingCourses extends State<DraftingCourses> {
-
   late List<CourseItemData> courseList = [];
   late List courseLessonList;
 
@@ -28,7 +27,10 @@ class _DraftingCourses extends State<DraftingCourses> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'author_id': AppStore.ID, 'is_drafting' : 1};
+    Map<String, dynamic> postData = {
+      'author_id': AppStore.ID,
+      'is_drafting': 1
+    };
 
     try {
       final response = await http.post(
@@ -53,19 +55,23 @@ class _DraftingCourses extends State<DraftingCourses> {
 
             debugPrint("subscribers count: " + subscribers.length.toString());
 
-            var meSubscriber = subscribers.where((element) => element['user_id'] == AppStore.ID).length > 0;
+            var meSubscriber = subscribers
+                    .where((element) => element['user_id'] == AppStore.ID)
+                    .length >
+                0;
 
             return new CourseItemData(
-              courseId: c['id'],
-              authorName: c['author_id']['firstName'] + " " + c['author_id']['lastName'],
-              createdAt: date,
-              title: c['title'],
-              isSubscribed: meSubscriber,
-              subscribersCount: subscribers.length,
-              description: c['description'],
-              lessons: c['lessons'],
-              isDrafting: c['is_drafting']
-            );
+                courseId: c['id'],
+                authorName: c['author_id']['firstName'] +
+                    " " +
+                    c['author_id']['lastName'],
+                createdAt: date,
+                title: c['title'],
+                isSubscribed: meSubscriber,
+                subscribersCount: subscribers.length,
+                description: c['description'],
+                lessons: c['lessons'],
+                isDrafting: c['is_drafting']);
           }).toList();
         });
       } else {
@@ -79,7 +85,7 @@ class _DraftingCourses extends State<DraftingCourses> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     fetchCourses();
   }
@@ -87,12 +93,13 @@ class _DraftingCourses extends State<DraftingCourses> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-            child: Container(
-            child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return CourseItem(courseData: courseList[index]);
-                },
-                itemCount: courseList.length),
-          ));
+        child: RefreshIndicator(
+      onRefresh: fetchCourses,
+      child: ListView.builder(
+          itemBuilder: (context, index) {
+            return CourseItem(courseData: courseList[index]);
+          },
+          itemCount: courseList.length),
+    ));
   }
 }
