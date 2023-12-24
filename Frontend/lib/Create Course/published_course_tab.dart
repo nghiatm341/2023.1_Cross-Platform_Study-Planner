@@ -55,6 +55,8 @@ class _PublishedCoursesState extends State<PublishedCourses> {
 
             var meSubscriber = subscribers.where((element) => element['user_id'] == AppStore.ID).length > 0;
 
+            debugPrint("isDrafting " + c['isDrafting'].toString());
+
             return new CourseItemData(
               courseId: c['id'],
               authorName: c['author_id']['firstName'] + " " + c['author_id']['lastName'],
@@ -63,7 +65,8 @@ class _PublishedCoursesState extends State<PublishedCourses> {
               isSubscribed: meSubscriber,
               subscribersCount: subscribers.length,
               description: c['description'],
-              lessons: c['lessons']
+              lessons: c['lessons'],
+              isDrafting: c['isDrafting']
             );
           }).toList();
         });
