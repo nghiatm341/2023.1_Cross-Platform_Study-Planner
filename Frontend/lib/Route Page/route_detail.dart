@@ -9,10 +9,9 @@ import 'package:frontend/utils.dart' as utils;
 class RouteDetail extends StatefulWidget {
   final String description;
   final String routeId;
-  final VoidCallback onUpdateRoute;
 
   const RouteDetail(
-      {super.key, required this.description, required this.routeId, required this.onUpdateRoute});
+      {super.key, required this.description, required this.routeId});
 
   @override
   State<RouteDetail> createState() => _RouteDetailState();
@@ -71,7 +70,6 @@ class _RouteDetailState extends State<RouteDetail> {
 
   void Refresh(){
     debugPrint("Refresh");
-    widget.onUpdateRoute();
     fetchRouteDetail(widget.routeId);
   }
 
@@ -91,6 +89,14 @@ class _RouteDetailState extends State<RouteDetail> {
         ),
         centerTitle: true,
         elevation: 0,
+        leading: IconButton(
+          icon: Icon(Icons.arrow_back), 
+          onPressed: () {
+            Navigator.pop(context);
+            print('Callback after pressing the back button in AppBar');
+
+          },
+      ),
       ),
       body: Container(
         decoration: BoxDecoration(
