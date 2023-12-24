@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(MyApp());
-}
+// void main() {
+//   runApp(MyApp());
+// }
 
-class MyApp extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      home: NewCourseScreen(),
-    );
-  }
-}
+// class MyApp extends StatelessWidget {
+//   @override
+//   Widget build(BuildContext context) {
+//     return MaterialApp(
+//       home: NewCourseScreen(),
+//     );
+//   }
+// }
 
 class NewCourseScreen extends StatefulWidget {
   @override
@@ -25,7 +25,7 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
 
   void _addLesson() {
     setState(() {
-      lessons.add(Lesson(title: '', chapterName: '', contents: []));
+      lessons.add(Lesson(title: '', chapterTitle: '', estimateTime: 0.0, contents: []));
     });
   }
 
@@ -116,15 +116,17 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
 
 class Lesson {
   String title;
-  String chapterName;
+  String chapterTitle;
+  double estimateTime;
   List<Content> contents;
 
-  Lesson({required this.title, required this.chapterName, required this.contents});
+  Lesson({required this.title, required this.chapterTitle, required this.estimateTime, required this.contents});
 
   Map<String, dynamic> toJson() {
     return {
       'title': title,
-      'chapterName': chapterName,
+      'chapterTitle': chapterTitle,
+      'estimateTime': estimateTime,
       'contents': contents.map((content) => content.toJson()).toList(),
     };
   }
@@ -172,8 +174,20 @@ class LessonWidget extends StatelessWidget {
             ),
             SizedBox(height: 16),
             TextField(
-              onChanged: (value) => lesson.chapterName = value,
-              decoration: InputDecoration(labelText: 'Chapter Name'),
+              onChanged: (value) => lesson.chapterTitle = value,
+              decoration: InputDecoration(labelText: 'Chapter Title'),
+            ),
+            SizedBox(height: 16),
+            TextField(
+              onChanged: (value) {
+                try {
+                  lesson.estimateTime = double.parse(value);
+                } catch (e) {
+                  lesson.estimateTime = 0.0;
+                }
+              },
+              keyboardType: TextInputType.numberWithOptions(decimal: true),
+              decoration: InputDecoration(labelText: 'Estimate Time (hours)'),
             ),
             SizedBox(height: 16),
             for (int i = 0; i < lesson.contents.length; i++)
