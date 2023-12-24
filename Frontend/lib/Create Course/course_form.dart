@@ -48,7 +48,7 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
 
   void _addContent(int lessonIndex) {
     setState(() {
-      lessons[lessonIndex].contents.add(Content(type: 0, content: ''));
+      lessons[lessonIndex].contents.add(Content(type: 1, content: ''));
     });
   }
 
@@ -150,11 +150,13 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
               ElevatedButton(
                 onPressed: _addLesson,
                 child: Text('Add Lesson'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
               ),
               SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _saveCourse,
                 child: Text('Save'),
+                style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
               ),
             ],
           ),
@@ -194,8 +196,8 @@ class Content {
 
   Map<String, dynamic> toJson() {
     return {
-      'type': type,
-      'content': content,
+      'content_type': type,
+      'contents': content,
     };
   }
 }
@@ -259,11 +261,12 @@ class LessonWidget extends StatelessWidget {
             ElevatedButton(
               onPressed: onAddContent,
               child: Text('Add Content'),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber, foregroundColor: Colors.black),
             ),
             SizedBox(height: 8),
             ElevatedButton(
               onPressed: onDelete,
-              style: ElevatedButton.styleFrom(primary: Colors.red),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
               child: Text('Delete Lesson'),
             ),
           ],
@@ -295,7 +298,7 @@ class ContentWidget extends StatelessWidget {
             SizedBox(height: 8),
             ElevatedButton(
               onPressed: onDelete,
-              style: ElevatedButton.styleFrom(primary: Colors.red),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
               child: Text('Delete Content'),
             ),
           ],

@@ -12,7 +12,7 @@ const LessonSchema = new Schema({
         default: ""
     },
     contents: [{
-        content: {
+        contents: {
             type: String,
             default: ""
         },
