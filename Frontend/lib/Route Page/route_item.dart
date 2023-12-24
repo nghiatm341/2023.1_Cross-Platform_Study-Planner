@@ -1,18 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class RouteItem extends StatefulWidget {
   RouteItemData routeData;
-  VoidCallback onUpdateRoute;
+  VoidCallback reloadTab;
 
-  RouteItem({
-    super.key,
-    required this.routeData,
-    required this.onUpdateRoute
-  });
+  RouteItem({super.key, required this.routeData, required this.reloadTab});
 
   @override
   State<RouteItem> createState() => _RouteItem();
@@ -22,6 +20,10 @@ class _RouteItem extends State<RouteItem> {
   RouteItemUIData routeItemUIData = new RouteItemUIData();
 
   String courseDescription = "";
+
+  void _reload(){
+    widget.reloadTab();
+  }
 
   Future<void> fetchCourses(RouteItemData routeData) async {
     Map<String, String> headers = {
@@ -47,12 +49,13 @@ class _RouteItem extends State<RouteItem> {
         setState(() {
           courseDescription = courseData['description'];
           routeItemUIData.title = courseData['title'];
-          routeItemUIData.author = "1";
           routeItemUIData.startDate = routeData.createdAt;
           routeItemUIData.progress = routeData.progress;
+          routeItemUIData.author = courseData['author_id']['firstName'] +  " " + courseData['author_id']['lastName'];
         });
       } else {
-        // Request failed with an error status code
+        // Request f
+        //ailed with an error status code
         print('Failed with status code: ${response.statusCode}');
       }
     } catch (error) {
@@ -61,19 +64,10 @@ class _RouteItem extends State<RouteItem> {
     }
   }
 
-  Future<void> fetchAuthor(RouteItemData routeData) async {
-    
-  }
-
-  void onRouteUpdated(){
-    widget.onUpdateRoute();
-  }
-
   @override
   void initState() {
     super.initState();
     fetchCourses(widget.routeData);
-    fetchAuthor(widget.routeData);
   }
 
   @override
@@ -88,10 +82,10 @@ class _RouteItem extends State<RouteItem> {
             child: Row(
               children: [
                 Expanded(
-                    flex: 3,
+                    flex: 2,
                     child: Icon(
                       Icons.book,
-                      size: 60,
+                      size: 50,
                     )),
                 Expanded(
                   flex: 6,
@@ -159,7 +153,12 @@ class _RouteItem extends State<RouteItem> {
       ),
       onTap: () => {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.routeData.routeId, onUpdateRoute: onRouteUpdated,)))
+            context,
+            MaterialPageRoute(
+                builder: (context) => RouteDetail(
+                      description: courseDescription,
+                      routeId: widget.routeData.routeId,
+                    )))
       },
     );
   }
@@ -170,6 +169,7 @@ class RouteItemData {
   final int courseId;
   final int userId;
   final String createdAt;
+  final String finishedAt;
   final String progress;
 
   RouteItemData(
@@ -177,12 +177,14 @@ class RouteItemData {
       required this.courseId,
       required this.userId,
       required this.createdAt,
-      required this.progress});
+      required this.progress, 
+      required this.finishedAt
+  });
 }
 
 class RouteItemUIData {
-  String title = "1";
-  String author = "1";
-  String startDate = "1";
-  String progress = "1";
+  String title = "...";
+  String author = "...";
+  String startDate = "...";
+  String progress = "...";
 }
