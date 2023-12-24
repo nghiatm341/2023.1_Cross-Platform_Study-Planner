@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Route%20Page/lesson_note_page.dart';
+import 'package:frontend/Route%20Page/popup_congrat.dart';
 import 'package:frontend/Route%20Page/popup_notification.dart';
 import 'package:frontend/Route%20Page/route_lesson_item.dart';
 import 'package:http/http.dart' as http;
@@ -38,6 +39,14 @@ class _RouteLessonDetailState extends State<RouteLessonDetail> {
         });
   }
 
+  void _showCongrat(){
+    showDialog(
+        context: context,
+        builder: (context) {
+          return PopupCongrat();
+        });
+  }
+
   void showLessonNote(){
     showDialog(context: context, builder: (context){ 
       return LessonNotePage(routeId: widget.routeId, lessonId: widget.courseLessonData.lessonId,);
@@ -69,10 +78,15 @@ class _RouteLessonDetailState extends State<RouteLessonDetail> {
       if (response.statusCode == 200) {
         // Successfully fetched data
         final jsonData = json.decode(response.body);
-
         widget.onCompleteLesson();
         // ignore: use_build_context_synchronously
-        Navigator.pop(context);
+        Navigator.of(context).pop();
+
+        if(jsonData['data']['isCompleteCourse']){
+          debugPrint("complete course");
+          _showCongrat();
+        }
+
       } else if (response.statusCode == 300) {
         debugPrint("Need to complete previous lesson");
         _showWarning();
