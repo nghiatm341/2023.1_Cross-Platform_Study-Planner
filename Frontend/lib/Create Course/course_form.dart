@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:numberpicker/numberpicker.dart';
 
 // void main() {
 //   runApp(MyApp());
@@ -25,7 +26,12 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
 
   void _addLesson() {
     setState(() {
-      lessons.add(Lesson(title: '', chapterTitle: '', estimateTime: 0.0, contents: []));
+      lessons.add(Lesson(
+        title: '',
+        chapterTitle: '',
+        estimateTime: 0, // Default estimate time
+        contents: [],
+      ));
     });
   }
 
@@ -59,6 +65,7 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
     // ApiService.createCourse(courseData);
 
     // You might want to handle the API response or errors here
+
     print(courseData);
   }
 
@@ -95,6 +102,11 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
                   onAddContent: () => _addContent(i),
                   onDelete: () => _deleteLesson(i),
                   onDeleteContent: (int contentIndex) => _deleteContent(i, contentIndex),
+                  onEstimateTimeChanged: (double newValue) {
+                    setState(() {
+                      lessons[i].estimateTime = newValue;
+                    });
+                  },
                 ),
               SizedBox(height: 16),
               ElevatedButton(
@@ -125,8 +137,8 @@ class Lesson {
   Map<String, dynamic> toJson() {
     return {
       'title': title,
-      'chapterTitle': chapterTitle,
-      'estimateTime': estimateTime,
+      'chapter_title': chapterTitle,
+      'estimate_time': estimateTime,
       'contents': contents.map((content) => content.toJson()).toList(),
     };
   }
@@ -151,12 +163,14 @@ class LessonWidget extends StatelessWidget {
   final VoidCallback onAddContent;
   final VoidCallback onDelete;
   final Function(int) onDeleteContent;
+  final ValueChanged<double> onEstimateTimeChanged;
 
   LessonWidget({
     required this.lesson,
     required this.onAddContent,
     required this.onDelete,
     required this.onDeleteContent,
+    required this.onEstimateTimeChanged,
   });
 
   @override
@@ -178,16 +192,20 @@ class LessonWidget extends StatelessWidget {
               decoration: InputDecoration(labelText: 'Chapter Title'),
             ),
             SizedBox(height: 16),
-            TextField(
-              onChanged: (value) {
-                try {
-                  lesson.estimateTime = double.parse(value);
-                } catch (e) {
-                  lesson.estimateTime = 0.0;
-                }
-              },
-              keyboardType: TextInputType.numberWithOptions(decimal: true),
-              decoration: InputDecoration(labelText: 'Estimate Time (hours)'),
+            Column(
+              children: [
+                Text('Estimate Time: ${lesson.estimateTime} hours'),
+                DecimalNumberPicker(
+                  value: lesson.estimateTime.toDouble(),
+                  minValue: 0,
+                  maxValue: 24,
+                  // step: 1,
+                  decimalPlaces: 1,
+                  itemHeight: 40,
+                  axis: Axis.horizontal,
+                  onChanged: (value) => onEstimateTimeChanged(value.toDouble()),
+                ),
+              ],
             ),
             SizedBox(height: 16),
             for (int i = 0; i < lesson.contents.length; i++)
