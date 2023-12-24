@@ -234,6 +234,7 @@ class CourseItemData {
   final int subscribersCount;
   final String description;
   final List lessons;
+  final int isDrafting;
 
   CourseItemData(
       {required this.title,
@@ -243,5 +244,7 @@ class CourseItemData {
       required this.isSubscribed,
       required this.subscribersCount,
       required this.description,
-      required this.lessons});
+      required this.lessons,
+      required this.isDrafting
+      });
 }
