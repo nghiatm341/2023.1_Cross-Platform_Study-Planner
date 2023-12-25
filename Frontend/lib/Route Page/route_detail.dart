@@ -9,9 +9,10 @@ import 'package:frontend/utils.dart' as utils;
 class RouteDetail extends StatefulWidget {
   final String description;
   final String routeId;
+  final VoidCallback testCb;
 
   const RouteDetail(
-      {super.key, required this.description, required this.routeId});
+      {super.key, required this.description, required this.routeId, required this.testCb});
 
   @override
   State<RouteDetail> createState() => _RouteDetailState();
@@ -94,7 +95,7 @@ class _RouteDetailState extends State<RouteDetail> {
           onPressed: () {
             Navigator.pop(context);
             print('Callback after pressing the back button in AppBar');
-
+            widget.testCb();
           },
       ),
       ),

@@ -139,7 +139,7 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
 
       onTap: () => {
         Navigator.push(
-            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.routeData.routeId)))
+            context, MaterialPageRoute(builder: (context) => RouteDetail(description: courseDescription, routeId: widget.routeData.routeId, testCb: () => {},)))
       },
     );
   }

@@ -96,7 +96,7 @@ class _PopupSubscribeCourse extends State<PopupSubscribeCourse> {
     return AlertDialog(
       backgroundColor: const Color.fromARGB(255, 255, 255, 255),
       content: Container(
-        height: 120,
+        height: 140,
 
         child: Column(
           children: [

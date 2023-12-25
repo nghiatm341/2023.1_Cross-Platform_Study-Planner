@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
@@ -21,8 +23,32 @@ class _RouteItem extends State<RouteItem> {
 
   String courseDescription = "";
 
+  bool _isDisposed = false;
+  Completer<void> _completer = Completer<void>();
+
   void _reload(){
+    debugPrint("_redisplay route item");
     widget.reloadTab();
+
+    Future.delayed(Duration(milliseconds: 300), () {
+      if(!_isDisposed){
+         _displayProgress();
+      }
+    });
+  }
+
+
+  void _displayProgress(){
+    debugPrint("_re display route progress " + widget.routeData.progress.toString());
+    setState(() {
+      routeItemUIData.progress = widget.routeData.progress;
+    });
+  }
+
+  @override
+  void dispose() {
+    _isDisposed = true; // Set flag to true when the widget is disposed
+    super.dispose();
   }
 
   Future<void> fetchCourses(RouteItemData routeData) async {
@@ -83,9 +109,12 @@ class _RouteItem extends State<RouteItem> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: Icon(
-                      Icons.book,
-                      size: 50,
+                    child: GestureDetector(
+                      child: Icon(
+                        Icons.book,
+                        size: 50,
+                      ),
+                      onTap: _reload,
                     )),
                 Expanded(
                   flex: 6,
@@ -158,6 +187,7 @@ class _RouteItem extends State<RouteItem> {
                 builder: (context) => RouteDetail(
                       description: courseDescription,
                       routeId: widget.routeData.routeId,
+                      testCb: _reload,
                     )))
       },
     );
