@@ -315,7 +315,7 @@ router.post('/createWithNewLessons', async (req, res) => {
         })
 
         const result = await newData.save();
-        await sanitizeLesson(id, lessons)
+        await sanitizeLesson(id, lessonIds)
         res.status(200).json({ message: 'create success', data: result })
 
     } catch (error) {
