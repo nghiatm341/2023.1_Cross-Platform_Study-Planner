@@ -258,7 +258,6 @@ class AuthController {
         });
       } else {
         return res.status(404).json({
-          message: "login fail!",
           message: "email or password is incorrect !",
         });
       }
