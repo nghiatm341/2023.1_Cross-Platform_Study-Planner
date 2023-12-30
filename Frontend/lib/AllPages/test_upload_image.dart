@@ -2,7 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:frontend/ultils/networkImage.dart';
+import 'package:frontend/ultils/simpleNetworkImage.dart';
 import 'package:image_picker/image_picker.dart';
 
 class UploadImage extends StatefulWidget {
