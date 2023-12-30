@@ -331,6 +331,7 @@ class _AccountPageState extends State<AccountPage> {
                               children: [
                                 Expanded(
                                   child: RadioListTile<String>(
+                                    contentPadding: EdgeInsets.zero,
                                     title: const Text('Male'),
                                     value: 'male',
                                     groupValue: gender,
@@ -345,6 +346,7 @@ class _AccountPageState extends State<AccountPage> {
                                 ),
                                 Expanded(
                                   child: RadioListTile<String>(
+                                    contentPadding: EdgeInsets.zero,
                                     title: const Text('Female'),
                                     value: 'female',
                                     groupValue: gender,
@@ -355,6 +357,21 @@ class _AccountPageState extends State<AccountPage> {
                                               gender = value;
                                             });
                                           },
+                                  ),
+                                ),
+                                Expanded(
+                                  child: RadioListTile<String>(
+                                    contentPadding: EdgeInsets.zero,
+                                    title: const Text('Other'),
+                                    value: 'other',
+                                    groupValue: gender,
+                                    onChanged: !enableForm
+                                        ? null
+                                        : (String? value) {
+                                      setState(() {
+                                        gender = value;
+                                      });
+                                    },
                                   ),
                                 ),
                               ],
