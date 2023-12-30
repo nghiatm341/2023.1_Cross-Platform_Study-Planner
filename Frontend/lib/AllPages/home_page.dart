@@ -3,6 +3,7 @@ import 'package:frontend/AllPages/account_page.dart';
 import 'package:frontend/AllPages/courses_page.dart';
 import 'package:frontend/AllPages/routes_page.dart';
 import 'package:frontend/AllPages/social_page.dart';
+import 'package:frontend/AllPages/test_upload_image.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "594954301473",
+    "project_id": "study-planning-205cf",
+    "storage_bucket": "study-planning-205cf.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:594954301473:android:020df323f856d192f7f360",
+        "android_client_info": {
+          "package_name": "com.hypeboy.crossplatform.frontend"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBDgVpae8zkGOW2W5SVVBjlcIx-d7s49Oc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
