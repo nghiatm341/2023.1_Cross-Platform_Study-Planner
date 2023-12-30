@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:frontend/AuthPage/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -15,12 +16,12 @@ class AccountPage extends StatefulWidget {
 class _AccountPageState extends State<AccountPage> {
   TextEditingController firstNameController = TextEditingController();
   TextEditingController lastNameController = TextEditingController();
-  TextEditingController genderController = TextEditingController();
   TextEditingController phoneNumberController = TextEditingController();
   TextEditingController emailController = TextEditingController();
   TextEditingController scoreController = TextEditingController();
   TextEditingController roleController = TextEditingController();
   TextEditingController statusController = TextEditingController();
+  String? gender = 'male';
 
   bool enableForm = false;
   bool shouldResetForm = true;
@@ -71,7 +72,7 @@ class _AccountPageState extends State<AccountPage> {
 
         firstNameController.text = currentUser.firstName;
         lastNameController.text = currentUser.lastName;
-        genderController.text = currentUser.gender;
+        gender = currentUser.gender;
         phoneNumberController.text = currentUser.phoneNumber;
         emailController.text = currentUser.email;
         scoreController.text = currentUser.score.toString();
@@ -93,7 +94,7 @@ class _AccountPageState extends State<AccountPage> {
 
     Map<String, String> headers = {
       'Content-Type':
-      'application/json', // Set the content type for POST request
+          'application/json', // Set the content type for POST request
       // Add other headers if needed
       'Authorization': 'Bearer ' + AppStore.TOKEN.toString()
     };
@@ -105,7 +106,7 @@ class _AccountPageState extends State<AccountPage> {
       'lastName': lastNameController.text,
       'dob': '${now.year}-${now.month}-${now.day}',
       'phoneNumber': phoneNumberController.text,
-      'gender': genderController.text,
+      'gender': gender,
       'avatar': currentUser.avatar
     };
 
@@ -118,7 +119,9 @@ class _AccountPageState extends State<AccountPage> {
 
       debugPrint('Status code: ${response.statusCode}');
       debugPrint('Response for update: ${response.body}');
-      shouldResetForm = true;
+      setState(() {
+        shouldResetForm = true;
+      });
     } catch (error) {
       print('Error: $error');
     }
@@ -201,13 +204,14 @@ class _AccountPageState extends State<AccountPage> {
                             // Hình ảnh avatar
                             Row(children: [
                               CircleAvatar(
-                                backgroundImage: NetworkImage(currentUser.avatar),
+                                backgroundImage:
+                                    NetworkImage(currentUser.avatar),
                                 radius: 50,
                               ),
                               SizedBox(width: 16.0),
                               Text(
                                 '${currentUser.firstName} ${currentUser.lastName}',
-                                style: const TextStyle(
+                                style: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                 ),
@@ -216,52 +220,144 @@ class _AccountPageState extends State<AccountPage> {
                             SizedBox(height: 16.0),
                             // Các trường thông tin
                             TextFormField(
-                              enabled: false,
-                              decoration: InputDecoration(labelText: 'ID'),
+                              readOnly: true,
+                              style: TextStyle(fontSize: 18),
+                              decoration:
+                              InputDecoration(
+                                labelText: 'ID',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                               initialValue: currentUser.id.toString(),
                             ),
                             TextFormField(
-                              enabled: false,
-                              decoration: InputDecoration(labelText: 'Email'),
+                              readOnly: true,
+                              style: TextStyle(fontSize: 18),
+                              decoration:
+                              InputDecoration(
+                                labelText: 'Email',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                               controller: emailController,
                             ),
                             TextFormField(
-                              enabled: false,
-                              decoration: InputDecoration(labelText: 'Score'),
+                              readOnly: true,
+                              style: TextStyle(fontSize: 18),
+                              decoration:
+                              InputDecoration(
+                                labelText: 'Score',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                               controller: scoreController,
                             ),
                             TextFormField(
-                              enabled: false,
-                              decoration: InputDecoration(labelText: 'Role'),
+                              readOnly: true,
+                              style: TextStyle(fontSize: 18),
+                              decoration:
+                              InputDecoration(
+                                labelText: 'Role',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                               controller: roleController,
                             ),
                             TextFormField(
-                              enabled: false,
-                              decoration: InputDecoration(labelText: 'Status'),
+                              readOnly: true,
+                              style: TextStyle(fontSize: 18),
+                              decoration:
+                              InputDecoration(
+                                labelText: 'Status',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                               controller: statusController,
                             ),
                             TextFormField(
-                              enabled: enableForm,
+                              readOnly: !enableForm,
                               controller: firstNameController,
+                              style: TextStyle(fontSize: 18),
                               decoration:
-                                  InputDecoration(labelText: 'First Name'),
+                                  InputDecoration(
+                                      labelText: 'First Name',
+                                      labelStyle: TextStyle(
+                                        fontSize: 20,
+                                        fontWeight: FontWeight.w900,
+                                      ),
+                                  ),
                             ),
                             TextFormField(
-                              enabled: enableForm,
+                              readOnly: !enableForm,
                               controller: lastNameController,
+                              style: TextStyle(fontSize: 18),
                               decoration:
-                                  InputDecoration(labelText: 'Last Name'),
+                              InputDecoration(
+                                labelText: 'Last Name',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                             ),
                             TextFormField(
-                              enabled: enableForm,
-                              controller: genderController,
-                              decoration: InputDecoration(labelText: 'Gender'),
-                            ),
-                            TextFormField(
-                              enabled: enableForm,
+                              readOnly: !enableForm,
                               controller: phoneNumberController,
+                              style: TextStyle(fontSize: 18),
                               decoration:
-                                  InputDecoration(labelText: 'Phone Number'),
+                              InputDecoration(
+                                labelText: 'Phone Number',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
+                              keyboardType: TextInputType.numberWithOptions(decimal: true),
+                              inputFormatters: <TextInputFormatter>[
+                                FilteringTextInputFormatter.digitsOnly, // Chỉ cho phép nhập số
+                              ],
+                            ),
+                            Row(
+                              children: [
+                                Expanded(
+                                  child: RadioListTile<String>(
+                                    title: const Text('Male'),
+                                    value: 'male',
+                                    groupValue: gender,
+                                    onChanged: !enableForm
+                                        ? null
+                                        : (String? value) {
+                                            setState(() {
+                                              gender = value;
+                                            });
+                                          },
+                                  ),
+                                ),
+                                Expanded(
+                                  child: RadioListTile<String>(
+                                    title: const Text('Female'),
+                                    value: 'female',
+                                    groupValue: gender,
+                                    onChanged: !enableForm
+                                        ? null
+                                        : (String? value) {
+                                            setState(() {
+                                              gender = value;
+                                            });
+                                          },
+                                  ),
+                                ),
+                              ],
                             ),
                             SizedBox(height: 32.0),
                             Row(
@@ -292,10 +388,13 @@ class _AccountPageState extends State<AccountPage> {
                                             ElevatedButton(
                                               onPressed: () {
                                                 setState(() {
-                                                  firstNameController.text = currentUser.firstName;
-                                                  lastNameController.text = currentUser.lastName;
-                                                  genderController.text = currentUser.gender;
-                                                  phoneNumberController.text = currentUser.phoneNumber;
+                                                  firstNameController.text =
+                                                      currentUser.firstName;
+                                                  lastNameController.text =
+                                                      currentUser.lastName;
+                                                  gender = currentUser.gender;
+                                                  phoneNumberController.text =
+                                                      currentUser.phoneNumber;
                                                   enableForm = !enableForm;
                                                 });
                                               },

@@ -293,6 +293,7 @@ class ContentWidget extends StatelessWidget {
           children: [
             TextField(
               onChanged: (value) => content.content = value,
+              maxLines: 4,
               decoration: InputDecoration(labelText: 'Content Text'),
             ),
             SizedBox(height: 8),

@@ -14,7 +14,6 @@ class PublishedCourses extends StatefulWidget {
 }
 
 class _PublishedCoursesState extends State<PublishedCourses> {
-
   late List<CourseItemData> courseList = [];
   late List courseLessonList;
 
@@ -28,7 +27,10 @@ class _PublishedCoursesState extends State<PublishedCourses> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {'author_id': AppStore.ID, 'is_drafting' : 0};
+    Map<String, dynamic> postData = {
+      'author_id': AppStore.ID,
+      'is_drafting': 0
+    };
 
     try {
       final response = await http.post(
@@ -53,21 +55,23 @@ class _PublishedCoursesState extends State<PublishedCourses> {
 
             debugPrint("subscribers count: " + subscribers.length.toString());
 
-            var meSubscriber = subscribers.where((element) => element['user_id'] == AppStore.ID).length > 0;
-
-            debugPrint("isDrafting " + c['isDrafting'].toString());
+            var meSubscriber = subscribers
+                    .where((element) => element['user_id'] == AppStore.ID)
+                    .length >
+                0;
 
             return new CourseItemData(
-              courseId: c['id'],
-              authorName: c['author_id']['firstName'] + " " + c['author_id']['lastName'],
-              createdAt: date,
-              title: c['title'],
-              isSubscribed: meSubscriber,
-              subscribersCount: subscribers.length,
-              description: c['description'],
-              lessons: c['lessons'],
-              isDrafting: c['isDrafting']
-            );
+                courseId: c['id'],
+                authorName: c['author_id']['firstName'] +
+                    " " +
+                    c['author_id']['lastName'],
+                createdAt: date,
+                title: c['title'],
+                isSubscribed: meSubscriber,
+                subscribersCount: subscribers.length,
+                description: c['description'],
+                lessons: c['lessons'],
+                isDrafting: c['is_drafting']);
           }).toList();
         });
       } else {
@@ -81,7 +85,7 @@ class _PublishedCoursesState extends State<PublishedCourses> {
   }
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
     fetchCourses();
   }
@@ -89,12 +93,13 @@ class _PublishedCoursesState extends State<PublishedCourses> {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-            child: Container(
-            child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return CourseItem(courseData: courseList[index]);
-                },
-                itemCount: courseList.length),
-          ));
+        child: RefreshIndicator(
+      onRefresh: fetchCourses,
+      child: ListView.builder(
+          itemBuilder: (context, index) {
+            return CourseItem(courseData: courseList[index]);
+          },
+          itemCount: courseList.length),
+    ));
   }
 }

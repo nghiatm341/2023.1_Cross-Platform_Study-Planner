@@ -19,7 +19,7 @@ class UserController {
       if (gender !== GENDER.MALE && gender !== GENDER.FEMALE && gender !== GENDER.OTHER) {
         return res.status(400).json({ message: "invalid gender!" });
       }
-      if (!isValidPhoneNumber(phoneNumber)) {
+      if (phoneNumber && !isValidPhoneNumber(phoneNumber)) {
         return res.status(400).json({ message: "invalid phone number!" });
       }
       if (firstName === "" && lastName === "" && avatar === "") {

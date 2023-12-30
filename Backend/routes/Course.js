@@ -58,7 +58,7 @@ router.post('/getById', async (req, res) => {
         const { id } = req.body
 
         if (id) {
-            const data = await Course.findOne({ id: id, is_delete: 0 })
+            const data = await Course.findOne({ id: id })
                 .populate({
                     path: 'lessons.lesson.user_id',
                     model: User,
@@ -119,7 +119,7 @@ router.post('/create', async (req, res) => {
             is_drafting,
             list_subscriber } = req.body
 
-        const maxId = await Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
+        const maxId = await Course.findOne({}, 'id').sort({ id: -1 })
         const id = maxId ? Number(maxId.id) + 1 : 1
 
         const newData = new Course({
@@ -264,7 +264,7 @@ router.post('/createWithNewLessons', async (req, res) => {
             is_drafting,
             list_subscriber } = req.body
 
-        const maxId = await Course.findOne({ is_delete: 0 }, 'id').sort({ id: -1 })
+        const maxId = await Course.findOne({}, 'id').sort({ id: -1 })
         const id = maxId ? Number(maxId.id) + 1 : 1
 
         let lessonIds = []
@@ -315,7 +315,7 @@ router.post('/createWithNewLessons', async (req, res) => {
         })
 
         const result = await newData.save();
-        await sanitizeLesson(id, lessons)
+        await sanitizeLesson(id, lessonIds)
         res.status(200).json({ message: 'create success', data: result })
 
     } catch (error) {
