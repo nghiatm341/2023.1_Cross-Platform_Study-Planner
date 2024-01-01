@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/ultils/store.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -128,13 +129,16 @@ class _AccountPageState extends State<AccountPage> {
   }
 
   Future<void> logout() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
     debugPrint("Fetch logout");
 
     Map<String, String> headers = {
       'Content-Type':
           'application/json', // Set the content type for POST request
       // Add other headers if needed
-      'Authorization': 'Bearer ' + AppStore.TOKEN.toString()
+      'Authorization': 'Bearer ' + token.toString()
     };
 
     Map<String, dynamic> postData = {};
@@ -147,6 +151,7 @@ class _AccountPageState extends State<AccountPage> {
       );
       if (response.statusCode == 200) {
         // Successfully fetched data
+        await prefs.clear();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -222,8 +227,7 @@ class _AccountPageState extends State<AccountPage> {
                             TextFormField(
                               readOnly: true,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                              InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'ID',
                                 labelStyle: TextStyle(
                                   fontSize: 20,
@@ -235,8 +239,7 @@ class _AccountPageState extends State<AccountPage> {
                             TextFormField(
                               readOnly: true,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                              InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Email',
                                 labelStyle: TextStyle(
                                   fontSize: 20,
@@ -248,8 +251,7 @@ class _AccountPageState extends State<AccountPage> {
                             TextFormField(
                               readOnly: true,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                              InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Score',
                                 labelStyle: TextStyle(
                                   fontSize: 20,
@@ -261,8 +263,7 @@ class _AccountPageState extends State<AccountPage> {
                             TextFormField(
                               readOnly: true,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                              InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Role',
                                 labelStyle: TextStyle(
                                   fontSize: 20,
@@ -274,8 +275,7 @@ class _AccountPageState extends State<AccountPage> {
                             TextFormField(
                               readOnly: true,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                              InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Status',
                                 labelStyle: TextStyle(
                                   fontSize: 20,
@@ -288,21 +288,19 @@ class _AccountPageState extends State<AccountPage> {
                               readOnly: !enableForm,
                               controller: firstNameController,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                                  InputDecoration(
-                                      labelText: 'First Name',
-                                      labelStyle: TextStyle(
-                                        fontSize: 20,
-                                        fontWeight: FontWeight.w900,
-                                      ),
-                                  ),
+                              decoration: InputDecoration(
+                                labelText: 'First Name',
+                                labelStyle: TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.w900,
+                                ),
+                              ),
                             ),
                             TextFormField(
                               readOnly: !enableForm,
                               controller: lastNameController,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                              InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Last Name',
                                 labelStyle: TextStyle(
                                   fontSize: 20,
@@ -314,17 +312,18 @@ class _AccountPageState extends State<AccountPage> {
                               readOnly: !enableForm,
                               controller: phoneNumberController,
                               style: TextStyle(fontSize: 18),
-                              decoration:
-                              InputDecoration(
+                              decoration: InputDecoration(
                                 labelText: 'Phone Number',
                                 labelStyle: TextStyle(
                                   fontSize: 20,
                                   fontWeight: FontWeight.w900,
                                 ),
                               ),
-                              keyboardType: TextInputType.numberWithOptions(decimal: true),
+                              keyboardType: TextInputType.numberWithOptions(
+                                  decimal: true),
                               inputFormatters: <TextInputFormatter>[
-                                FilteringTextInputFormatter.digitsOnly, // Chỉ cho phép nhập số
+                                FilteringTextInputFormatter
+                                    .digitsOnly, // Chỉ cho phép nhập số
                               ],
                             ),
                             Row(
@@ -368,10 +367,10 @@ class _AccountPageState extends State<AccountPage> {
                                     onChanged: !enableForm
                                         ? null
                                         : (String? value) {
-                                      setState(() {
-                                        gender = value;
-                                      });
-                                    },
+                                            setState(() {
+                                              gender = value;
+                                            });
+                                          },
                                   ),
                                 ),
                               ],
