@@ -38,3 +38,4 @@ app.use(`/${domain}`, require("./routes/auth"));
 app.use(`/${domain}/user`, require("./routes/user"));
 app.use(`/${domain}/studyRoute`, require("./routes/studyRoute"))
 app.use(`/${domain}/lessonNote`, require("./routes/lessonNote"))
+app.use(`/${domain}/post`, require("./routes/Post"));
