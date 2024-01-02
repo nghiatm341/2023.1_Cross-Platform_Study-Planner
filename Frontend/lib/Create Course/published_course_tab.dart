@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/const.dart' as constaint;
 import 'package:frontend/utils.dart' as utils;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PublishedCourses extends StatefulWidget {
   const PublishedCourses({super.key});
@@ -21,6 +22,10 @@ class _PublishedCoursesState extends State<PublishedCourses> {
     // Replace with your API endpoint
     debugPrint("Fetch api list course");
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    final int? userId = prefs.getInt('userId');
+
     Map<String, String> headers = {
       'Content-Type':
           'application/json', // Set the content type for POST request
@@ -28,7 +33,7 @@ class _PublishedCoursesState extends State<PublishedCourses> {
     };
 
     Map<String, dynamic> postData = {
-      'author_id': AppStore.ID,
+      'author_id': userId,
       'is_drafting': 0
     };
 
@@ -56,7 +61,7 @@ class _PublishedCoursesState extends State<PublishedCourses> {
             debugPrint("subscribers count: " + subscribers.length.toString());
 
             var meSubscriber = subscribers
-                    .where((element) => element['user_id'] == AppStore.ID)
+                    .where((element) => element['user_id'] == userId)
                     .length >
                 0;
 

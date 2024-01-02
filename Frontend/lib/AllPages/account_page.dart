@@ -27,21 +27,25 @@ class _AccountPageState extends State<AccountPage> {
   bool enableForm = false;
   bool shouldResetForm = true;
 
-  User currentUser = User(
-    id: AppStore.ID,
-  );
+  User currentUser = new User();
 
   Future<void>? fetchUserInfo() async {
     debugPrint("Fetch api get user info");
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    //final String? role = prefs.getString('role');
+    final String? token = prefs.getString('token');
+    final int? userId = prefs.getInt('userId');
+    //final String? userName = prefs.getString('userName');
 
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       // Set the content type for POST request
       // Add other headers if needed
-      'Authorization': 'Bearer ' + AppStore.TOKEN.toString()
+      'Authorization': 'Bearer ' + token.toString()
     };
 
-    Map<String, dynamic> postData = {'userId': currentUser.id};
+    Map<String, dynamic> postData = {'userId': userId};
 
     try {
       final response = await http.post(
@@ -93,11 +97,14 @@ class _AccountPageState extends State<AccountPage> {
   Future<void> updateUserInfo() async {
     debugPrint("Updating info");
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
     Map<String, String> headers = {
       'Content-Type':
           'application/json', // Set the content type for POST request
       // Add other headers if needed
-      'Authorization': 'Bearer ' + AppStore.TOKEN.toString()
+      'Authorization': 'Bearer ' + token.toString()
     };
 
     final now = DateTime.now();
@@ -460,7 +467,7 @@ class User {
   final String updatedAt;
 
   User({
-    required this.id,
+    this.id = 0,
     this.email = '',
     this.firstName = '',
     this.lastName = '',

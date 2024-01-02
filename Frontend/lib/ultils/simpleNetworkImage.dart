@@ -10,7 +10,7 @@ class SimpleNetworkImage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 100,
+      padding: EdgeInsets.all(4),
       child: Image.network(
           imageUrl,
           fit: BoxFit.contain,

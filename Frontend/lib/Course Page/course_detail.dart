@@ -10,6 +10,7 @@ import 'dart:convert';
 import 'package:frontend/utils.dart' as utils;
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CourseDetail extends StatefulWidget {
   final CourseItemData courseData;
@@ -21,9 +22,21 @@ class CourseDetail extends StatefulWidget {
 }
 
 class _CourseDetailState extends State<CourseDetail> {
+
+  late String? role = "";
+
   @override
   void initState() {
     super.initState();
+    _loadData();
+  }
+
+  _loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      role = prefs.getString('role');
+    });
   }
 
   Future<void> _showPublishDraftConfirmationDialog(BuildContext context) async {
@@ -159,7 +172,7 @@ class _CourseDetailState extends State<CourseDetail> {
       curve: Curves.bounceIn,
       overlayColor: Colors.black,
       overlayOpacity: 0.5,
-      visible: AppStore.ROLE == "teacher",
+      visible: role == "teacher",
       children: [
         SpeedDialChild(
           child: Icon(Icons.delete),

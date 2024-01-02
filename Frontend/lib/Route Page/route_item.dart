@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/simpleNetworkImage.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -109,13 +110,7 @@ class _RouteItem extends State<RouteItem> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: GestureDetector(
-                      child: Icon(
-                        Icons.book,
-                        size: 50,
-                      ),
-                      onTap: _reload,
-                    )),
+                    child: SimpleNetworkImage(imageUrl: widget.routeData.courseAvatar)),
                 Expanded(
                   flex: 6,
                   child: Column(
@@ -201,6 +196,7 @@ class RouteItemData {
   final String createdAt;
   final String finishedAt;
   final String progress;
+  final String courseAvatar;
 
   RouteItemData(
       {required this.routeId,
@@ -208,7 +204,8 @@ class RouteItemData {
       required this.userId,
       required this.createdAt,
       required this.progress, 
-      required this.finishedAt
+      required this.finishedAt,
+      required this.courseAvatar
   });
 }
 
