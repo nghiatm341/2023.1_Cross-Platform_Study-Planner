@@ -118,8 +118,12 @@ class _UserManagementState extends State<UserManagement> {
               fit: BoxFit.cover,
             ),
           ),
+
           child: Column(
             children: [
+
+              
+
               Padding(padding: EdgeInsets.all(5)),
               SearchBar(
                 hintText: 'Search for account',

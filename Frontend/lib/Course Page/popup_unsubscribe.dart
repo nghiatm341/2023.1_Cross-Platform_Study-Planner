@@ -6,6 +6,8 @@ import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class PopupUnsubscribeCourse extends StatefulWidget {
   final int courseId;
   final VoidCallback onConfirmUnsubscribe;
@@ -35,6 +37,10 @@ class _PopupUnsubscribeCourse extends State<PopupUnsubscribeCourse> {
 
   Future<void> _unsubscribeCourse() async {
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    final int? userId = prefs.getInt('userId');
+
     setState(() {
       _isLoading = true;
       _doneConfirm = true;
@@ -49,13 +55,13 @@ class _PopupUnsubscribeCourse extends State<PopupUnsubscribeCourse> {
     Map<String, dynamic> postData = 
     {
       'id': widget.courseId, 
-      'user_id': AppStore.ID,
+      'user_id': userId,
     };
 
     Map<String, dynamic> postDataRoute = 
     {
       'courseId': widget.courseId, 
-      'userId': AppStore.ID,
+      'userId': userId,
     };
 
     try {

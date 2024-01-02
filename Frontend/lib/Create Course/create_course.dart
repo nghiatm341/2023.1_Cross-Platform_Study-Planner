@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/ultils/store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class CreateCourse extends StatefulWidget {
   const CreateCourse({super.key});
@@ -32,12 +33,17 @@ class _CreateCourseState extends State<CreateCourse> {
   final TextEditingController _titleController = TextEditingController();
   final TextEditingController _descriptionController = TextEditingController();
 
-void saveCourse() {
+void saveCourse() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    final int? userId = prefs.getInt('userId');
+
     // Replace this with your actual API call logic
     Course newCourse = Course(
       title: _titleController.text,
       description: _descriptionController.text,
-      author_id: AppStore.ID.toString()
+      author_id: userId.toString()
     );
 
     // Map the Course object to Map<String, dynamic>

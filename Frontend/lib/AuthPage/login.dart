@@ -77,14 +77,14 @@ class _MyWidgetState extends State<LoginPage> {
       // AppStore.USERNAME = userName;
       // AppStore.ROLE = role;
 
-      if (AppStore.ROLE == 'admin') {
+      if (role == 'admin') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => HomePageAdmin(),
           ),
         );
-      } else if (AppStore.ROLE == 'teacher') {
+      } else if (role == 'teacher') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(

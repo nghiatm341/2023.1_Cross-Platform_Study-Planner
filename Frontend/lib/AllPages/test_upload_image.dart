@@ -66,6 +66,7 @@ class _UploadImageState extends State<UploadImage> {
 
       final snapshot = await uploadTask!.whenComplete((){});
 
+      //use to store in database
       imagedUrl = await snapshot.ref.getDownloadURL();
 
       setState(() {
