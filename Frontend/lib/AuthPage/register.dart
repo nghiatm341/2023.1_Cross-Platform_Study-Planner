@@ -142,7 +142,7 @@ class _SendOtpPage extends State<SendOtpPage> {
                           }
 
                           if (!RegExp(
-                                  r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                                  r'^[a-zA-Z0-9_.+-]+(\+[a-zA-Z0-9_.+-]+)?@([\w-]+\.)+[a-zA-Z]{2,7}$')
                               .hasMatch(email.text)) {
                             _message = 'Invalid email!';
                             setState(() {});
