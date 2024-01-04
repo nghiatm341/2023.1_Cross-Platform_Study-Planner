@@ -110,30 +110,33 @@ class _RouteItem extends State<RouteItem> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: SimpleNetworkImage(imageUrl: widget.routeData.courseAvatar)),
+                    child: Container(height: 60, child: SimpleNetworkImage(imageUrl: widget.routeData.courseAvatar))),
                 Expanded(
-                  flex: 6,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          routeItemUIData.title,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w700),
-                          textAlign: TextAlign.left,
+                  flex: 8,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            routeItemUIData.title,
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                      ),
-                      Text("Author: " + routeItemUIData.author,
+                        Text("Author: " + routeItemUIData.author,
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.left),
+                        Text(
+                          "Start: " + routeItemUIData.startDate,
                           style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-                      Text(
-                        "Start: " + routeItemUIData.startDate,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/Course%20Page/course_lesson_item.dart';
+import 'package:frontend/Course%20Page/lesson_content_item.dart';
 import 'package:frontend/Route%20Page/route_lesson_item.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -56,11 +57,9 @@ class _CourseLessonDetailState extends State<CourseLessonDetail> {
             child: Expanded(
                 child: ListView.builder(
                   itemBuilder: (context, index) {
-                    return Padding(
-                      padding: EdgeInsets.all(8),
-                      child:
-                          Text(widget.lessonData.contents[index]['contents'], style: TextStyle(fontSize: 16),),
-                    );
+                    return LessonContentItem(
+                        contentType: widget.lessonData.contents[index]['content_type'], 
+                        content: widget.lessonData.contents[index]['contents']);
                   },
                   itemCount: widget.lessonData.contents.length,
                 ),
@@ -76,5 +75,7 @@ class _CourseLessonDetailState extends State<CourseLessonDetail> {
     );
   }
 }
+
+//widget.lessonData.contents[index]['contents']
 
 

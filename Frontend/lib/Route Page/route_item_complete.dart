@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/Route%20Page/route_item.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/simpleNetworkImage.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -84,30 +85,30 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: Icon(
-                      Icons.book,
-                      size: 40,
-                    )),
+                    child: Container(height: 60, child: SimpleNetworkImage(imageUrl: widget.routeData.courseAvatar))),
     
     
                 Expanded(
                   flex: 6,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(routeItemUIData.title,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                            textAlign: TextAlign.left, ),
-                      ),
-                      Text("author: " + routeItemUIData.author,
-                          style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-    
-                       
-                    ],
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(routeItemUIData.title,
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                              textAlign: TextAlign.left, ),
+                        ),
+                        Text("author: " + routeItemUIData.author,
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.left),
+                      
+                         
+                      ],
+                    ),
                   ),
                 ),
     
