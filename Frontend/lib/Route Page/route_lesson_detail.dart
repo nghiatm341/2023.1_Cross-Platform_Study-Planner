@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/Course%20Page/lesson_content_item.dart';
 import 'package:frontend/Route%20Page/lesson_note_page.dart';
 import 'package:frontend/Route%20Page/popup_congrat.dart';
 import 'package:frontend/Route%20Page/popup_notification.dart';
@@ -137,13 +138,9 @@ class _RouteLessonDetailState extends State<RouteLessonDetail> {
                 child: Expanded(
                   child: ListView.builder(
                     itemBuilder: (context, index) {
-                      return Padding(
-                        padding: EdgeInsets.all(8),
-                        child: Text(
-                          widget.courseLessonData.contents[index]['contents'],
-                          style: TextStyle(fontSize: 16),
-                        ),
-                      );
+                      return LessonContentItem(
+                        contentType: widget.courseLessonData.contents[index]["content_type"], 
+                        content: widget.courseLessonData.contents[index]["contents"]);
                     },
                     itemCount: widget.courseLessonData.contents.length,
                   ),

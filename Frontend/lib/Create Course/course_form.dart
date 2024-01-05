@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/const.dart' as constaint;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 // void main() {
 //   runApp(MyApp());
 // }
@@ -61,6 +63,10 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
   void _saveCourse() async {
     debugPrint("Fetch add course");
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    final int? userId = prefs.getInt('userId');
+
     Map<String, String> headers = {
       'Content-Type':
           'application/json', // Set the content type for POST request
@@ -72,7 +78,7 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
       'title': titleController.text,
       'description': descriptionController.text,
       'lessons': lessons.map((lesson) => lesson.toJson()).toList(),
-      'author_id': AppStore.ID
+      'author_id': userId
     };
 
     // Example API call:

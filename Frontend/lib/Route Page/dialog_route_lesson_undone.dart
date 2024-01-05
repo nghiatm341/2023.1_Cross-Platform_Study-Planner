@@ -5,6 +5,8 @@ import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class DialogRouteLessonUnDone extends StatefulWidget {
   final DateTime routeCreatedTime;
   final int studyTime;
@@ -50,10 +52,15 @@ class _DialogRouteLessonUnDoneState extends State<DialogRouteLessonUnDone> {
   }
 
   Future<void> _updateStudyTime() async {
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    final int? userId = prefs.getInt('userId');
+
     Map<String, String> headers = {
       'Content-Type':
           'application/json',
-      'Authorization': "Bearer ${AppStore.TOKEN}"// Set the content type for POST request
+      'Authorization': "Bearer ${token}"// Set the content type for POST request
       // Add other headers if needed
     };
 

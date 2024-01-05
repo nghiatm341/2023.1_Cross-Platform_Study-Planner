@@ -9,6 +9,8 @@ import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class CourseItem extends StatefulWidget {
   CourseItemData courseData;
 
@@ -23,10 +25,20 @@ class CourseItem extends StatefulWidget {
 
 class _RouteItem extends State<CourseItem> {
   String courseDescription = "";
+  late String? role = "";
 
   @override
   void initState() {
     super.initState();
+    _loadData();
+  }
+
+  _loadData() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      role = prefs.getString('role');
+    });
   }
 
   void subscribeCourse() {
@@ -109,7 +121,7 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: widget.courseData.isSubscribed && AppStore.ROLE == "student",
+                          visible: widget.courseData.isSubscribed && role == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,
@@ -136,7 +148,7 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: !widget.courseData.isSubscribed && AppStore.ROLE == "student",
+                          visible: !widget.courseData.isSubscribed && role == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,

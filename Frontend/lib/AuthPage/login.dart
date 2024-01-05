@@ -10,6 +10,7 @@ import 'package:frontend/const.dart' as constaint;
 import 'package:frontend/AllPages/routes_page.dart';
 import 'dart:convert';
 import 'package:frontend/ultils/store.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -31,6 +32,8 @@ class _MyWidgetState extends State<LoginPage> {
   }
 
   Future<String?> login(String email, String pass) async {
+    final SharedPreferences prefs = await SharedPreferences.getInstance();
+
     debugPrint("Fetch login");
 
     Map<String, String> headers = {
@@ -65,19 +68,23 @@ class _MyWidgetState extends State<LoginPage> {
         EasyLoading.dismiss();
         return 'Email or password is invalid';
       }
-      AppStore.ID = userId;
-      AppStore.TOKEN = token;
-      AppStore.USERNAME = userName;
-      AppStore.ROLE = role;
+      await prefs.setInt('userId', userId);
+      await prefs.setString('token', token);
+      await prefs.setString('userName', userName);
+      await prefs.setString('role', role);
+      // AppStore.ID = userId;
+      // AppStore.TOKEN = token;
+      // AppStore.USERNAME = userName;
+      // AppStore.ROLE = role;
 
-      if (AppStore.ROLE == 'admin') {
+      if (role == 'admin') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => HomePageAdmin(),
           ),
         );
-      } else if (AppStore.ROLE == 'teacher') {
+      } else if (role == 'teacher') {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
@@ -200,7 +207,7 @@ class _MyWidgetState extends State<LoginPage> {
                         return;
                       }
                       if (!RegExp(
-                              r'^[\w-]+(\.[\w-]+)*@([\w-]+\.)+[a-zA-Z]{2,7}$')
+                              r'^[a-zA-Z0-9_.+-]+(\+[a-zA-Z0-9_.+-]+)?@([\w-]+\.)+[a-zA-Z]{2,7}$')
                           .hasMatch(email.text)) {
                         _message = 'Invalid email!';
                         setState(() {});
