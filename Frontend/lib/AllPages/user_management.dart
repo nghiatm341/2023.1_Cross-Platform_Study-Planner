@@ -8,92 +8,7 @@ class UserManagement extends StatefulWidget {
 
 class _UserManagementState extends State<UserManagement> {
   List<User> suggestions = [];
-  List<User> listUser = [
-    User(
-        firstName: 'Dung',
-        lastName: 'Nong',
-        status: 'block',
-        id: 1,
-        avatar:
-            'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'Dung',
-        lastName: 'Viet',
-        status: 'active',
-        id: 2,
-        avatar:
-            'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'Nam',
-        lastName: 'Pham',
-        status: 'active',
-        id: 3,
-        avatar:
-            'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'Nghia',
-        lastName: 'Nong',
-        status: 'active',
-        id: 4,
-        avatar:
-            'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'Son',
-        lastName: 'Nguyen',
-        status: 'active',
-        id: 5,
-        avatar:
-            'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'Hoang',
-        lastName: 'Vu',
-        status: 'active',
-        id: 6,
-        avatar:
-            'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'First',
-        lastName: 'Last1',
-        status: 'active',
-        id: 7,
-        avatar:
-        'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'First',
-        lastName: 'Last2',
-        status: 'active',
-        id: 8,
-        avatar:
-        'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'First',
-        lastName: 'Last3',
-        status: 'active',
-        id: 9,
-        avatar:
-        'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'First',
-        lastName: 'Last4',
-        status: 'active',
-        id: 10,
-        avatar:
-        'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'First',
-        lastName: 'Last5',
-        status: 'active',
-        id: 11,
-        avatar:
-        'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-    User(
-        firstName: 'First',
-        lastName: 'Last6',
-        status: 'active',
-        id: 12,
-        avatar:
-        'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg'),
-  ];
+  List<User> listUser = [];
 
   @override
   void initState() {
@@ -171,9 +86,39 @@ class _UserManagementState extends State<UserManagement> {
                             Container(
                                 child: Row(
                                     children: [
-                                      CircleAvatar(
-                                        backgroundImage:
-                                            NetworkImage(suggestions[index].avatar),
+                                      // CircleAvatar(
+                                      //   backgroundImage:
+                                      //       NetworkImage(suggestions[index].avatar),
+                                      // ),
+                                      Container(
+                                        width: 100,
+                                        height: 100,
+                                        child: ClipOval(
+                                          child: Image.network(
+                                            suggestions[index].avatar,
+                                            fit: BoxFit.cover,
+                                            loadingBuilder: (BuildContext context,
+                                                Widget child,
+                                                ImageChunkEvent? loadingProgress) {
+                                              if (loadingProgress == null) {
+                                                return child;
+                                              } else {
+                                                return Center(
+                                                  child: CircularProgressIndicator(
+                                                    value: loadingProgress.expectedTotalBytes != null
+                                                        ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes!
+                                                        : null,
+                                                  ),
+                                                );
+                                              }
+                                            },
+                                            errorBuilder: (BuildContext context,
+                                                Object exception,
+                                                StackTrace? stackTrace) {
+                                              return Text('Error loading image');
+                                            },
+                                          ),
+                                        ),
                                       ),
                                       SizedBox(width: 10.0),
                                       Column(

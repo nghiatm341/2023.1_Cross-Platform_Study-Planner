@@ -117,7 +117,8 @@ router.post('/create', async (req, res) => {
             author_id,
             lessons,
             is_drafting,
-            list_subscriber } = req.body
+            list_subscriber,
+            avatar } = req.body
 
         const maxId = await Course.findOne({}, 'id').sort({ id: -1 })
         const id = maxId ? Number(maxId.id) + 1 : 1
@@ -134,6 +135,7 @@ router.post('/create', async (req, res) => {
             user_id: 0, // Chưa có user và login 
             is_drafting: !isNaN(is_drafting) ? is_drafting : 1,
             list_subscriber: list_subscriber ? list_subscriber : [],
+            avatar: avatar ? avatar : ''
         })
 
         const result = await newData.save();
@@ -154,7 +156,8 @@ router.post('/update', async (req, res) => {
             author_id,
             lessons,
             is_drafting,
-            list_subscriber } = req.body
+            list_subscriber,
+            avatar } = req.body
 
         const foundData = await Course.findOne({ id: id, is_delete: 0 })
         if (foundData) {
@@ -165,6 +168,7 @@ router.post('/update', async (req, res) => {
             if (lessons) update.lessons = lessons
             if (!isNaN(is_drafting)) update.is_drafting = is_drafting
             if (list_subscriber) update.list_subscriber = list_subscriber
+            if (avatar) update.avatar = avatar
 
             await Course.findOneAndUpdate({ id: id, is_delete: 0 }, { $set: update })
             await sanitizeLesson(id, lessons)
@@ -262,7 +266,8 @@ router.post('/createWithNewLessons', async (req, res) => {
             author_id,
             lessons,
             is_drafting,
-            list_subscriber } = req.body
+            list_subscriber,
+            avatar } = req.body
 
         const maxId = await Course.findOne({}, 'id').sort({ id: -1 })
         const id = maxId ? Number(maxId.id) + 1 : 1
@@ -278,14 +283,14 @@ router.post('/createWithNewLessons', async (req, res) => {
 
                 const newLesson = new Lesson({
                     id: lessonId + i,
-        
+
                     title: element.hasOwnProperty('title') ? element.title : '',
                     contents: element.hasOwnProperty('contents') ? element.contents : [],
                     chapter_title: element.hasOwnProperty('chapter_title') ? element.chapter_title : '',
                     course_id: 0,
                     estimate_time: element.hasOwnProperty('estimate_time') ? element.estimate_time : 0,
                     lesson_before_id: i === 0 ? 0 : lessonId + i - 1,
-        
+
                     is_delete: 0,
                     create_at: new Date(),
                     update_at: new Date(),
@@ -312,6 +317,7 @@ router.post('/createWithNewLessons', async (req, res) => {
             user_id: 0, // Chưa có user và login 
             is_drafting: !isNaN(is_drafting) ? is_drafting : 1,
             list_subscriber: list_subscriber ? list_subscriber : [],
+            avatar: avatar ? avatar : ''
         })
 
         const result = await newData.save();
