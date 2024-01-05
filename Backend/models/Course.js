@@ -56,7 +56,11 @@ const CourseSchema = new Schema({
             type: Number,
             default: 0
         }
-    }]
+    }],
+    avatar: {
+        type: String,
+        default: ''
+    },
 }, {
     timestamps: true,
     versionKey: false,

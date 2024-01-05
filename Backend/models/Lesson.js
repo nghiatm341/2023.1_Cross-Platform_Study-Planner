@@ -16,7 +16,7 @@ const LessonSchema = new Schema({
             type: String,
             default: ""
         },
-        content_type: {
+        content_type: { // 1 String, 2 Image
             type: Number,
             default: 1
         }
