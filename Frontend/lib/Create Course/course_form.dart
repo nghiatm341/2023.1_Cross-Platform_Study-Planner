@@ -292,7 +292,7 @@ class _NewCourseScreenState extends State<NewCourseScreen> {
                   visible: courseAvatarUploaded,
                   child: Column(
                     children: [
-                      SimpleNetworkImage(imageUrl: courseAvatarUrl),
+                      SimpleNetworkImage(imageUrl: courseAvatarUrl, boxFitType: BoxFit.contain),
                       ElevatedButton(
                         onPressed: clearAvatar,
                         child: Text("Clear"),
@@ -534,7 +534,7 @@ class ContentWidget extends StatelessWidget {
                     maxLines: 4,
                     decoration: InputDecoration(labelText: 'Content Text'),
                   )
-                : SimpleNetworkImage(imageUrl: content.content),
+                : SimpleNetworkImage(imageUrl: content.content, boxFitType: BoxFit.contain),
             SizedBox(height: 8),
             ElevatedButton(
               onPressed: onDelete,

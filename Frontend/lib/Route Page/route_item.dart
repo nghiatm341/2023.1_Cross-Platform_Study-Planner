@@ -79,6 +79,8 @@ class _RouteItem extends State<RouteItem> {
           routeItemUIData.startDate = routeData.createdAt;
           routeItemUIData.progress = routeData.progress;
           routeItemUIData.author = courseData['author_id']['firstName'] +  " " + courseData['author_id']['lastName'];
+          routeItemUIData.courseAvatar = (courseData['avatar'] != null) ? courseData['avatar'] : "";
+          routeItemUIData.hasAvatar = routeItemUIData.courseAvatar != "";
         });
       } else {
         // Request f
@@ -99,6 +101,9 @@ class _RouteItem extends State<RouteItem> {
 
   @override
   Widget build(BuildContext context) {
+
+    bool hasAvatar = routeItemUIData.hasAvatar;
+
     return GestureDetector(
       child: Container(
         child: Padding(
@@ -110,7 +115,12 @@ class _RouteItem extends State<RouteItem> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: Container(height: 60, child: SimpleNetworkImage(imageUrl: widget.routeData.courseAvatar))),
+                    child: Container(
+                      height: 60, 
+                      child: 
+                        hasAvatar ? SimpleNetworkImage(imageUrl: routeItemUIData.courseAvatar, boxFitType: BoxFit.cover) : Image(image: AssetImage("assets/course-default-icon.jpg"), fit: BoxFit.cover) 
+                        )
+                      ),
                 Expanded(
                   flex: 8,
                   child: Padding(
@@ -199,7 +209,6 @@ class RouteItemData {
   final String createdAt;
   final String finishedAt;
   final String progress;
-  final String courseAvatar;
 
   RouteItemData(
       {required this.routeId,
@@ -208,7 +217,6 @@ class RouteItemData {
       required this.createdAt,
       required this.progress, 
       required this.finishedAt,
-      required this.courseAvatar
   });
 }
 
@@ -217,4 +225,6 @@ class RouteItemUIData {
   String author = "...";
   String startDate = "...";
   String progress = "...";
+  String courseAvatar = "";
+  bool hasAvatar = false;
 }

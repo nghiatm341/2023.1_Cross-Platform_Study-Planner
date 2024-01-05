@@ -21,7 +21,7 @@ class LessonContentItem extends StatelessWidget {
                 style: TextStyle(fontSize: 16),
               ),
             )
-          : Container(width: 100, height: 200, child: SimpleNetworkImage(imageUrl: content),),
+          : Container(width: 100, height: 200, child: SimpleNetworkImage(imageUrl: content, boxFitType: BoxFit.contain),),
     );
   }
 }

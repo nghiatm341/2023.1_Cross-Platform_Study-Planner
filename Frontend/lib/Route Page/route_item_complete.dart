@@ -53,6 +53,7 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
           routeItemUIData.startDate = routeData.createdAt;
           routeItemUIData.endDate = routeData.finishedAt;
           routeItemUIData.author = courseData['author_id']['firstName'] +  " " + courseData['author_id']['lastName'];
+          routeItemUIData.courseAvatar = (courseData['avatar'] != null) ? courseData['avatar'] : "";
         });
       } else {
         // Request failed with an error status code
@@ -73,6 +74,9 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
 
   @override
   Widget build(BuildContext context) {
+
+    bool hasAvatar = routeItemUIData.courseAvatar != "";
+
     return GestureDetector(
       child: Container(
     
@@ -85,11 +89,16 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: Container(height: 60, child: SimpleNetworkImage(imageUrl: widget.routeData.courseAvatar))),
+                    child: Container(
+                      height: 60, 
+                      child: 
+                        hasAvatar ? SimpleNetworkImage(imageUrl: routeItemUIData.courseAvatar, boxFitType: BoxFit.contain) : Image(image: AssetImage("assets/course-default-icon.jpg"), fit: BoxFit.fill)
+                      )
+                    ),
     
     
                 Expanded(
-                  flex: 6,
+                  flex: 8,
                   child: Padding(
                     padding: const EdgeInsets.only(left: 8),
                     child: Column(
@@ -151,6 +160,7 @@ class RouteItemCompleteUIData {
   String author = "...";
   String startDate = "...";
   String endDate = "...";
+  String courseAvatar = "";
 }
 
 

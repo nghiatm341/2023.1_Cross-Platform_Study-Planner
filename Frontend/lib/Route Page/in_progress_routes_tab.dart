@@ -73,7 +73,6 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
                 createdAt: date,
                 finishedAt: finishDate,
                 progress: (((completeCount / allLessons.length) * 100).ceil()).toString(),
-                courseAvatar: constaint.sampleCourseAvatarUrl
               );
             }).toList();
             
