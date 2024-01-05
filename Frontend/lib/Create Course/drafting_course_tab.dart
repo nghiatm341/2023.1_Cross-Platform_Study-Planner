@@ -76,7 +76,9 @@ class _DraftingCourses extends State<DraftingCourses> {
                 subscribersCount: subscribers.length,
                 description: c['description'],
                 lessons: c['lessons'],
-                isDrafting: c['is_drafting']);
+                isDrafting: c['is_drafting'],
+                avatar: (c['avatar'] != null) ? c['avatar'] : ""
+                );
           }).toList();
         });
       } else {

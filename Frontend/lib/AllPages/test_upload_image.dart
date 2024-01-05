@@ -127,7 +127,7 @@ class _UploadImageState extends State<UploadImage> {
             child: Container(
               child: Column(children: [
                 Text("Uploaded file:"),
-                SimpleNetworkImage(imageUrl: imagedUrl,),
+                SimpleNetworkImage(imageUrl: imagedUrl, boxFitType: BoxFit.contain,),
                  ElevatedButton(onPressed: clear, child: Text("Clear")),
               ]),
             ),

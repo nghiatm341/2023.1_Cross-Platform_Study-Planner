@@ -98,7 +98,8 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
               subscribersCount: subscribers.length,
               description: c['description'],
               lessons: c['lessons'],
-              isDrafting: c['is_drafting']
+              isDrafting: c['is_drafting'],
+              avatar: (c['avatar'] != null) ? c['avatar'] : ""
             );
           }).toList();
         });

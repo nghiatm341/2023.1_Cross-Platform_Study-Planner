@@ -74,7 +74,6 @@ late List<RouteItemData> inProgressRoute = [];
                 createdAt: date,
                 finishedAt: finishDate,
                 progress: (((completeCount / allLessons.length) * 100).ceil()).toString(),
-                courseAvatar: constaint.sampleCourseAvatarUrl
               );
             }).toList();
             
