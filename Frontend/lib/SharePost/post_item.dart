@@ -110,7 +110,7 @@ class _PostItem extends State<PostItem> {
 }
 
 class PostItemData {
-  final int postId;
+  final String postId;
   final String userName;
   final String title;
   final String content;
