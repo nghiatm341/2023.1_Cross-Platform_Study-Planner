@@ -115,12 +115,17 @@ class _AllPosts extends State<AllPosts> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-        itemCount: postData1.length,
-        itemBuilder: (context, index) {
-          final post = postData1[index];
-
-          return PostItem(postItemData: post);
-        });
+    return Expanded(
+      child: RefreshIndicator(
+        onRefresh: getCourses,
+        child: ListView.builder(
+            itemCount: postData1.length,
+            itemBuilder: (context, index) {
+              final post = postData1[index];
+        
+              return PostItem(postItemData: post);
+            }),
+      ),
+    );
   }
 }

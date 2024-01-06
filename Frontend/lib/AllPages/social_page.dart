@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/SharePost/all_post.dart';
+import 'package:frontend/SharePost/my_post.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/const.dart' as constaint;
@@ -136,7 +137,7 @@ class _SocialPageState extends State<SocialPage> {
                   )
                 ]),
                 Expanded(
-                  child: TabBarView(children: [AllPosts(), AllPosts()]),
+                  child: TabBarView(children: [AllPosts(), MyPosts()]),
                 )
               ],
             ),
