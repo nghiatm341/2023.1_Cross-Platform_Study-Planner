@@ -5,16 +5,12 @@ const authMiddleware = require('../middlewares/auth.middleware');
 const { ROLE } = require('../constant/enum')
 const User = require('../models/user')
 
-router.post('/create', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN), async (req, res) => {
+router.post('/create', async (req, res) => {
     try {
-        const { title, content, image } = req.body
-        const user = req.userInfo
-
-        const maxId = await Post.findOne({}, 'id').sort({ id: -1 })
-        const id = maxId ? Number(maxId.id) + 1 : 1
+        const {userId, title, content, image } = req.body
 
         const newData = new Post({
-            id: id,
+            //id: id,
 
             title: title ? title : "",
             content: content ? content : "",
@@ -22,7 +18,7 @@ router.post('/create', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEAC
             list_like: [],
             list_comment: [],
 
-            user: user.id,
+            user: userId,
             is_delete: 0,
             create_at: new Date(),
             update_at: new Date()
@@ -37,7 +33,7 @@ router.post('/create', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEAC
     }
 })
 
-router.post('/update', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN), async (req, res) => {
+router.post('/update', async (req, res) => {
     try {
         const { id, title, content, image } = req.body
         const user = req.userInfo
@@ -69,7 +65,7 @@ router.post('/update', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEAC
     }
 })
 
-router.post('/list', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN), async (req, res) => {
+router.post('/list', async (req, res) => {
     try {
         const { user_id } = req.body
 
@@ -110,7 +106,7 @@ router.post('/list', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHE
     }
 })
 
-router.post('/getById', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN), async (req, res) => {
+router.post('/getById', async (req, res) => {
     try {
         const { id } = req.body
 
@@ -153,7 +149,7 @@ router.post('/getById', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEA
     }
 })
 
-router.post('/delete', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN), async (req, res) => {
+router.post('/delete',  async (req, res) => {
     try {
         const { id } = req.body
 
@@ -177,7 +173,7 @@ router.post('/delete', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEAC
     }
 })
 
-router.post('/likeDislike', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN), async (req, res) => {
+router.post('/likeDislike',  async (req, res) => {
     try {
         const { id } = req.body
         const user = req.userInfo
@@ -216,46 +212,31 @@ router.post('/likeDislike', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE
     }
 })
 
-router.post('/comment', authMiddleware.authRoleMiddleware(ROLE.STUDENT, ROLE.TEACHER, ROLE.ADMIN), async (req, res) => {
+router.post('/comment', async (req, res) => {
+    const { postId, userId, comment } = req.body; 
+    
     try {
-        const { id, comment } = req.body
-        const user = req.userInfo
-
-        if (id) {
-            if (comment) {
-                const foundData = await Post.findOne({ id: id, is_delete: 0 })
-                if (foundData) {
-                    const listComment = foundData.list_comment
-
-                    listComment.push({
-                        user: user.id,
-                        comment: comment,
-                        created_at: new Date()
-                    })
-
-                    if (listComment.length > 0) {
-                        listComment.sort((a, b) => b.created_at - a.created_at)
-                    }
-
-                    await Post.findOneAndUpdate(
-                        { id: id, is_delete: 0 },
-                        { $set: { list_comment: listComment } }
-                    )
-
-                    res.status(200).json({ message: 'comment success' })
-                } else {
-                    res.status(400).json({ message: "Not found" })
-                }
-            } else {
-                res.status(400).json({ message: "Empty comment" })
-            }
-        } else {
-            res.status(400).json({ message: "Missing id" })
-        }
-    } catch (error) {
-        console.log('Error', error)
-        res.status(500).json({ message: error.message })
+      const post = await Post.findById(postId);
+  
+      if (!post) {
+        return res.status(404).json({ error: 'Post not found' });
+      }
+  
+      const newComment = {
+        userId: userId,
+        comment: comment,
+        created_at: new Date()
+      };
+  
+      post.list_comment.push(newComment);
+      await post.save();
+  
+      res.status(201).json({ message: 'Comment added successfully', post });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ error: 'Server error' });
     }
-})
+  });
+  
 
 module.exports = router
