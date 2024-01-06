@@ -6,7 +6,7 @@ import 'package:frontend/const.dart' as constaint;
 
 class PostItem extends StatefulWidget {
   final PostItemData postItemData;
-
+  late bool isLike = false;
   PostItem({Key? key, required this.postItemData}) : super(key: key);
 
   @override
@@ -15,7 +15,13 @@ class PostItem extends StatefulWidget {
 
 class _PostItemState extends State<PostItem> {
   TextEditingController _commentController = TextEditingController();
-
+  late bool _isLike;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _isLike = widget.isLike;
+  }
   @override
   void dispose() {
     _commentController.dispose();
@@ -89,13 +95,16 @@ class _PostItemState extends State<PostItem> {
                     TextButton(
                       onPressed: () {
                         // Handle like button click
+                        setState(() {
+                          _isLike = !_isLike;
+                        });
                         print('Like button clicked');
                       },
                       child: Row(
                         children: [
-                          Icon(Icons.thumb_up),
+                          Icon(Icons.thumb_up, color: _isLike? Colors.blue:Colors.grey,),
                           SizedBox(width: 5.0),
-                          Text('Like'),
+                          Text('Like', style: TextStyle(color: _isLike? Colors.blue:Colors.grey),),
                         ],
                       ),
                     ),
