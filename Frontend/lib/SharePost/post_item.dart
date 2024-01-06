@@ -1,15 +1,27 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ultils/store.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'package:frontend/const.dart' as constaint;
 
 class PostItem extends StatefulWidget {
-  PostItemData postItemData;
+  final PostItemData postItemData;
 
-  PostItem({super.key, required this.postItemData});
+  PostItem({Key? key, required this.postItemData}) : super(key: key);
 
   @override
-  State<PostItem> createState() => _PostItem();
+  State<PostItem> createState() => _PostItemState();
 }
 
-class _PostItem extends State<PostItem> {
+class _PostItemState extends State<PostItem> {
+  TextEditingController _commentController = TextEditingController();
+
+  @override
+  void dispose() {
+    _commentController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -47,7 +59,6 @@ class _PostItem extends State<PostItem> {
             padding: EdgeInsets.all(10.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
-              // crossAxisAlignment: CrossAxisAlignment.baseline,
               children: [
                 // Title
                 Text(
@@ -70,35 +81,86 @@ class _PostItem extends State<PostItem> {
           // Footer
           Container(
             padding: EdgeInsets.all(10.0),
-            child: Row(
+            child: Column(
               children: [
-                // Like Button
-                TextButton(
-                  onPressed: () {
-                    // Handle like button click
-                    print('Like button clicked');
-                  },
-                  child: Row(
-                    children: [
-                      Icon(Icons.thumb_up),
-                      SizedBox(width: 5.0),
-                      Text('Like'),
-                    ],
-                  ),
+                Row(
+                  children: [
+                    // Like Button
+                    TextButton(
+                      onPressed: () {
+                        // Handle like button click
+                        print('Like button clicked');
+                      },
+                      child: Row(
+                        children: [
+                          Icon(Icons.thumb_up),
+                          SizedBox(width: 5.0),
+                          Text('Like'),
+                        ],
+                      ),
+                    ),
+                    // Comment TextField and Button
+                    Expanded(
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _commentController,
+                              decoration: InputDecoration(
+                                hintText: 'Add a comment...',
+                              ),
+                            ),
+                          ),
+                          TextButton(
+                            onPressed: () async {
+                              // Handle comment button click
+                              String comment = _commentController.text;
+                              print('Comment button clicked: $comment');
+
+                              try {
+                                Map<String, String> headers = {
+                                  'Content-Type':
+                                      'application/json', // Set the content type for POST request
+                                };
+                                final response = await http.post(
+                                  Uri.parse('${constaint.apiUrl}/p/comment'),
+                                  headers: headers,
+                                  body: jsonEncode({
+                                    'userID': AppStore.ID,
+                                    'postId': widget.postItemData.postId,
+                                    'comment': comment
+                                  }), // Encode the POST data to JSON
+                                );
+                                print('=======$response');
+                              } catch (e) {
+                                print('errrrrrrrrrrrrr: $e');
+                              }
+                              // Process the comment data as needed
+                              _commentController
+                                  .clear(); // Clear the input field
+                            },
+                            child: Text('Comment'),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-                // Comment Button
-                TextButton(
-                  onPressed: () {
-                    // Handle comment button click
-                    print('Comment button clicked');
+                // Other Footer components...
+                ListView.builder(
+                  shrinkWrap: true,
+                  itemCount: widget.postItemData.listComment.length,
+                  itemBuilder: (BuildContext context, int index) {
+                    final comment =
+                        widget.postItemData.listComment[index]['comment'];
+                    return Container(
+                      padding: EdgeInsets.symmetric(vertical: 5.0),
+                      child: Text(
+                        comment,
+                        textAlign: TextAlign.left,
+                      ),
+                    );
                   },
-                  child: Row(
-                    children: [
-                      Icon(Icons.comment),
-                      SizedBox(width: 5.0),
-                      Text('Comment'),
-                    ],
-                  ),
                 ),
               ],
             ),
@@ -120,14 +182,15 @@ class PostItemData {
   final String createdAt;
   final int routeId;
 
-  PostItemData(
-      {required this.postId,
-      required this.userName,
-      required this.title,
-      required this.content,
-      required this.type,
-      required this.listLike,
-      required this.listComment,
-      required this.createdAt,
-      required this.routeId});
+  PostItemData({
+    required this.postId,
+    required this.userName,
+    required this.title,
+    required this.content,
+    required this.type,
+    required this.listLike,
+    required this.listComment,
+    required this.createdAt,
+    required this.routeId,
+  });
 }

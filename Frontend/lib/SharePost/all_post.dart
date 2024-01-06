@@ -5,7 +5,6 @@ import 'package:frontend/SharePost/post_item.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/const.dart' as constaint;
 
-
 class AllPosts extends StatefulWidget {
   const AllPosts({super.key});
 
@@ -59,7 +58,6 @@ class _AllPosts extends State<AllPosts> {
         routeId: 0),
   ];
 
-
   Future getCourses() async {
     Map<String, String> headers = {
       'Content-Type':
@@ -73,38 +71,38 @@ class _AllPosts extends State<AllPosts> {
         headers: headers,
         body: jsonEncode({}), // Encode the POST data to JSON
       );
-      if(response.statusCode == 200) {
+      if (response.statusCode == 200) {
         final jsonData = json.decode(response.body);
         List data = jsonData['data'];
         print(data);
 
         setState(() {
-  postData1 = data.map((item) {
-    String postId = item['_id'] ?? "";
-    // Perform null checks using the null-aware and null-coalescing operators
-    String userName = item['user'] != null
-        ? '${item['user']['lastName'] ?? ''} ${item['user']['firstName'] ?? ''}'
-        : "";
-    String title = item['title'] ?? "";
-    String content = item['content'] ?? "";
-    String createdAt = item['created_at'] ?? "";
-    List listLike = item['list_like'] ?? [];
-    List listComment = item['list_comment'] ?? [];
-    return PostItemData(
-      postId: postId, 
-      userName: userName, 
-      title: title, 
-      content: content, 
-      type: 0, 
-      listLike: listLike, 
-      listComment: listComment, 
-      createdAt: createdAt, 
-      routeId: 0,
-    );
-  }).toList();
-});
+          postData1 = data.map((item) {
+            String postId = item['_id'] ?? "";
+            // Perform null checks using the null-aware and null-coalescing operators
+            String userName = item['user'] != null
+                ? '${item['user']['lastName'] ?? ''} ${item['user']['firstName'] ?? ''}'
+                : "";
+            String title = item['title'] ?? "";
+            String content = item['content'] ?? "";
+            String createdAt = item['created_at'] ?? "";
+            List listLike = item['list_like'] ?? [];
+            List listComment = item['list_comment'] ?? [];
+            return PostItemData(
+              postId: postId,
+              userName: userName,
+              title: title,
+              content: content,
+              type: 0,
+              listLike: listLike,
+              listComment: listComment,
+              createdAt: createdAt,
+              routeId: 0,
+            );
+          }).toList();
+        });
       }
-    } catch(e) {
+    } catch (e) {
       print(e);
     }
   }
