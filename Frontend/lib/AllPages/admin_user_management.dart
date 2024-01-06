@@ -5,6 +5,8 @@ import 'package:frontend/const.dart' as constaint;
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class AdminUserManagement extends StatefulWidget {
   const AdminUserManagement({super.key});
 
@@ -20,11 +22,14 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
   Future<void> fetchListUser() async {
     debugPrint("Fetch api get list user");
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       // Set the content type for POST request
       // Add other headers if needed
-      'Authorization': 'Bearer ' + AppStore.TOKEN.toString()
+      'Authorization': 'Bearer ' + token.toString()
     };
 
     try {
@@ -59,11 +64,14 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
   Future<void> blockUser(User user) async {
     debugPrint("Call api block user");
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       // Set the content type for POST request
       // Add other headers if needed
-      'Authorization': 'Bearer ' + AppStore.TOKEN.toString()
+      'Authorization': 'Bearer ' + token.toString()
     };
 
     Map<String, dynamic> postData = {'userId': user.id};
@@ -87,11 +95,14 @@ class _AdminUserManagementState extends State<AdminUserManagement> {
   Future<void> unblockUser(User user) async {
     debugPrint("Call api unblock user");
 
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
     Map<String, String> headers = {
       'Content-Type': 'application/json',
       // Set the content type for POST request
       // Add other headers if needed
-      'Authorization': 'Bearer ' + AppStore.TOKEN.toString()
+      'Authorization': 'Bearer ' + token.toString()
     };
 
     Map<String, dynamic> postData = {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:frontend/Route%20Page/route_item.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/simpleNetworkImage.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -52,6 +53,7 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
           routeItemUIData.startDate = routeData.createdAt;
           routeItemUIData.endDate = routeData.finishedAt;
           routeItemUIData.author = courseData['author_id']['firstName'] +  " " + courseData['author_id']['lastName'];
+          routeItemUIData.courseAvatar = (courseData['avatar'] != null) ? courseData['avatar'] : "";
         });
       } else {
         // Request failed with an error status code
@@ -72,6 +74,9 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
 
   @override
   Widget build(BuildContext context) {
+
+    bool hasAvatar = routeItemUIData.courseAvatar != "";
+
     return GestureDetector(
       child: Container(
     
@@ -84,30 +89,35 @@ class _RouteItemCompleteState extends State<RouteItemComplete> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: Icon(
-                      Icons.book,
-                      size: 40,
-                    )),
+                    child: Container(
+                      height: 60, 
+                      child: 
+                        hasAvatar ? SimpleNetworkImage(imageUrl: routeItemUIData.courseAvatar, boxFitType: BoxFit.contain) : Image(image: AssetImage("assets/course-default-icon.jpg"), fit: BoxFit.fill)
+                      )
+                    ),
     
     
                 Expanded(
-                  flex: 6,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(routeItemUIData.title,
-                            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
-                            textAlign: TextAlign.left, ),
-                      ),
-                      Text("author: " + routeItemUIData.author,
-                          style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-    
-                       
-                    ],
+                  flex: 8,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(routeItemUIData.title,
+                              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w700),
+                              textAlign: TextAlign.left, ),
+                        ),
+                        Text("author: " + routeItemUIData.author,
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.left),
+                      
+                         
+                      ],
+                    ),
                   ),
                 ),
     
@@ -150,6 +160,7 @@ class RouteItemCompleteUIData {
   String author = "...";
   String startDate = "...";
   String endDate = "...";
+  String courseAvatar = "";
 }
 
 

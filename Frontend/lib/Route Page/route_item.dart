@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_easyloading/flutter_easyloading.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/simpleNetworkImage.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -78,6 +79,8 @@ class _RouteItem extends State<RouteItem> {
           routeItemUIData.startDate = routeData.createdAt;
           routeItemUIData.progress = routeData.progress;
           routeItemUIData.author = courseData['author_id']['firstName'] +  " " + courseData['author_id']['lastName'];
+          routeItemUIData.courseAvatar = (courseData['avatar'] != null) ? courseData['avatar'] : "";
+          routeItemUIData.hasAvatar = routeItemUIData.courseAvatar != "";
         });
       } else {
         // Request f
@@ -98,6 +101,9 @@ class _RouteItem extends State<RouteItem> {
 
   @override
   Widget build(BuildContext context) {
+
+    bool hasAvatar = routeItemUIData.hasAvatar;
+
     return GestureDetector(
       child: Container(
         child: Padding(
@@ -109,36 +115,38 @@ class _RouteItem extends State<RouteItem> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: GestureDetector(
-                      child: Icon(
-                        Icons.book,
-                        size: 50,
+                    child: Container(
+                      height: 60, 
+                      child: 
+                        hasAvatar ? SimpleNetworkImage(imageUrl: routeItemUIData.courseAvatar, boxFitType: BoxFit.cover) : Image(image: AssetImage("assets/course-default-icon.jpg"), fit: BoxFit.cover) 
+                        )
                       ),
-                      onTap: _reload,
-                    )),
                 Expanded(
-                  flex: 6,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 8),
-                        child: Text(
-                          routeItemUIData.title,
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.w700),
-                          textAlign: TextAlign.left,
+                  flex: 8,
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 8),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 8),
+                          child: Text(
+                            routeItemUIData.title,
+                            style: TextStyle(
+                                fontSize: 16, fontWeight: FontWeight.w700),
+                            textAlign: TextAlign.left,
+                          ),
                         ),
-                      ),
-                      Text("Author: " + routeItemUIData.author,
+                        Text("Author: " + routeItemUIData.author,
+                            style: TextStyle(fontSize: 16),
+                            textAlign: TextAlign.left),
+                        Text(
+                          "Start: " + routeItemUIData.startDate,
                           style: TextStyle(fontSize: 16),
-                          textAlign: TextAlign.left),
-                      Text(
-                        "Start: " + routeItemUIData.startDate,
-                        style: TextStyle(fontSize: 16),
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
                 ),
                 Expanded(
@@ -208,7 +216,7 @@ class RouteItemData {
       required this.userId,
       required this.createdAt,
       required this.progress, 
-      required this.finishedAt
+      required this.finishedAt,
   });
 }
 
@@ -217,4 +225,6 @@ class RouteItemUIData {
   String author = "...";
   String startDate = "...";
   String progress = "...";
+  String courseAvatar = "";
+  bool hasAvatar = false;
 }

@@ -4,6 +4,7 @@ import 'package:frontend/AllPages/courses_page.dart';
 import 'package:frontend/AllPages/routes_page.dart';
 import 'package:frontend/AllPages/social_page.dart';
 import 'package:frontend/AllPages/teacher_course_page.dart';
+import 'package:frontend/AllPages/test_upload_image.dart';
 import 'package:google_nav_bar/google_nav_bar.dart';
 import 'package:line_icons/line_icon.dart';
 import 'package:line_icons/line_icons.dart';
@@ -16,10 +17,9 @@ class HomePageTeacher extends StatefulWidget {
 }
 
 class _HomePageTeacher extends State<HomePageTeacher> {
-
   int _currentIndexPage = 0;
 
-  void _navigateBottomBar(int index){
+  void _navigateBottomBar(int index) {
     setState(() {
       _currentIndexPage = index;
     });
@@ -29,13 +29,13 @@ class _HomePageTeacher extends State<HomePageTeacher> {
     TeacherCoursePage(),
     CoursesPage(),
     SocialPage(),
+    // UploadImage(),
     AccountPage()
   ];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       // appBar: AppBar(
       //   title: Text("Sharing-learn App"),
       //   centerTitle: true,
@@ -47,37 +47,34 @@ class _HomePageTeacher extends State<HomePageTeacher> {
 
       bottomNavigationBar: Container(
         color: Colors.amber,
-
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 12.0, vertical: 16),
           child: GNav(
-            backgroundColor: Colors.amber,
-            color: Colors.black,
-            activeColor: Colors.black,
-            tabBackgroundColor: Colors.yellow.shade600,
-            gap: 8,
-            padding: EdgeInsets.all(16),
-
-           onTabChange: _navigateBottomBar,
-
-            tabs: const [
-            GButton(
-              icon: Icons.view_kanban,
-              text: "My courses",
-            ),
-            GButton(
-              icon: LineIcons.school,
-              text: "Explode courses",
-            ),
-            GButton(
-              icon: LineIcons.globe,
-              text: "Social",
-            ),
-            GButton(
-              icon: LineIcons.user,
-              text: "Account",
-            ),
-          ]),
+              backgroundColor: Colors.amber,
+              color: Colors.black,
+              activeColor: Colors.black,
+              tabBackgroundColor: Colors.yellow.shade600,
+              gap: 8,
+              padding: EdgeInsets.all(16),
+              onTabChange: _navigateBottomBar,
+              tabs: const [
+                GButton(
+                  icon: Icons.view_kanban,
+                  text: "My courses",
+                ),
+                GButton(
+                  icon: LineIcons.school,
+                  text: "Explode courses",
+                ),
+                GButton(
+                  icon: LineIcons.globe,
+                  text: "Social",
+                ),
+                GButton(
+                  icon: LineIcons.user,
+                  text: "Account",
+                ),
+              ]),
         ),
       ),
     );

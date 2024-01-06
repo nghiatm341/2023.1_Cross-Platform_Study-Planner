@@ -66,6 +66,7 @@ class _UploadImageState extends State<UploadImage> {
 
       final snapshot = await uploadTask!.whenComplete((){});
 
+      //use to store in database
       imagedUrl = await snapshot.ref.getDownloadURL();
 
       setState(() {
@@ -126,7 +127,7 @@ class _UploadImageState extends State<UploadImage> {
             child: Container(
               child: Column(children: [
                 Text("Uploaded file:"),
-                SimpleNetworkImage(imageUrl: imagedUrl,),
+                SimpleNetworkImage(imageUrl: imagedUrl, boxFitType: BoxFit.contain,),
                  ElevatedButton(onPressed: clear, child: Text("Clear")),
               ]),
             ),

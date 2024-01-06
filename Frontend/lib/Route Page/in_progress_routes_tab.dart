@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/const.dart' as constaint;
 import 'package:frontend/utils.dart' as utils;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InProgressRoutesTab extends StatefulWidget {
   const InProgressRoutesTab({super.key});
@@ -24,7 +25,11 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
 
   Future<void> fetchCourses() async {
 
-     debugPrint("Fetch api list route");
+    debugPrint("Fetch api list route");
+
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+    final int? userId = prefs.getInt('userId');
 
     Map<String, String> headers = {
       'Content-Type': 'application/json', // Set the content type for POST request
@@ -32,7 +37,7 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
     };
 
     Map<String, dynamic> postData = {
-      'userId' : AppStore.ID
+      'userId' : userId
     };
 
     try {
@@ -67,7 +72,7 @@ class _InProgressRoutesTabState extends State<InProgressRoutesTab> {
                 userId: e['userId'], 
                 createdAt: date,
                 finishedAt: finishDate,
-                progress: (((completeCount / allLessons.length) * 100).ceil()).toString()
+                progress: (((completeCount / allLessons.length) * 100).ceil()).toString(),
               );
             }).toList();
             

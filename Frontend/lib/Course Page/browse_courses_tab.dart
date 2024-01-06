@@ -5,6 +5,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/const.dart' as constaint;
 import 'package:frontend/utils.dart' as utils;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BrowseCoursesTab extends StatefulWidget {
   const BrowseCoursesTab({super.key});
@@ -60,6 +61,10 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
     Map<String, dynamic> postData = {'title': _searchText, 'is_drafting': 0};
 
     try {
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      final String? token = prefs.getString('token');
+      final int? userId = prefs.getInt('userId');
+
       final response = await http.post(
         Uri.parse('${constaint.apiUrl}/course/list'),
         headers: headers,
@@ -82,7 +87,7 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
 
             debugPrint("subscribers count: " + subscribers.length.toString());
 
-            var meSubscriber = subscribers.where((element) => element['user_id'] == AppStore.ID).length > 0;
+            var meSubscriber = subscribers.where((element) => element['user_id'] == userId).length > 0;
 
             return new CourseItemData(
               courseId: c['id'],
@@ -93,7 +98,8 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
               subscribersCount: subscribers.length,
               description: c['description'],
               lessons: c['lessons'],
-              isDrafting: c['is_drafting']
+              isDrafting: c['is_drafting'],
+              avatar: (c['avatar'] != null) ? c['avatar'] : ""
             );
           }).toList();
         });
