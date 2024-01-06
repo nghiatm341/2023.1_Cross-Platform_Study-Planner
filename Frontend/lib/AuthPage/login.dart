@@ -10,7 +10,7 @@ import 'package:frontend/const.dart' as constaint;
 import 'package:frontend/AllPages/routes_page.dart';
 import 'dart:convert';
 import 'package:frontend/ultils/store.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart'
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 
 
@@ -62,8 +62,8 @@ class _MyWidgetState extends State<LoginPage> {
         userName = jsonData['userName'];
         userId = jsonData['id'];
         role = jsonData['role'];
-        final storage = new FlutterSecureStorage();
-        await storage.write(key: "userId", value: userId.toString());
+        //const storage = FlutterSecureStorage();
+        //await storage.write(key: "userId", value: userId.toString());
         //print('id: $userId');
       } else {
         print('Failed with status code: ${response.statusCode}');
