@@ -123,7 +123,7 @@ class _PostItemState extends State<PostItem> {
                                       'application/json', // Set the content type for POST request
                                 };
                                 final response = await http.post(
-                                  Uri.parse('${constaint.apiUrl}/p/comment'),
+                                  Uri.parse('${constaint.apiUrl}/post/comment'),
                                   headers: headers,
                                   body: jsonEncode({
                                     'userID': AppStore.ID,
@@ -131,13 +131,18 @@ class _PostItemState extends State<PostItem> {
                                     'comment': comment
                                   }), // Encode the POST data to JSON
                                 );
-                                print('=======$response');
+                                print(response.body);
+                                if(response.statusCode == 201) {
+                                  print('=======${response.body}');
+                                  _commentController
+                                  .clear(); // Clear the input field
+                                }
+                                
                               } catch (e) {
                                 print('errrrrrrrrrrrrr: $e');
                               }
                               // Process the comment data as needed
-                              _commentController
-                                  .clear(); // Clear the input field
+                              
                             },
                             child: Text('Comment'),
                           ),
