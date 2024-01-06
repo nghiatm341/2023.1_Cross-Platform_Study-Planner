@@ -80,17 +80,31 @@ class _AllPosts extends State<AllPosts> {
 
         setState(() {
           
-          /* postData1 = data.map((item) {
-            String postId = item['_id'];
-            String userName = item['_id'];
-
+          postData1 = data.map((item) {
+            String postId = item['_id'] ?? ""; // If _id is null, assign an empty string
+            String userName = '${item['user']['lastName']} ${item['user']['firstName']}' ?? ""; // Assign empty string if user data is null
+            String title = item['title'] ?? "";
+            String content = item['content'] ?? "";
+            String createdAt = item['created_at'] ?? "";
+            List listLike = item['list_like'] ?? [];
+            List listComment = item['list_comment'] ?? [];
             return PostItemData(
               postId: postId, 
-              userName: '',
+              userName: userName, 
+              title: title, 
+              content: content, 
+              type: 0, 
+              listLike: listLike, 
+              listComment: listComment, 
+              createdAt: createdAt, 
+              routeId: 0,
+              
+
+
 
     
              );
-          }).toList(); */
+          }).toList(); 
 
         });
       }
@@ -108,9 +122,9 @@ class _AllPosts extends State<AllPosts> {
   @override
   Widget build(BuildContext context) {
     return ListView.builder(
-        itemCount: postData.length,
+        itemCount: postData1.length,
         itemBuilder: (context, index) {
-          final post = postData[index];
+          final post = postData1[index];
 
           return PostItem(postItemData: post);
         });
