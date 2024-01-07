@@ -1,8 +1,8 @@
 const { GENDER, STATUS } = require("../constant/enum");
-const { cryptPassword } = require("../utils/hashPassword");
 const { isValidDateTime, isValidPhoneNumber } = require("../constant/regex");
 const User = require("../models/user");
 const Report = require("../models/Report");
+const { comparePassword, cryptPassword } = require("../utils/hashPassword");
 
 class UserController {
   async updateInfo(req, res) {
@@ -67,6 +67,60 @@ class UserController {
       const password = await cryptPassword(newPassword);
       await User.updateOne({ email }, { password });
       return res.status(200).json({ message: "Update password success!" });
+    } catch (error) {
+      console.log("Error", error);
+      res.status(500).json({ message: error.message });
+    }
+  }
+
+  async changePassword(req, res) {
+    try {
+      let { email, oldPassword, newPassword } = req.body;
+
+      if (!email || !newPassword) {
+        return res.status(400).json({ message: "Missing information fields!" });
+      }
+
+      if (oldPassword.length < 6) {
+        return res.status(400).json({ message: "newPassword minimum 6 characters!" });
+      }
+
+      if (newPassword.length < 6) {
+        return res.status(400).json({ message: "newPassword minimum 6 characters!" });
+      }
+
+      const findUser = await User.findOne({ email });
+
+      if (!findUser) {
+        return res.status(404).json({
+          message: "account does not exist!",
+        });
+      }
+
+      if (findUser.status === STATUS.BLOCK) {
+        return res.status(403).json({
+          message: "account has been block!",
+          data: {
+            blockedAt: findUser.updatedAt,
+            duration: 15 * findUser.count_block + " days",
+          },
+        });
+      }
+
+      const isMatchPassword = await comparePassword(oldPassword, findUser.password);
+      if (isMatchPassword) {
+        const passwordHash = await cryptPassword(newPassword);
+        findUser.password = passwordHash;
+
+        await User.updateOne({ email: findUser.email }, findUser);
+        return res.status(200).json({
+          message: "change password successfully!",
+        });
+      } else {
+        return res.status(400).json({
+          message: "email or password is incorrect!",
+        });
+      }
     } catch (error) {
       console.log("Error", error);
       res.status(500).json({ message: error.message });
@@ -188,8 +242,8 @@ class UserController {
     });
   }
 
-  async getListBlock(req, res){
-    const findUser = await User.find({ status: 'block'}).select("-password -token -refreshToken");
+  async getListBlock(req, res) {
+    const findUser = await User.find({ status: "block" }).select("-password -token -refreshToken");
 
     return res.status(200).json({
       message: "success",

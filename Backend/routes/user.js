@@ -10,5 +10,6 @@ router.post("/forget-password", authOtpMiddleware(), userController.forgotPasswo
 router.post("/get-info", authRoleMiddleware(), userController.getInfo);
 router.post("/get-list", authRoleMiddleware(ROLE.ADMIN), userController.getListUser);
 router.post("/get-list-block", authRoleMiddleware(ROLE.ADMIN), userController.getListBlock);
+router.post("/change-password", authRoleMiddleware(), userController.changePassword);
 
 module.exports = router;
