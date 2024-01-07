@@ -5,6 +5,7 @@ import 'package:frontend/SharePost/post_item.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'package:frontend/const.dart' as constaint;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class MyPosts extends StatefulWidget {
   const MyPosts({super.key});
@@ -26,13 +27,15 @@ class _MyPosts extends State<MyPosts> {
           'application/json', // Set the content type for POST request
       // Add other headers if needed
     };
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
+    final int? userId = prefs.getInt('userId');
     try {
       final response = await http.post(
         Uri.parse('${constaint.apiUrl}/post/list'),
         headers: headers,
         body: jsonEncode({
-          'user_id': AppStore.ID
+          'user_id': userId
         }), // Encode the POST data to JSON
       );
       if (response.statusCode == 200) {
@@ -41,7 +44,7 @@ class _MyPosts extends State<MyPosts> {
         print(data);
 
         setState(() {
-          final userId = AppStore.ID;
+          
           
           
           

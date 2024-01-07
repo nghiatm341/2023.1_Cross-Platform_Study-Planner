@@ -3,6 +3,7 @@ import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'package:frontend/const.dart' as constaint;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class PostItem extends StatefulWidget {
   final PostItemData postItemData;
@@ -16,12 +17,14 @@ class PostItem extends StatefulWidget {
 class _PostItemState extends State<PostItem> {
   TextEditingController _commentController = TextEditingController();
   late bool _isLike;
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _isLike = widget.isLike;
   }
+
   @override
   void dispose() {
     _commentController.dispose();
@@ -102,9 +105,16 @@ class _PostItemState extends State<PostItem> {
                       },
                       child: Row(
                         children: [
-                          Icon(Icons.thumb_up, color: _isLike? Colors.blue:Colors.grey,),
+                          Icon(
+                            Icons.thumb_up,
+                            color: _isLike ? Colors.blue : Colors.grey,
+                          ),
                           SizedBox(width: 5.0),
-                          Text('Like', style: TextStyle(color: _isLike? Colors.blue:Colors.grey),),
+                          Text(
+                            'Like',
+                            style: TextStyle(
+                                color: _isLike ? Colors.blue : Colors.grey),
+                          ),
                         ],
                       ),
                     ),
@@ -123,6 +133,10 @@ class _PostItemState extends State<PostItem> {
                           TextButton(
                             onPressed: () async {
                               // Handle comment button click
+                              SharedPreferences prefs =
+                                  await SharedPreferences.getInstance();
+
+                              final int? userId = prefs.getInt('userId');
                               String comment = _commentController.text;
                               print('Comment button clicked: $comment');
 
@@ -135,23 +149,21 @@ class _PostItemState extends State<PostItem> {
                                   Uri.parse('${constaint.apiUrl}/post/comment'),
                                   headers: headers,
                                   body: jsonEncode({
-                                    'userID': AppStore.ID,
+                                    'userId': userId,
                                     'postId': widget.postItemData.postId,
                                     'comment': comment
                                   }), // Encode the POST data to JSON
                                 );
                                 print(response.body);
-                                if(response.statusCode == 201) {
+                                if (response.statusCode == 201) {
                                   print('=======${response.body}');
                                   _commentController
-                                  .clear(); // Clear the input field
+                                      .clear(); // Clear the input field
                                 }
-                                
                               } catch (e) {
                                 print('errrrrrrrrrrrrr: $e');
                               }
                               // Process the comment data as needed
-                              
                             },
                             child: Text('Comment'),
                           ),
@@ -167,11 +179,41 @@ class _PostItemState extends State<PostItem> {
                   itemBuilder: (BuildContext context, int index) {
                     final comment =
                         widget.postItemData.listComment[index]['comment'];
+                    final name = widget.postItemData.listComment[index]['name'];
+                    final avatar =
+                        widget.postItemData.listComment[index]['avatar'];
+
                     return Container(
                       padding: EdgeInsets.symmetric(vertical: 5.0),
-                      child: Text(
-                        comment,
-                        textAlign: TextAlign.left,
+                      child: Row(
+                        children: [
+                          Container(
+                            height: 40,
+                            width: 40,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              image: DecorationImage(
+                                fit: BoxFit.cover,
+                                image: NetworkImage(avatar ??
+                                    "https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"),
+                              ),
+                            ),
+                          ),
+                          Container(
+                            margin: EdgeInsets.fromLTRB(8, 0, 8, 2),
+                            child: Text(
+                              name,
+                              //textAlign: TextAlign.left,
+                              style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            comment,
+                            //textAlign: TextAlign.left,
+                          ),
+                        ],
                       ),
                     );
                   },
