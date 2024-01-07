@@ -15,48 +15,6 @@ class AllPosts extends StatefulWidget {
 class _AllPosts extends State<AllPosts> {
 // Sample data
   List<PostItemData> postData1 = [];
-  List<PostItemData> postData = [
-    PostItemData(
-        postId: "",
-        userName: 'A',
-        title: 'First post',
-        content: "This is the first post",
-        type: 0,
-        listLike: [],
-        listComment: [],
-        createdAt: '17:00 20/12/2023',
-        routeId: 0),
-    PostItemData(
-        postId: "",
-        userName: 'A',
-        title: 'First post',
-        content: "This is the first post",
-        type: 0,
-        listLike: [],
-        listComment: [],
-        createdAt: '17:00 20/12/2023',
-        routeId: 0),
-    PostItemData(
-        postId: "",
-        userName: 'A',
-        title: 'First post',
-        content: "This is the first post",
-        type: 0,
-        listLike: [],
-        listComment: [],
-        createdAt: '17:00 20/12/2023',
-        routeId: 0),
-    PostItemData(
-        postId: "",
-        userName: 'A',
-        title: 'First post',
-        content: "This is the first post",
-        type: 0,
-        listLike: [],
-        listComment: [],
-        createdAt: '17:00 20/12/2023',
-        routeId: 0),
-  ];
 
   Future getCourses() async {
     Map<String, String> headers = {
@@ -98,6 +56,7 @@ class _AllPosts extends State<AllPosts> {
               listComment: listComment,
               createdAt: createdAt,
               routeId: 0,
+              avatarUrl: (item['user'] != null  && item['user']['avatar'] != null) ? item['user']['avatar']  : ""
             );
           }).toList();
         });

@@ -45,10 +45,6 @@ class _MyPosts extends State<MyPosts> {
 
         setState(() {
           
-          
-          
-          
-
 
           postData1 = data.map((item) {
             String postId = item['_id'] ?? "";
@@ -71,6 +67,7 @@ class _MyPosts extends State<MyPosts> {
               listComment: listComment,
               createdAt: createdAt,
               routeId: 0,
+              avatarUrl: item['user']['avatar']
             );
           }).toList();
         });

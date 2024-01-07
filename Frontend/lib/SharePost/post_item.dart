@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/ultils/simpleNetworkImage.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -35,6 +36,9 @@ class _PostItemState extends State<PostItem> {
 
   @override
   Widget build(BuildContext context) {
+
+    bool hasAvatar = widget.postItemData.avatarUrl != "";
+
     return Card(
       margin: EdgeInsets.all(10.0),
       child: Column(
@@ -45,10 +49,12 @@ class _PostItemState extends State<PostItem> {
             child: Row(
               children: [
                 // Circle Avatar for the picture
-                CircleAvatar(
-                  backgroundImage: AssetImage(
-                      'assets/profile_picture.jpg'), // Replace with actual image
-                  radius: 25.0,
+                Container(
+                  child: Container(
+                      height: 60, 
+                      child: 
+                        hasAvatar ? SimpleNetworkImage(imageUrl: widget.postItemData.avatarUrl, boxFitType: BoxFit.cover) : Image(image: AssetImage("assets/user-default.png"), fit: BoxFit.cover) 
+                        )
                 ),
                 SizedBox(width: 10.0),
                 // Name and Time
@@ -189,6 +195,10 @@ class _PostItemState extends State<PostItem> {
                     final name = listComment[index]['name'];
                     final avatar = listComment[index]['avatar'];
 
+                    bool hasAvatar = avatar != "";
+
+                    debugPrint(avatar);
+
                     return Container(
                       padding: EdgeInsets.symmetric(vertical: 5.0),
                       child: Row(
@@ -196,14 +206,9 @@ class _PostItemState extends State<PostItem> {
                           Container(
                             height: 40,
                             width: 40,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              image: DecorationImage(
-                                fit: BoxFit.cover,
-                                image: NetworkImage(avatar ??
-                                    "https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg"),
-                              ),
-                            ),
+
+                           child: hasAvatar ? SimpleNetworkImage(imageUrl: avatar, boxFitType: BoxFit.cover) : Image(image: AssetImage("assets/user-default.png"), fit: BoxFit.cover)
+                            
                           ),
                           Container(
                             margin: EdgeInsets.fromLTRB(8, 0, 8, 2),
@@ -243,6 +248,7 @@ class PostItemData {
   final List listComment;
   final String createdAt;
   final int routeId;
+  final String avatarUrl;
 
   PostItemData({
     required this.postId,
@@ -254,5 +260,6 @@ class PostItemData {
     required this.listComment,
     required this.createdAt,
     required this.routeId,
+    required this.avatarUrl
   });
 }
