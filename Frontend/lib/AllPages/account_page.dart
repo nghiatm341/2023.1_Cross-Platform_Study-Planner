@@ -3,15 +3,13 @@ import 'dart:io';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:frontend/AllPages/change_password.dart';
 import 'package:frontend/AuthPage/login.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
-import 'package:frontend/ultils/store.dart';
 import 'package:frontend/const.dart' as constaint;
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:image_picker/image_picker.dart';
-
-import '../ultils/simpleNetworkImage.dart';
 
 class AccountPage extends StatefulWidget {
   const AccountPage({super.key});
@@ -405,11 +403,24 @@ class _AccountPageState extends State<AccountPage> {
         debugPrint("Logout successfully");
       } else {
         print('Logout fail with status code: ${response.statusCode}');
+        if (response.statusCode == 400) {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => LoginPage()));
+        }
       }
     } catch (error) {
       // Catch and handle any errors that occur during the API call
       print('Error logout: $error');
     }
+  }
+
+  void changePassword() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => ChangePassword(email: currentUser.email)));
   }
 
   @override
@@ -694,17 +705,35 @@ class _AccountPageState extends State<AccountPage> {
                                             ),
                                           ],
                                         )),
-                                  SizedBox(width: 10),
-                                  ElevatedButton(
-                                      onPressed: () async {
-                                        await logout();
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                          backgroundColor: Colors.amber),
-                                      child: Text("Logout",
-                                          style: TextStyle(
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold))),
+                                  const SizedBox(width: 10),
+                                  if (!enableForm)
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          changePassword();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.amber),
+                                        child: const Text("Change Password",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold
+                                            )
+                                        )
+                                    ),
+                                  if (!enableForm)
+                                    ElevatedButton(
+                                        onPressed: () async {
+                                          await logout();
+                                        },
+                                        style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.amber),
+                                        child: const Text("Logout",
+                                            style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.bold
+                                            )
+                                        )
+                                    ),
                                 ]),
                           ],
                         ),

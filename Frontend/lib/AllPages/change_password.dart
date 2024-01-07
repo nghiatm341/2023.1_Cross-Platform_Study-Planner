@@ -1,24 +1,79 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:frontend/AllPages/account_page.dart';
+import 'package:frontend/AuthPage/login.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:frontend/const.dart' as constaint;
 
 class ChangePassword extends StatefulWidget {
-  const ChangePassword({super.key});
+  final String email;
+
+  const ChangePassword({super.key, required this.email});
 
   State<ChangePassword> createState() => _ChangePasswordState();
 }
 
 class _ChangePasswordState extends State<ChangePassword> {
+  bool showOldPassword = false;
   bool showNewPassword = false;
   bool showConfirmPassword = false;
   bool checkPassChange = false;
-  final passwordCtrl = TextEditingController();
-  final passwordCfmCtrl = TextEditingController();
+  final _oldpasswordCtrl = TextEditingController();
+  final _passwordCtrl = TextEditingController();
+  final _passwordCfmCtrl = TextEditingController();
 
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
-    passwordCtrl.dispose();
-    passwordCfmCtrl.dispose();
+    _oldpasswordCtrl.dispose();
+    _passwordCtrl.dispose();
+    _passwordCfmCtrl.dispose();
     super.dispose();
+  }
+
+  Future<void> _changePassword() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    final String? token = prefs.getString('token');
+
+    debugPrint("Changing password");
+
+    Map<String, String> headers = {
+      'Content-Type':
+      'application/json', // Set the content type for POST request
+      // Add other headers if needed
+      'Authorization': 'Bearer ' + token.toString()
+    };
+
+    Map<String, dynamic> postData = {
+      'email': widget.email,
+      'oldPassword': _oldpasswordCtrl.text,
+      'newPassword': _passwordCfmCtrl.text
+    };
+
+    try {
+      final response = await http.post(
+        Uri.parse('${constaint.apiUrl}/user/change-password'),
+        headers: headers,
+        body: jsonEncode(postData), // Encode the POST data to JSON
+      );
+      if (response.statusCode == 200) {
+        // Successfully fetched data
+        await prefs.clear();
+        checkPassChange = true;
+
+        debugPrint("Change password successfully");
+        _showAlertDialog(context, 'Success', 'Password changed successfully');
+      } else {
+        print('Change password fail with status code: ${response.statusCode}');
+        _showAlertDialog(context, 'Error', response.body);
+      }
+    } catch (error) {
+      // Catch and handle any errors that occur during the API call
+      print('Error logout: $error');
+      _showAlertDialog(context, 'Error', error.toString());
+    }
   }
 
   @override
@@ -50,6 +105,35 @@ class _ChangePasswordState extends State<ChangePassword> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
+                    'Old Password',
+                    style: TextStyle(
+                      fontSize: 18.0,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.black,
+                    ),
+                  ),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextFormField(
+                          controller: _oldpasswordCtrl,
+                          obscureText: !showOldPassword,
+                          decoration: InputDecoration(
+                            hintText: 'Type your old password here',
+                          ),
+                        ),
+                      ),
+                      IconButton(
+                        icon: Icon(showOldPassword ? Icons.visibility : Icons.visibility_off),
+                        onPressed: () {
+                          setState(() {
+                            showOldPassword = !showOldPassword;
+                          });
+                        },
+                      ),
+                    ],
+                  ),
+                  Text(
                     'New Password',
                     style: TextStyle(
                       fontSize: 18.0,
@@ -61,7 +145,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          controller: passwordCtrl,
+                          controller: _passwordCtrl,
                           obscureText: !showNewPassword,
                           decoration: InputDecoration(
                             hintText: 'Type your new password here',
@@ -91,7 +175,7 @@ class _ChangePasswordState extends State<ChangePassword> {
                     children: [
                       Expanded(
                         child: TextFormField(
-                          controller: passwordCfmCtrl,
+                          controller: _passwordCfmCtrl,
                           obscureText: !showConfirmPassword,
                           decoration: InputDecoration(
                             hintText: 'Confirm your new password',
@@ -125,7 +209,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                             side: MaterialStateProperty.all<BorderSide>(BorderSide(color: Colors.black)),
                           ),
                           onPressed: () {
-                            // Điều hướng về trang đăng nhập
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) => AccountPage()));
                           },
                           child: Text('Cancel'),
                         ),
@@ -143,13 +230,12 @@ class _ChangePasswordState extends State<ChangePassword> {
 
   void _onConfirmPressed() {
     // Kiểm tra xem hai trường mật khẩu có khớp nhau không
-    if (passwordCtrl.text.length < 6 || passwordCtrl.text.length > 12) {
+    if (_passwordCtrl.text.length < 6 || _passwordCtrl.text.length > 12) {
       checkPassChange = false;
       return _showAlertDialog(context, 'Error', 'Password must be more than 6 characters and less than 12 characters');
     }
-    if (passwordCtrl.text == passwordCfmCtrl.text) {
-      checkPassChange = true;
-      _showAlertDialog(context, 'Success', 'Password changed successfully');
+    if (_passwordCtrl.text == _passwordCfmCtrl.text) {
+      _changePassword();
     } else {
       checkPassChange = false;
       _showAlertDialog(context, 'Error', 'Passwords do not match');
@@ -169,6 +255,10 @@ class _ChangePasswordState extends State<ChangePassword> {
                 Navigator.of(context).pop();
                 if (checkPassChange) {
                   // Điều hướng về trang đăng nhập
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => LoginPage()));
                 }
               },
               child: Text('OK'),
