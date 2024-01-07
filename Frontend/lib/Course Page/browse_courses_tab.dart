@@ -103,6 +103,7 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
                 description: c['description'],
                 lessons: c['lessons'],
                 isDrafting: c['is_drafting'],
+                avatar: (c['avatar'] != null) ? c['avatar'] : "",
                 authorId: c['author_id']['id']);
           }).toList();
         });

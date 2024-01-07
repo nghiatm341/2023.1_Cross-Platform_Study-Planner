@@ -74,7 +74,8 @@ class _PublishedCoursesState extends State<PublishedCourses> {
                 description: c['description'],
                 lessons: c['lessons'],
                 isDrafting: c['is_drafting'],
-                authorId: c['author_id']['id']);
+                authorId: c['author_id']['id'],
+                avatar: (c['avatar'] != null) ? c['avatar'] : "");
           }).toList();
         });
       } else {

@@ -5,7 +5,9 @@ class SimpleNetworkImage extends StatelessWidget {
 
   final String imageUrl;
 
-  const SimpleNetworkImage({super.key, required this.imageUrl});
+  final BoxFit boxFitType;
+
+  const SimpleNetworkImage({super.key, required this.imageUrl, required this.boxFitType});
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class SimpleNetworkImage extends StatelessWidget {
       padding: EdgeInsets.all(4),
       child: Image.network(
           imageUrl,
-          fit: BoxFit.contain,
+          fit: boxFitType,
           loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
             if (loadingProgress == null) {
               return child;

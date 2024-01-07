@@ -5,6 +5,7 @@ import 'package:frontend/Course%20Page/popup_subscribe_result.dart';
 import 'package:frontend/Course%20Page/popup_unsubscribe.dart';
 import 'package:frontend/Route%20Page/route_detail.dart';
 import 'package:frontend/const.dart' as constaint;
+import 'package:frontend/ultils/simpleNetworkImage.dart';
 import 'package:frontend/ultils/store.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -71,6 +72,8 @@ class _RouteItem extends State<CourseItem> {
 
   @override
   Widget build(BuildContext context) {
+    bool hasAvatar = widget.courseData.avatar != "";
+
     return GestureDetector(
       child: Container(
         child: Padding(
@@ -82,10 +85,16 @@ class _RouteItem extends State<CourseItem> {
               children: [
                 Expanded(
                     flex: 2,
-                    child: Icon(
-                      Icons.book,
-                      size: 50,
-                    )),
+                    child: Container(
+                        height: 60,
+                        child: hasAvatar
+                            ? SimpleNetworkImage(
+                                imageUrl: widget.courseData.avatar,
+                                boxFitType: BoxFit.cover)
+                            : Image(
+                                image: AssetImage(
+                                    "assets/course-default-icon.jpg"),
+                                fit: BoxFit.cover))),
                 Expanded(
                   flex: 6,
                   child: Column(
@@ -249,6 +258,7 @@ class CourseItemData {
   final List lessons;
   final int isDrafting;
   final int authorId;
+  final String avatar;
 
   CourseItemData(
       {required this.title,
@@ -260,5 +270,6 @@ class CourseItemData {
       required this.description,
       required this.lessons,
       required this.isDrafting,
-      required this.authorId});
+      required this.authorId,
+      required this.avatar});
 }
