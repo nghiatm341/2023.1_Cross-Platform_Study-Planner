@@ -6,6 +6,8 @@ import 'package:http/http.dart' as http;
 import 'package:frontend/const.dart' as constaint;
 import 'dart:convert';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
 class SocialPage extends StatefulWidget {
   const SocialPage({super.key});
 
@@ -18,7 +20,8 @@ class _SocialPageState extends State<SocialPage> {
   void initState() {
     // TODO: implement initState
     super.initState();
-    print(AppStore.ID);
+    //print(AppStore.ID);
+    
   }
   @override
   Widget build(BuildContext context) {
@@ -82,18 +85,21 @@ class _SocialPageState extends State<SocialPage> {
           'application/json', // Set the content type for POST request
       // Add other headers if needed
                };
+               SharedPreferences prefs = await SharedPreferences.getInstance();
+
+                final int? userId = prefs.getInt('userId');
                 try {
                   final response = await http.post(
                   Uri.parse('${constaint.apiUrl}/post/create'),
                   headers: headers,
                   body: jsonEncode({
-                    'userId': AppStore.ID,
+                    'userId': userId,
                     'title': title,
                     'content': content,
                     'image': imageUrl
                   }),
                 );
-                print('userId: ${AppStore.ID} Title: $title, Content: $content, Image URL: $imageUrl');
+                print('userId: ${userId} Title: $title, Content: $content, Image URL: $imageUrl');
                 } catch (e) {
                   print(e);
                 }
