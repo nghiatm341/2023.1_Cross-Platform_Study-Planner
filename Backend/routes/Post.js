@@ -217,12 +217,15 @@ router.post('/comment', async (req, res) => {
     
     try {
       const post = await Post.findById(postId);
+      const user = await User.findOne({id: userId});
   
       if (!post) {
         return res.status(404).json({ error: 'Post not found' });
       }
   
       const newComment = {
+        name: `${user.firstName} ${user.lastName}`,
+        avatar: user.avatar,
         userId: userId,
         comment: comment,
         created_at: new Date()
