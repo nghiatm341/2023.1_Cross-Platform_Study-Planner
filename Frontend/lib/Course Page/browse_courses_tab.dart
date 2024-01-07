@@ -25,11 +25,10 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
     setState(() {
       courseList = [];
     });
-
   }
 
   void findCourse() {
-    if(_searchText != ""){
+    if (_searchText != "") {
       debugPrint("find courses with title: " + _searchText);
       fetchCourses();
     }
@@ -87,20 +86,25 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
 
             debugPrint("subscribers count: " + subscribers.length.toString());
 
-            var meSubscriber = subscribers.where((element) => element['user_id'] == userId).length > 0;
+            var meSubscriber = subscribers
+                    .where((element) => element['user_id'] == userId)
+                    .length >
+                0;
 
             return new CourseItemData(
-              courseId: c['id'],
-              authorName: c['author_id']['firstName'] + " " + c['author_id']['lastName'],
-              createdAt: date,
-              title: c['title'],
-              isSubscribed: meSubscriber,
-              subscribersCount: subscribers.length,
-              description: c['description'],
-              lessons: c['lessons'],
-              isDrafting: c['is_drafting'],
-              avatar: (c['avatar'] != null) ? c['avatar'] : ""
-            );
+                courseId: c['id'],
+                authorName: c['author_id']['firstName'] +
+                    " " +
+                    c['author_id']['lastName'],
+                createdAt: date,
+                title: c['title'],
+                isSubscribed: meSubscriber,
+                subscribersCount: subscribers.length,
+                description: c['description'],
+                lessons: c['lessons'],
+                isDrafting: c['is_drafting'],
+                avatar: (c['avatar'] != null) ? c['avatar'] : "",
+                authorId: c['author_id']['id']);
           }).toList();
         });
       } else {
@@ -168,9 +172,8 @@ class _BrowseCoursesTabState extends State<BrowseCoursesTab> {
               color: Colors.black,
             ),
           ),
-
           Expanded(
-            child: Container(
+              child: Container(
             child: ListView.builder(
                 itemBuilder: (context, index) {
                   return CourseItem(courseData: courseList[index]);

@@ -22,8 +22,8 @@ class CourseDetail extends StatefulWidget {
 }
 
 class _CourseDetailState extends State<CourseDetail> {
-
   late String? role = "";
+  late int? userId = 0;
 
   @override
   void initState() {
@@ -36,6 +36,7 @@ class _CourseDetailState extends State<CourseDetail> {
 
     setState(() {
       role = prefs.getString('role');
+      userId = prefs.getInt('userId');
     });
   }
 
@@ -49,7 +50,8 @@ class _CourseDetailState extends State<CourseDetail> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Text('Do you want to ${widget.courseData.isDrafting.toInt() == 1 ? 'publish' : 'draft'} this course?'),
+                Text(
+                    'Do you want to ${widget.courseData.isDrafting.toInt() == 1 ? 'publish' : 'draft'} this course?'),
               ],
             ),
           ),
@@ -172,7 +174,9 @@ class _CourseDetailState extends State<CourseDetail> {
       curve: Curves.bounceIn,
       overlayColor: Colors.black,
       overlayOpacity: 0.5,
-      visible: role == "teacher",
+      visible: role == "teacher" &&
+          userId != null &&
+          widget.courseData.authorId == userId,
       children: [
         SpeedDialChild(
           child: Icon(Icons.delete),

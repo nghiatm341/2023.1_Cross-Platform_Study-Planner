@@ -54,7 +54,6 @@ class _RouteItem extends State<CourseItem> {
   }
 
   void unsubscribeCourse() {
-    
     showDialog(
         context: context,
         builder: (context) {
@@ -73,7 +72,6 @@ class _RouteItem extends State<CourseItem> {
 
   @override
   Widget build(BuildContext context) {
-
     bool hasAvatar = widget.courseData.avatar != "";
 
     return GestureDetector(
@@ -88,10 +86,15 @@ class _RouteItem extends State<CourseItem> {
                 Expanded(
                     flex: 2,
                     child: Container(
-                      height: 60, 
-                      child: 
-                        hasAvatar ? SimpleNetworkImage(imageUrl: widget.courseData.avatar, boxFitType: BoxFit.cover) : Image(image: AssetImage("assets/course-default-icon.jpg"), fit: BoxFit.cover) 
-                        )),
+                        height: 60,
+                        child: hasAvatar
+                            ? SimpleNetworkImage(
+                                imageUrl: widget.courseData.avatar,
+                                boxFitType: BoxFit.cover)
+                            : Image(
+                                image: AssetImage(
+                                    "assets/course-default-icon.jpg"),
+                                fit: BoxFit.cover))),
                 Expanded(
                   flex: 6,
                   child: Column(
@@ -126,7 +129,8 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: widget.courseData.isSubscribed && role == "student",
+                          visible: widget.courseData.isSubscribed &&
+                              role == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,
@@ -153,7 +157,8 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: !widget.courseData.isSubscribed && role == "student",
+                          visible: !widget.courseData.isSubscribed &&
+                              role == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,
@@ -252,6 +257,7 @@ class CourseItemData {
   final String description;
   final List lessons;
   final int isDrafting;
+  final int authorId;
   final String avatar;
 
   CourseItemData(
@@ -264,6 +270,6 @@ class CourseItemData {
       required this.description,
       required this.lessons,
       required this.isDrafting,
-      required this.avatar
-      });
+      required this.authorId,
+      required this.avatar});
 }
