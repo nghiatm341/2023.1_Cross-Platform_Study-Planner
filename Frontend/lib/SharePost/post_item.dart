@@ -17,12 +17,14 @@ class PostItem extends StatefulWidget {
 class _PostItemState extends State<PostItem> {
   TextEditingController _commentController = TextEditingController();
   late bool _isLike;
+  late List listComment =  [];
 
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
     _isLike = widget.isLike;
+    listComment = widget.postItemData.listComment;
   }
 
   @override
@@ -154,11 +156,16 @@ class _PostItemState extends State<PostItem> {
                                     'comment': comment
                                   }), // Encode the POST data to JSON
                                 );
-                                print(response.body);
+                                //print(response.body);
                                 if (response.statusCode == 201) {
-                                  print('=======${response.body}');
-                                  _commentController
-                                      .clear(); // Clear the input field
+                                  final jsonData = json.decode(response.body);
+                                  final List newLisCmt = jsonData['post']['list_comment'];
+
+                                  setState(() {
+                                    listComment = newLisCmt; 
+                                  });
+  
+                                  _commentController.clear(); // Clear the input field
                                 }
                               } catch (e) {
                                 print('errrrrrrrrrrrrr: $e');
@@ -175,13 +182,12 @@ class _PostItemState extends State<PostItem> {
                 // Other Footer components...
                 ListView.builder(
                   shrinkWrap: true,
-                  itemCount: widget.postItemData.listComment.length,
+                  itemCount: listComment.length,
                   itemBuilder: (BuildContext context, int index) {
                     final comment =
-                        widget.postItemData.listComment[index]['comment'];
-                    final name = widget.postItemData.listComment[index]['name'];
-                    final avatar =
-                        widget.postItemData.listComment[index]['avatar'];
+                        listComment[index]['comment'];
+                    final name = listComment[index]['name'];
+                    final avatar = listComment[index]['avatar'];
 
                     return Container(
                       padding: EdgeInsets.symmetric(vertical: 5.0),
