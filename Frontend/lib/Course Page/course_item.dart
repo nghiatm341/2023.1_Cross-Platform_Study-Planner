@@ -53,7 +53,6 @@ class _RouteItem extends State<CourseItem> {
   }
 
   void unsubscribeCourse() {
-    
     showDialog(
         context: context,
         builder: (context) {
@@ -121,7 +120,8 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: widget.courseData.isSubscribed && role == "student",
+                          visible: widget.courseData.isSubscribed &&
+                              role == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,
@@ -148,7 +148,8 @@ class _RouteItem extends State<CourseItem> {
 
                       GestureDetector(
                         child: Visibility(
-                          visible: !widget.courseData.isSubscribed && role == "student",
+                          visible: !widget.courseData.isSubscribed &&
+                              role == "student",
                           child: Container(
                             padding: EdgeInsets.symmetric(vertical: 4),
                             height: 40,
@@ -247,6 +248,7 @@ class CourseItemData {
   final String description;
   final List lessons;
   final int isDrafting;
+  final int authorId;
 
   CourseItemData(
       {required this.title,
@@ -257,6 +259,6 @@ class CourseItemData {
       required this.subscribersCount,
       required this.description,
       required this.lessons,
-      required this.isDrafting
-      });
+      required this.isDrafting,
+      required this.authorId});
 }

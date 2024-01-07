@@ -32,10 +32,7 @@ class _PublishedCoursesState extends State<PublishedCourses> {
       // Add other headers if needed
     };
 
-    Map<String, dynamic> postData = {
-      'author_id': userId,
-      'is_drafting': 0
-    };
+    Map<String, dynamic> postData = {'author_id': userId, 'is_drafting': 0};
 
     try {
       final response = await http.post(
@@ -76,7 +73,8 @@ class _PublishedCoursesState extends State<PublishedCourses> {
                 subscribersCount: subscribers.length,
                 description: c['description'],
                 lessons: c['lessons'],
-                isDrafting: c['is_drafting']);
+                isDrafting: c['is_drafting'],
+                authorId: c['author_id']['id']);
           }).toList();
         });
       } else {
