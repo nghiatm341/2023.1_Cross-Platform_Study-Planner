@@ -8,9 +8,12 @@ import 'package:frontend/AllPages/routes_page.dart';
 import 'package:frontend/AuthPage/login.dart';
 import 'package:frontend/firebase_options.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 Future main() async {
-
   WidgetsFlutterBinding.ensureInitialized();
 
   SharedPreferences prefs = await SharedPreferences.getInstance();
@@ -19,6 +22,21 @@ Future main() async {
   // final String? token = prefs.getString('token');
   //   final int? userId = prefs.getInt('userId');
   //   final String? userName = prefs.getString('userName');
+
+  // final client = http.Client();
+  final dio = Dio();
+
+  dio.interceptors.add(InterceptorsWrapper(onError: (DioError e, handler) {
+    if (e.response?.statusCode == 401) {
+      // Xử lý chuyển hướng về màn hình login ở đây
+      navigatorKey.currentState?.pushReplacement(
+        MaterialPageRoute(
+          builder: (context) => LoginPage(),
+        ),
+      );
+    }
+    return handler.next(e);
+  }));
 
   Widget _getHomePageBasedOnRole(String role) {
     switch (role) {
@@ -33,7 +51,6 @@ Future main() async {
     }
   }
 
- 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -51,6 +68,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      navigatorKey: navigatorKey,
       debugShowCheckedModeBanner: false,
       home: initialPage,
       theme: ThemeData(primarySwatch: Colors.amber),

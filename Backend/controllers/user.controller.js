@@ -215,7 +215,7 @@ class UserController {
     }
 
     if (userId === 1 && id !== 1) {
-      return res.status(401).json({
+      return res.status(400).json({
         message: "do not have permission to view this user information!",
       });
     }
