@@ -37,6 +37,14 @@ const PostSchema = new Schema({
                 type: Number,
                 default: 0
             },
+            name: {
+                type: String,
+                default: ""
+            },
+            avatar: {
+                type: String,
+                default: ""
+            },
             comment: {
                 type: String,
                 default: ""

@@ -11,7 +11,6 @@ import 'package:frontend/AllPages/routes_page.dart';
 import 'dart:convert';
 import 'package:frontend/ultils/store.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -62,6 +61,9 @@ class _MyWidgetState extends State<LoginPage> {
         userName = jsonData['userName'];
         userId = jsonData['id'];
         role = jsonData['role'];
+        //const storage = FlutterSecureStorage();
+        //await storage.write(key: "userId", value: userId.toString());
+        //print('id: $userId');
       } else {
         print('Failed with status code: ${response.statusCode}');
 

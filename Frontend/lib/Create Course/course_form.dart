@@ -538,7 +538,7 @@ class ContentWidget extends StatelessWidget {
             SizedBox(height: 8),
             ElevatedButton(
               onPressed: onDelete,
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.white),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.amber),
               child: Text('Delete Content'),
             ),
           ],
