@@ -19,7 +19,7 @@ exports.authRoleMiddleware = (...role) => {
         req.userInfo = data;
         next();
       })
-      .catch(() => res.status(400).json({ message: "Invalid token" }));
+      .catch(() => res.status(401).json({ message: "UnAuth" }));
   };
 };
 
